@@ -8,6 +8,7 @@ nothing is ever hard-coded here that could be a secret.
 from __future__ import annotations
 
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Literal
@@ -18,6 +19,11 @@ from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 from reglens.config import paths
 
 EnvName = Literal["local", "test", "ci", "docker", "prod"]
+
+
+class MissingApiKeyError(RuntimeError):
+    """No API key for the configured provider: fail loudly before any pipeline runs,
+    never mid-eval with half the questions answered."""
 
 
 class Settings(BaseSettings):
@@ -185,6 +191,25 @@ class Settings(BaseSettings):
     @property
     def has_gemini_key(self) -> bool:
         return self.gemini_api_key is not None
+
+    def require_gemini_key(self) -> str:
+        """A usable Gemini key (possibly ``""`` = let the SDK read the environment).
+
+        Raises :class:`MissingApiKeyError` when neither ``.env`` nor the process
+        environment has one, so a pipeline fails *before* its first paid call instead
+        of half-way through an eval run.
+        """
+        if self.gemini_api_key is not None:
+            value = self.gemini_api_key.get_secret_value().strip()
+            if value:
+                return value
+        for env_name in ("GEMINI_API_KEY", "GOOGLE_API_KEY"):
+            if os.environ.get(env_name, "").strip():
+                return ""
+        raise MissingApiKeyError(
+            "no GEMINI_API_KEY in .env or the environment; create one at "
+            "https://aistudio.google.com/apikey and add GEMINI_API_KEY=... to .env"
+        )
 
     def redacted(self) -> dict[str, object]:
         """Settings safe to log or return from the API: secrets are replaced."""
