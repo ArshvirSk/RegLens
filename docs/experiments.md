@@ -15,9 +15,9 @@ be filled in from intuition, a single example, or a model's opinion of itself.
 
 ## Phase 0 status
 
-No eval run has been performed. There are no metrics in this document, and that is the
-correct state: the baseline pipeline does not exist yet, and the golden set is empty because
-the working rules require questions to be drafted from parsed documents.
+No golden-set eval run has been performed. There are no retrieval or generation metrics in
+this document, and that is the correct state: the baseline pipeline had not been built, and
+the golden set could not be drafted before the documents were parsed.
 
 What Phase 0 *does* establish is the machinery that makes a metric trustworthy:
 
@@ -29,11 +29,25 @@ What Phase 0 *does* establish is the machinery that makes a metric trustworthy:
 | Held-out questions cannot be tuned on | `held_out` field + validator counts | `tests/unit/test_golden.py::test_review_and_held_out_counts` |
 | Judge is validated against humans | Phase 1 deliverable (20 hand-graded answers) | — |
 
+## Parser comparison (measured, Phase 1 preprocessing)
+
+Not an eval metric — this decides which parser feeds the chunker. Full report:
+`eval/results/2026-10-02T183304Z-parser-comparison/`.
+
+| Documents | Mean token agreement (pymupdf vs pdfplumber) | Faster | Mean quality (pymupdf) |
+|---|---|---|---|
+| 20 | 0.9732 | pymupdf 20/20 (8.46 s vs 229.15 s) | 0.998 |
+
+
+Worst agreement: 0.9048 (`rbi_md_psl_2020`). Pages `[57, 73, 86]` yielded almost no text
+and are flagged as OCR candidates. Decision: **pymupdf stays the baseline parser on this
+evidence** (`parsing.parser: pymupdf`).
+
 ## Phase 1 — baseline (to be filled by the first real run)
 
 | # | Config | Chunking | Embedding | Retrieval | recall@10 | MRR@10 | nDCG@10 | Correctness | Faithfulness | Report |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1.0 | `baseline_naive` | fixed 512/64 | `text-embedding-3-small` | dense top-10 | — | — | — | — | — | — |
+| 1.0 | `baseline_naive` | fixed 512/64 | `gemini-embedding-001` (3072-dim) | dense top-10 | — | — | — | — | — | — |
 
 Baseline is deliberately naive: fixed-size chunks, one hosted embedding model, dense
 retrieval only, no reranking, no rewriting, no temporal filtering. It stays runnable for the
@@ -102,3 +116,4 @@ baseline, and the actual delta is reported — including if it is smaller than h
 | Date | Change |
 |---|---|
 | 2026-10-02 | Created. Phase 0 complete: no metrics yet, by design. |
+| 2026-10-02 | Parser comparison measured on all 20 fetched documents; pymupdf retained. |
