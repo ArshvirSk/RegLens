@@ -25,8 +25,17 @@ def _isolate_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("REGLENS_RAW_DIR", str(tmp_path / "data" / "raw"))
     monkeypatch.setenv("REGLENS_PARSED_DIR", str(tmp_path / "data" / "parsed"))
     monkeypatch.setenv("REGLENS_DERIVED_DIR", str(tmp_path / "data" / "derived"))
+    # Point the env-file loader at a path that does not exist: the project's real .env
+    # (providers, database URL, keys) must never shape an assertion.
+    monkeypatch.setenv("REGLENS_ENV_FILE", str(tmp_path / "no.env"))
     (tmp_path / "data").mkdir(parents=True, exist_ok=True)
-    for key in ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "LANGFUSE_SECRET_KEY"):
+    for key in (
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "LANGFUSE_SECRET_KEY",
+    ):
         monkeypatch.delenv(key, raising=False)
     get_settings.cache_clear()
     yield

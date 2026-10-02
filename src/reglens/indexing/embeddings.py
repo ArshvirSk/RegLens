@@ -99,9 +99,19 @@ class GeminiEmbedding:
     def embed_documents(self, texts: list[str]) -> EmbeddedBatch:
         return self._embed(texts, task_type=DOCUMENT_TASK)
 
-    def embed_query(self, text: str) -> list[float]:
+    def embed_query_with_usage(self, text: str) -> tuple[list[float], int]:
+        """Query vector plus its input tokens, returned by value.
+
+        Cost attribution for the retrieval stage needs the token count; returning it
+        (instead of storing it on the client) keeps concurrent /ask requests from
+        overwriting each other's usage.
+        """
         batch = self._embed([text], task_type=QUERY_TASK)
-        return batch.vectors[0]
+        return batch.vectors[0], batch.input_tokens
+
+    def embed_query(self, text: str) -> list[float]:
+        vector, _ = self.embed_query_with_usage(text)
+        return vector
 
 
 def build_embedding_model(

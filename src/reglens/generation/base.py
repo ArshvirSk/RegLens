@@ -67,6 +67,11 @@ class Answer:
     support_score: float = 0.0
     citation_checks: list[CitationCheck] = field(default_factory=list)
     model: str | None = None
+    #: Token accounting travels with the answer (FR6) rather than through shared client
+    #: state, which would race under concurrent requests.
+    input_tokens: int = 0
+    output_tokens: int = 0
+    latency_ms: int = 0
 
 
 @runtime_checkable

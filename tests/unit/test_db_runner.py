@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 
+from reglens.config import get_settings
 from reglens.db.runner import MigrationError, discover_migrations, render_sql
 
 
@@ -30,7 +31,10 @@ def test_migrations_are_discovered_in_filename_order(tmp_path: Path) -> None:
 def test_embedding_dim_placeholder_is_substituted(tmp_path: Path) -> None:
     write_migration(tmp_path, "0001_v.sql", "CREATE TABLE t (v vector(${EMBEDDING_DIM}));")
     (migration,) = discover_migrations(tmp_path)
-    assert "vector(1536)" in migration.sql
+    # Assert against the configured dimension, not a copy of it: the embedding model is
+    # a config choice and hard-coding the number here is how the two drift apart.
+    expected_dim = get_settings().embedding_dim
+    assert f"vector({expected_dim})" in migration.sql
     assert "${" not in migration.sql
 
 

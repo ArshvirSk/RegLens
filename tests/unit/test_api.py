@@ -1,18 +1,23 @@
 """API tests.
 
-The important assertion is that ``/ask`` fails loudly (501) instead of returning an
-unsourced answer, and that ``/health`` still works with no database: a fresh clone must be
-able to start the API and see the truth about what is and is not built.
+The contract that matters: ``/ask`` never invents an answer. Without credentials it
+returns 503 with a trace id (fail closed, no empty 200); with an injected pipeline it
+answers with citations mapped to real retrieved chunks, refuses explicitly, or reports
+a pipeline failure as 503. ``/health`` must keep working with no database.
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterator
+from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
 
 from reglens.api.main import create_app
+from reglens.generation.base import Answer
+from reglens.retrieval.base import RetrievedChunk
+from reglens.routing.pipeline import AskResult
 
 
 @pytest.fixture
@@ -62,13 +67,136 @@ def test_config_endpoint_exposes_the_ablation_toggles(client: TestClient) -> Non
     assert "gemini-3.5-flash-lite" in body["pricing"]["models"]
 
 
-def test_ask_returns_501_and_refuses_to_guess(client: TestClient) -> None:
+def make_chunk() -> RetrievedChunk:
+    return RetrievedChunk(
+        chunk_id="rbi_md_test__fixed__00000",
+        doc_id="rbi_md_test",
+        text="The liquidity coverage ratio shall be not less than one hundred per cent.",
+        doc_title="Master Direction - Test",
+        issuer="RBI",
+        doc_type="master_direction",
+        page_start=4,
+        page_end=5,
+        clause_path="3.1",
+        section_title=None,
+        issue_date=None,
+        effective_date=None,
+        score=0.91,
+        dense_score=0.91,
+    )
+
+
+def make_result(*, refused: bool = False) -> AskResult:
+    text = (
+        "INSUFFICIENT EVIDENCE"
+        if refused
+        else "The LCR must be at least 100%. [Master Direction - Test, p.4, 3.1]"
+    )
+    answer = Answer(
+        text=text,
+        citations=[] if refused else ["[Master Direction - Test, p.4, 3.1]"],
+        refused=refused,
+        refusal_reason="no_evidence" if refused else None,
+        model="gemini-3.5-flash-lite",
+        input_tokens=120,
+        output_tokens=30,
+        latency_ms=5,
+    )
+    return AskResult(
+        answer=answer,
+        chunks=[] if refused else [make_chunk()],
+        embed_input_tokens=12,
+        embed_model="gemini-embedding-001",
+    )
+
+
+def test_ask_fails_closed_without_credentials(client: TestClient) -> None:
+    """No key in .env or the environment: 503 with a trace id, never an empty 200."""
     response = client.post("/ask", json={"question": "What is the LCR requirement?"})
-    assert response.status_code == 501
+    assert response.status_code == 503
     body = response.json()
-    assert body["status"] == "not_implemented"
-    assert body["phase"] == 1
-    assert "Phase 1" in body["detail"]
+    assert "GEMINI_API_KEY" in body["detail"]
+    assert body["trace_id"]
+
+
+def test_ask_answers_with_citations_via_the_pipeline(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import reglens.api.routes as routes_module
+
+    captured: dict[str, object] = {}
+
+    def fake_get_pipeline(request: object, experiment: object):  # type: ignore[no-untyped-def]
+        def ask(question: str, *, top_k: int | None = None, filters: object = None):  # type: ignore[no-untyped-def]
+            captured.update(question=question, top_k=top_k, filters=filters)
+            return make_result()
+
+        return SimpleNamespace(ask=ask)
+
+    monkeypatch.setattr(routes_module, "_get_pipeline", fake_get_pipeline)
+    response = client.post(
+        "/ask",
+        json={
+            "question": "What is the LCR requirement?",
+            "filters": {"issuer": "RBI"},
+            "top_k": 5,
+        },
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["refused"] is False
+    assert body["answer"].startswith("The LCR")
+    assert body["disclaimer"] == "Informational only. Not legal or investment advice."
+    assert body["route"] == "text"
+    assert body["model"] == "gemini-3.5-flash-lite"
+    assert body["trace_id"]
+    assert len(body["config_hash"]) == 64
+    # The citation label maps to the real retrieved chunk (FR1's shape).
+    assert len(body["citations"]) == 1
+    citation = body["citations"][0]
+    assert citation["doc_id"] == "rbi_md_test"
+    assert citation["page"] == 4
+    assert citation["clause"] == "3.1"
+    assert citation["chunk_id"] == "rbi_md_test__fixed__00000"
+    assert citation["quote"]
+    # The request's top_k and filters reach the pipeline unchanged.
+    assert captured["top_k"] == 5
+    filters = captured["filters"]
+    assert filters.issuer == "RBI"  # type: ignore[union-attr]
+    assert (
+        filters.as_of_date is None
+    )  # temporal filter is off in the baseline  # type: ignore[union-attr]
+
+
+def test_ask_refusal_is_explicit(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    import reglens.api.routes as routes_module
+
+    monkeypatch.setattr(
+        routes_module,
+        "_get_pipeline",
+        lambda *args, **kwargs: SimpleNamespace(ask=lambda *a, **k: make_result(refused=True)),
+    )
+    response = client.post("/ask", json={"question": "Who won the 1998 cricket final?"})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["refused"] is True
+    assert body["refusal_reason"] == "no_evidence"
+    assert body["citations"] == []
+
+
+def test_ask_reports_pipeline_failures_as_503(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import reglens.api.routes as routes_module
+
+    def boom(*args: object, **kwargs: object) -> AskResult:
+        raise RuntimeError("connection refused")
+
+    monkeypatch.setattr(routes_module, "_get_pipeline", lambda *a, **k: SimpleNamespace(ask=boom))
+    response = client.post("/ask", json={"question": "What is the LCR requirement?"})
+    assert response.status_code == 503
+    body = response.json()
+    assert "connection refused" in body["detail"]
     assert body["trace_id"]
 
 
@@ -90,7 +218,9 @@ def test_ask_accepts_as_of_date_and_filters(client: TestClient) -> None:
             "top_k": 5,
         },
     )
-    assert response.status_code == 501  # not implemented, but the schema is honoured
+    # No credentials in the hermetic test env: schema is honoured, then fail closed.
+    assert response.status_code == 503
+    assert response.json()["trace_id"]
 
 
 def test_traces_endpoint_is_empty_without_a_database(client: TestClient) -> None:

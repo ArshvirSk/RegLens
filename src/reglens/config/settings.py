@@ -234,6 +234,15 @@ def _redact_url(url: str) -> str:
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    """Process-wide settings singleton (call ``get_settings.cache_clear()`` in tests)."""
+    """Process-wide settings singleton (call ``get_settings.cache_clear()`` in tests).
+
+    ``REGLENS_ENV_FILE`` points at an alternative env file: tests set it to a temp path
+    so a developer's real ``.env`` (providers, keys, database URL) can never leak into
+    an assertion and make the suite depend on the machine it runs on.
+    """
+    override = os.environ.get("REGLENS_ENV_FILE")
+    if override:
+        candidate = Path(override)
+        return Settings(_env_file=candidate if candidate.is_file() else None)
     env_file = paths.project_root() / ".env"
     return Settings(_env_file=env_file if env_file.is_file() else None)
