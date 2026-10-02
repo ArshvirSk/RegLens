@@ -41,7 +41,6 @@ EXIT_NOT_IMPLEMENTED = 2
 EXIT_ERROR = 3
 
 NOT_IMPLEMENTED = {
-    "ingest": (1, "parse, chunk and index the corpus"),
     "reindex": (1, "rebuild the vector and keyword indexes for the active corpus version"),
     "eval": (1, "run the golden eval set and write a versioned report"),
     "refresh": (4, "poll for new circulars, ingest idempotently, bump corpus_version"),
@@ -284,6 +283,51 @@ def cmd_download(args: argparse.Namespace) -> int:
     return EXIT_OK if not report.failures else EXIT_ERROR
 
 
+def cmd_ingest(args: argparse.Namespace) -> int:
+    """Parse, chunk, embed and store the fetched corpus (dry run unless --yes)."""
+    from reglens.ingestion.ingest import ingest_corpus
+
+    settings = get_settings()
+    try:
+        records = load_manifest()
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"cannot ingest: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+    selected = [
+        record
+        for record in records
+        if record.status == "fetched"
+        and record.discovery == "direct"
+        and record.file_hash
+        and (not args.only or record.doc_id in args.only)
+    ]
+    if args.limit is not None:
+        selected = selected[: args.limit]
+
+    if not args.yes:
+        print(f"DRY RUN (pass --yes to parse and embed): {len(selected)} document(s)")
+        for record in selected:
+            print(f"  ingest {record.doc_id:44s} {record.title[:60]}")
+        return EXIT_OK
+
+    report = ingest_corpus(
+        settings=settings,
+        only=set(args.only) if args.only else None,
+        limit=args.limit,
+    )
+    payload = report.as_dict()
+    lines = [
+        f"ingested {payload['documents']} document(s): {payload['chunks']} chunks, "
+        f"{payload['embed_input_tokens']} embed tokens, "
+        f"${payload['embed_cost_usd']:.6f}, {payload['seconds']}s "
+        f"(skipped {payload['skipped_count']} already indexed, {payload['failed_count']} failed)"
+    ]
+    for doc_id, error in payload["failed"]:
+        lines.append(f"  FAILED {doc_id}: {error}")
+    _emit(payload, as_json=args.json, text="\n".join(lines))
+    return EXIT_ERROR if payload["failed"] else EXIT_OK
+
+
 def cmd_repair_raw(args: argparse.Namespace) -> int:
     """Quarantine stored payloads that are not the document they claim to be.
 
@@ -521,6 +565,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--apply", action="store_true", help="write the demoted rows back to the manifest"
     )
     repair.set_defaults(func=cmd_repair_raw)
+
+    ingest = sub.add_parser("ingest", help="parse, chunk and index the fetched corpus")
+    ingest.add_argument(
+        "--yes", action="store_true", help="actually parse and embed (default: dry run)"
+    )
+    ingest.add_argument("--only", nargs="*", help="restrict to these doc_ids")
+    ingest.add_argument("--limit", type=int, help="ingest at most N documents")
+    ingest.set_defaults(func=cmd_ingest)
 
     parse_compare = sub.add_parser(
         "parse-compare",

@@ -71,13 +71,13 @@ download:  ## Dry-run the download plan; forward flags after "--"
 	@$(TASKS) download $(ARGS)
 
 ingest:  ## Parse + chunk + index the corpus (Phase 1)
-	@$(TASKS) ingest
+	@$(TASKS) ingest $(ARGS)
 
 reindex:  ## Rebuild indexes for the active corpus version (Phase 1)
 	@$(TASKS) reindex
 
 eval:  ## Run the golden eval set and write a versioned report (Phase 1)
-	@$(TASKS) eval
+	@$(TASKS) eval $(ARGS)
 
 refresh:  ## Check for new circulars and ingest idempotently (Phase 4)
 	@$(TASKS) refresh

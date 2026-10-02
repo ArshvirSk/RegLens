@@ -8,20 +8,37 @@ tested like code (Phase 3 adds a schema allow-list and a read-only role for that
 
 from __future__ import annotations
 
+import ssl
+from typing import Any
+
 import asyncpg
 
 from reglens.config import Settings, get_settings
 
 
+def ssl_context_for(dsn: str, settings: Settings) -> ssl.SSLContext | None:
+    """TLS for managed Postgres (Neon), without breaking a plain local server.
+
+    Precedence: an ``sslmode=`` query parameter in the DSN wins (asyncpg parses it
+    itself), then ``REGLENS_DB_SSL``. ``require`` builds a verifying context — Neon's
+    certificate chain is public, so nothing is skipped.
+    """
+    if "sslmode=" in dsn.lower() or settings.db_ssl == "disable":
+        return None
+    return ssl.create_default_context()
+
+
 async def create_pool(settings: Settings | None = None) -> asyncpg.Pool:
     """Create the application pool. Callers own closing it."""
     active = settings or get_settings()
+    tls: Any = ssl_context_for(active.database_url, active)
     return await asyncpg.create_pool(
         dsn=active.database_url,
         min_size=active.db_pool_min_size,
         max_size=active.db_pool_max_size,
         command_timeout=active.db_command_timeout_seconds,
         server_settings={"application_name": "reglens"},
+        ssl=tls,
     )
 
 
@@ -36,7 +53,11 @@ async def connect(
     """Single connection for scripts and migrations."""
     active = settings or get_settings()
     dsn = active.readonly_database_url if readonly else active.database_url
-    return await asyncpg.connect(dsn=dsn, server_settings={"application_name": "reglens-conn"})
+    return await asyncpg.connect(
+        dsn=dsn,
+        server_settings={"application_name": "reglens-conn"},
+        ssl=ssl_context_for(dsn, active),
+    )
 
 
 async def health(pool: asyncpg.Pool) -> dict[str, object]:
