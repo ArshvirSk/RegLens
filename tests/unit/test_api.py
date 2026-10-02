@@ -55,11 +55,11 @@ def test_health_carries_the_disclaimer_header(client: TestClient) -> None:
 def test_config_endpoint_exposes_the_ablation_toggles(client: TestClient) -> None:
     body = client.get("/config").json()
     assert body["experiment"] == "baseline_naive"
-    assert len(body["summary"]) == 5
-    assert body["embedding"] == "openai/text-embedding-3-small"
-    assert body["generator"] == "gpt-4o-mini"
+    assert len(body["summary"]) == 6
+    assert body["embedding"] == "gemini/gemini-embedding-001"
+    assert body["generator"] == "gemini-3.5-flash-lite"
     assert body["pricing"]["verified_on"] == "2026-10-02"
-    assert "gpt-4o-mini" in body["pricing"]["models"]
+    assert "gemini-3.5-flash-lite" in body["pricing"]["models"]
 
 
 def test_ask_returns_501_and_refuses_to_guess(client: TestClient) -> None:

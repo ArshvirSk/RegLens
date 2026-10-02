@@ -8,6 +8,11 @@ description: >
   fused with RRF, cross-encoder reranking, and acronym-expanding query rewriting.
 corpus_version: null
 
+parsing:
+  parser: pymupdf
+  ocr_fallback: false
+  min_chars_per_page: 40
+
 chunking:
   strategy: clause_aware
   chunk_size_tokens: 512
@@ -17,9 +22,9 @@ chunking:
   parent_child: false
 
 indexing:
-  embedding_provider: openai
-  embedding_model: text-embedding-3-small
-  embedding_dim: 1536
+  embedding_provider: gemini
+  embedding_model: gemini-embedding-001
+  embedding_dim: 3072
   normalize_embeddings: true
   batch_size: 64
   keyword_index: postgres_fts
@@ -45,7 +50,7 @@ rewriting:
   hyde: false
 
 generation:
-  model: gpt-4o-mini
+  model: gemini-3.6-flash
   temperature: 0.0
   max_output_tokens: 900
   require_citations: true

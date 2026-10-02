@@ -60,17 +60,22 @@ class Settings(BaseSettings):
     readonly_database_url: str = (
         "postgresql://reglens_ro:reglens_ro_local_dev@localhost:5433/reglens"
     )
+    # Neon requires TLS; a plain local Postgres needs REGLENS_DB_SSL=disable. An sslmode=
+    # query parameter in the URL always wins (asyncpg parses it from the DSN directly).
+    db_ssl: Literal["require", "disable"] = "require"
     db_pool_min_size: int = 1
     db_pool_max_size: int = 10
     db_command_timeout_seconds: float = 30.0
 
     # --- models (used from Phase 1 onwards; declared here so configs stay swappable) ---
-    embedding_provider: Literal["openai", "sentence_transformers"] = "openai"
-    embedding_model: str = "text-embedding-3-small"
-    embedding_dim: int = 1536
-    llm_provider: Literal["openai", "anthropic"] = "openai"
-    llm_model_small: str = "gpt-4o-mini"
-    llm_model_large: str = "gpt-4o"
+    # Phase 1 baseline pins the cheapest stable Gemini picks (owner decision, 2026-10-02):
+    # gemini-embedding-001 (GA, 3072-dim) + gemini-3.5-flash-lite + judge gemini-3.6-flash.
+    embedding_provider: Literal["gemini", "openai", "sentence_transformers"] = "gemini"
+    embedding_model: str = "gemini-embedding-001"
+    embedding_dim: int = 3072
+    llm_provider: Literal["gemini", "openai", "anthropic"] = "gemini"
+    llm_model_small: str = "gemini-3.5-flash-lite"
+    llm_model_large: str = "gemini-3.6-flash"
     llm_temperature: float = 0.0
     reranker_enabled: bool = False
     reranker_model: str = "BAAI/bge-reranker-base"
@@ -88,6 +93,7 @@ class Settings(BaseSettings):
     langfuse_host: str | None = Field(default=None, validation_alias="LANGFUSE_HOST")
 
     # --- secrets ---
+    gemini_api_key: SecretStr | None = Field(default=None, validation_alias="GEMINI_API_KEY")
     openai_api_key: SecretStr | None = Field(default=None, validation_alias="OPENAI_API_KEY")
     anthropic_api_key: SecretStr | None = Field(default=None, validation_alias="ANTHROPIC_API_KEY")
 
@@ -175,6 +181,10 @@ class Settings(BaseSettings):
     @property
     def has_openai_key(self) -> bool:
         return self.openai_api_key is not None
+
+    @property
+    def has_gemini_key(self) -> bool:
+        return self.gemini_api_key is not None
 
     def redacted(self) -> dict[str, object]:
         """Settings safe to log or return from the API: secrets are replaced."""

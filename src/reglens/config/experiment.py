@@ -23,6 +23,16 @@ RetrievalMode = Literal["dense", "bm25", "hybrid"]
 FusionMode = Literal["none", "rrf"]
 
 
+class ParsingConfig(BaseModel):
+    """Which PDF parser runs during ingest (compared on real pages in eval/results/)."""
+
+    parser: Literal["pymupdf", "pdfplumber"] = "pymupdf"
+    ocr_fallback: bool = False
+    #: A page with fewer extracted characters than this is treated as image-only (a scan)
+    #: and recorded instead of silently becoming an empty page in the corpus.
+    min_chars_per_page: int = 40
+
+
 class ChunkingConfig(BaseModel):
     """How documents are split. Phase 1 is deliberately naive: fixed windows."""
 
@@ -39,9 +49,9 @@ class ChunkingConfig(BaseModel):
 class IndexingConfig(BaseModel):
     """What gets written into the indexes."""
 
-    embedding_provider: Literal["openai", "sentence_transformers"] = "openai"
-    embedding_model: str = "text-embedding-3-small"
-    embedding_dim: int = 1536
+    embedding_provider: Literal["gemini", "openai", "sentence_transformers"] = "gemini"
+    embedding_model: str = "gemini-embedding-001"
+    embedding_dim: int = 3072
     normalize_embeddings: bool = True
     batch_size: int = 64
     keyword_index: Literal["none", "postgres_fts"] = "none"
@@ -78,7 +88,7 @@ class RewritingConfig(BaseModel):
 class GenerationConfig(BaseModel):
     """The answer model and its guardrails."""
 
-    model: str = "gpt-4o-mini"
+    model: str = "gemini-3.5-flash-lite"
     temperature: float = 0.0
     max_output_tokens: int = 900
     require_citations: bool = True
@@ -94,6 +104,7 @@ class ExperimentConfig(BaseModel):
     phase: int = 0
     description: str = ""
     corpus_version: str | None = None
+    parsing: ParsingConfig = ParsingConfig()
     chunking: ChunkingConfig = ChunkingConfig()
     indexing: IndexingConfig = IndexingConfig()
     retrieval: RetrievalConfig = RetrievalConfig()
@@ -112,7 +123,8 @@ class ExperimentConfig(BaseModel):
 
     def summary_lines(self) -> list[str]:
         """Human-readable one-liners used in eval reports and status reports."""
-        c, i, r, w, g = (
+        p, c, i, r, w, g = (
+            self.parsing,
             self.chunking,
             self.indexing,
             self.retrieval,
@@ -120,6 +132,7 @@ class ExperimentConfig(BaseModel):
             self.generation,
         )
         return [
+            f"parsing: parser={p.parser} ocr_fallback={p.ocr_fallback}",
             f"chunking: {c.strategy} size={c.chunk_size_tokens} overlap={c.overlap_tokens} "
             f"contextual_headers={c.contextual_headers} parent_child={c.parent_child}",
             f"embeddings: {i.embedding_provider}/{i.embedding_model} dim={i.embedding_dim} "

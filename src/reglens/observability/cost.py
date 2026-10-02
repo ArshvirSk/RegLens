@@ -7,13 +7,16 @@ reporting $0.00, and the tracing layer turns that into a loud warning.
 
 Provenance
 ----------
-Values below were read from the official OpenAI pricing page on 2026-10-02
-(https://developers.openai.com/api/docs/pricing) and cross-checked against published
-per-token rates for the legacy GPT-4o family. They are *not* re-verified automatically:
-``prices_verified_on`` is the date a human last checked, and any eval report that quotes
-a cost is only as good as that date. Open-source models running locally cost $0 in API
-terms but still consume GPU time; the table records them at zero with a reason, so the
-reported "cost per query" never hides a local model behind a paid one.
+Values below were read from the official Gemini API pricing page on 2026-10-02
+(https://ai.google.dev/gemini-api/docs/pricing) and the official OpenAI pricing page on
+the same date (https://developers.openai.com/api/docs/pricing). They are *not*
+re-verified automatically: ``prices_verified_on`` is the date a human last checked, and
+any eval report that quotes a cost is only as good as that date. The Gemini 3.6 Flash
+rate is time-bounded: $0.75/$3.75 per 1M tokens through 2026-12-31, then $1.50/$7.50 —
+reported costs after that date need a re-check, and the note on the entry says so.
+Open-source models running locally cost $0 in API terms but still consume GPU time; the
+table records them at zero with a reason, so the reported "cost per query" never hides a
+local model behind a paid one.
 """
 
 from __future__ import annotations
@@ -21,7 +24,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 PRICES_VERIFIED_ON = "2026-10-02"
-PRICE_SOURCE = "https://developers.openai.com/api/docs/pricing"
+PRICE_SOURCE = "https://ai.google.dev/gemini-api/docs/pricing"
+PRICE_SOURCES = (
+    "https://ai.google.dev/gemini-api/docs/pricing",
+    "https://developers.openai.com/api/docs/pricing",
+)
 
 
 class UnknownModelError(KeyError):
@@ -43,11 +50,21 @@ class ModelPrice:
 
 
 MODEL_PRICES: dict[str, ModelPrice] = {
-    # --- generation (hosted) ---
+    # --- generation (hosted): Gemini is the Phase 1 provider ---
+    "gemini-3.5-flash-lite": ModelPrice(
+        0.30, 2.50, "Phase 1 small generator (official rate, 2026-10-02)"
+    ),
+    "gemini-3.6-flash": ModelPrice(
+        0.75,
+        3.75,
+        "Phase 1 judge; official rate through 2026-12-31, rises to 1.50/7.50 on 2027-01-01",
+    ),
+    # --- generation (hosted): kept for the provider ablation ---
     "gpt-4o-mini": ModelPrice(0.15, 0.60, "small generator / judge default"),
     "gpt-4o": ModelPrice(2.50, 10.00, "larger generator for the model-size ablation"),
     "gpt-6-luna": ModelPrice(0.10, 0.50, "current small flagship, short context"),
     # --- embeddings (hosted) ---
+    "gemini-embedding-001": ModelPrice(0.15, 0.0, "3072 dims, Phase 1 baseline embedding model"),
     "text-embedding-3-small": ModelPrice(0.02, 0.0, "1536 dims, baseline embedding model"),
     "text-embedding-3-large": ModelPrice(0.13, 0.0, "3072 dims, second hosted option"),
     # --- local ---
@@ -77,6 +94,7 @@ def describe_pricing() -> dict[str, object]:
     """Price table for docs/reports, so a reported cost can be traced to a rate."""
     return {
         "source": PRICE_SOURCE,
+        "sources": list(PRICE_SOURCES),
         "verified_on": PRICES_VERIFIED_ON,
         "unit": "USD per 1M tokens",
         "models": {

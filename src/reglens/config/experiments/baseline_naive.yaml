@@ -8,6 +8,11 @@ description: >
   no query rewriting, no temporal filtering. Simple grounded generation with citations.
 corpus_version: null # filled from REGLENS_CORPUS_VERSION at run time
 
+parsing:
+  parser: pymupdf
+  ocr_fallback: false
+  min_chars_per_page: 40
+
 chunking:
   strategy: fixed
   chunk_size_tokens: 512
@@ -17,9 +22,9 @@ chunking:
   parent_child: false
 
 indexing:
-  embedding_provider: openai
-  embedding_model: text-embedding-3-small
-  embedding_dim: 1536
+  embedding_provider: gemini
+  embedding_model: gemini-embedding-001
+  embedding_dim: 3072
   normalize_embeddings: true
   batch_size: 64
   keyword_index: none
@@ -44,7 +49,7 @@ rewriting:
   hyde: false
 
 generation:
-  model: gpt-4o-mini
+  model: gemini-3.5-flash-lite
   temperature: 0.0
   max_output_tokens: 900
   require_citations: true

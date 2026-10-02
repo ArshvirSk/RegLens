@@ -23,10 +23,11 @@ def test_defaults_match_the_env_example(clean_env: None) -> None:
     assert settings.seed == 1337
     assert settings.corpus_version == "0.1.0"
     assert settings.experiment_config == "baseline_naive"
-    assert settings.embedding_model == "text-embedding-3-small"
-    assert settings.llm_model_small == "gpt-4o-mini"
-    assert settings.llm_model_large == "gpt-4o"
-    assert settings.embedding_dim == 1536
+    assert settings.embedding_provider == "gemini"
+    assert settings.embedding_model == "gemini-embedding-001"
+    assert settings.llm_model_small == "gemini-3.5-flash-lite"
+    assert settings.llm_model_large == "gemini-3.6-flash"
+    assert settings.embedding_dim == 3072
     assert settings.fetch_delay_seconds == 2.0
     assert settings.fetch_respect_robots is True
 
@@ -136,7 +137,8 @@ def test_load_experiment_by_path() -> None:
 
 def test_summary_lines_cover_every_stage() -> None:
     lines = load_experiment("baseline_naive").summary_lines()
-    assert len(lines) == 5
+    assert len(lines) == 6
+    assert any("parsing" in line for line in lines)
     assert any("chunking" in line for line in lines)
     assert any("embeddings" in line for line in lines)
     assert any("generation" in line for line in lines)
