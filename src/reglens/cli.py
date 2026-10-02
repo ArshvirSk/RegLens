@@ -42,7 +42,6 @@ EXIT_ERROR = 3
 
 NOT_IMPLEMENTED = {
     "reindex": (1, "rebuild the vector and keyword indexes for the active corpus version"),
-    "eval": (1, "run the golden eval set and write a versioned report"),
     "refresh": (4, "poll for new circulars, ingest idempotently, bump corpus_version"),
 }
 
@@ -328,6 +327,142 @@ def cmd_ingest(args: argparse.Namespace) -> int:
     return EXIT_ERROR if payload["failed"] else EXIT_OK
 
 
+def cmd_eval(args: argparse.Namespace) -> int:
+    """Run the golden set through the pipeline and write a versioned report (Phase 1).
+
+    Dry run unless ``--yes``: a live eval spends money (embedding + generation + judge),
+    so the default only says what *would* run. The preflight refuses to start when a
+    prerequisite is missing — no questions, an unreviewed draft set without
+    ``--allow-drafts``, an empty index — because a run that fails halfway still writes a
+    report, and a report with 6 failed questions is worse than no report.
+    """
+    from eval.runners.golden import load_golden, validate_golden
+    from eval.runners.judge import GeminiJudge, load_human_grades
+    from eval.runners.run_eval import make_ask_fn, run_eval
+
+    from reglens.config.settings import MissingApiKeyError
+    from reglens.generation.gemini import build_llm
+    from reglens.indexing.vector_store import PgVectorStore
+    from reglens.routing.pipeline import build_pipeline
+
+    settings = get_settings()
+    try:
+        questions = load_golden()
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"cannot eval: {exc}", file=sys.stderr)
+        return EXIT_INVALID
+
+    selected = [question for question in questions if question.review != "rejected"]
+    if args.only:
+        only = set(args.only)
+        selected = [question for question in selected if question.id in only]
+    if args.limit is not None:
+        selected = selected[: args.limit]
+    if not selected:
+        print("no questions to run (check eval/golden/questions.jsonl)", file=sys.stderr)
+        return EXIT_INVALID
+
+    manifest_ids: set[str] = set()
+    try:
+        manifest_ids = {record.doc_id for record in load_manifest()}
+    except (FileNotFoundError, ValueError):
+        pass
+    golden_report = validate_golden(selected, manifest_ids=manifest_ids or None)
+    if not golden_report.ok:
+        for issue in golden_report.errors:
+            print(f"  ERROR [{issue.question_id}] {issue.message}", file=sys.stderr)
+        return EXIT_INVALID
+
+    drafts = sum(1 for question in selected if question.review == "draft")
+    if drafts and not args.allow_drafts:
+        print(
+            f"{drafts} of {len(selected)} questions are drafts (owner review pending).\n"
+            "Metrics from unreviewed questions are not quotable (eval/golden/schema.md): "
+            "review them first, or re-run with --allow-drafts for a non-quotable smoke run.",
+            file=sys.stderr,
+        )
+        return EXIT_INVALID
+
+    experiment = load_experiment(settings.experiment_config)
+    human_grades = None
+    if args.human_grades:
+        try:
+            human_grades = load_human_grades(args.human_grades)
+        except (FileNotFoundError, ValueError) as exc:
+            print(f"cannot load human grades: {exc}", file=sys.stderr)
+            return EXIT_INVALID
+
+    if not args.yes:
+        print(f"DRY RUN (pass --yes to spend tokens): {len(selected)} question(s)")
+        print(f"  experiment: {experiment.name}  config_hash={experiment.fingerprint()[:12]}")
+        print(
+            f"  embed={experiment.indexing.embedding_model} "
+            f"answer={experiment.generation.model} "
+            f"judge={'off' if args.no_judge else settings.llm_model_large}"
+        )
+        print(
+            f"  reviewed={len(selected) - drafts} draft={drafts} "
+            f"held_out={sum(1 for q in selected if q.held_out)}"
+        )
+        if human_grades:
+            print(f"  human grades: {len(human_grades)} (agreement will be reported)")
+        return EXIT_OK
+
+    try:
+        settings.require_gemini_key()
+        store = PgVectorStore(settings=settings)
+        chunk_count = store.count_chunks()
+    except MissingApiKeyError as exc:
+        print(f"cannot eval: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+    except Exception as exc:  # database unreachable is a preflight failure, not a crash
+        print(f"cannot eval: index unreachable: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+    if chunk_count == 0:
+        print(
+            f"cannot eval: index is empty for corpus_version={settings.corpus_version!r}; "
+            "run 'make migrate' and 'make ingest -- --yes' first",
+            file=sys.stderr,
+        )
+        return EXIT_ERROR
+
+    judge = None
+    if not args.no_judge:
+        judge = GeminiJudge(build_llm(settings), model=settings.llm_model_large)
+
+    try:
+        pipeline = build_pipeline(settings, experiment=experiment)
+    except MissingApiKeyError as exc:
+        print(f"cannot eval: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+    report, json_path, md_path = run_eval(
+        questions=selected,
+        ask=make_ask_fn(pipeline, experiment),
+        experiment=experiment,
+        settings=settings,
+        judge=judge,
+        human_grades=human_grades,
+    )
+    agg = report["aggregates"]
+    retrieval = agg["retrieval"]
+    lines = [
+        f"eval complete: {len(report['questions'])} scored, {len(report['failures'])} failed",
+        f"  recall@{retrieval['k']}={retrieval['recall_at_k']} "
+        f"MRR={retrieval['mrr']} nDCG={retrieval['ndcg_at_k']}",
+        f"  report: {json_path}",
+        f"          {md_path}",
+    ]
+    for caveat in report["caveats"]:
+        lines.append(f"  CAVEAT: {caveat}")
+    _emit(
+        report if args.json else {"report": str(json_path)},
+        as_json=args.json,
+        text="\n".join(lines),
+    )
+    return EXIT_OK if report["questions"] else EXIT_ERROR
+
+
 def cmd_repair_raw(args: argparse.Namespace) -> int:
     """Quarantine stored payloads that are not the document they claim to be.
 
@@ -573,6 +708,21 @@ def build_parser() -> argparse.ArgumentParser:
     ingest.add_argument("--only", nargs="*", help="restrict to these doc_ids")
     ingest.add_argument("--limit", type=int, help="ingest at most N documents")
     ingest.set_defaults(func=cmd_ingest)
+
+    eval_parser = sub.add_parser(
+        "eval", help="run the golden eval set and write a versioned report"
+    )
+    eval_parser.add_argument("--yes", action="store_true", help="actually run (default: dry run)")
+    eval_parser.add_argument("--only", nargs="*", help="restrict to these question ids")
+    eval_parser.add_argument("--limit", type=int, help="run at most N questions")
+    eval_parser.add_argument(
+        "--allow-drafts", action="store_true", help="run unreviewed questions (non-quotable)"
+    )
+    eval_parser.add_argument("--no-judge", action="store_true", help="skip LLM-as-judge scoring")
+    eval_parser.add_argument(
+        "--human-grades", type=Path, help="JSONL of hand grades for judge agreement"
+    )
+    eval_parser.set_defaults(func=cmd_eval)
 
     parse_compare = sub.add_parser(
         "parse-compare",

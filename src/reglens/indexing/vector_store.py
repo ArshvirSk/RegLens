@@ -255,6 +255,18 @@ class PgVectorStore:
         # The database returns arbitrary order; retrieval order lives in the ids.
         return [by_id[chunk_id] for chunk_id in chunk_ids if chunk_id in by_id]
 
+    def count_chunks(self) -> int:
+        """Chunks under the active corpus version (eval's empty-index preflight)."""
+
+        async def work(connection: asyncpg.Connection) -> int:
+            row = await connection.fetchrow(
+                "SELECT count(*) FROM chunks WHERE corpus_version = $1",
+                self.settings.corpus_version,
+            )
+            return int(row[0])
+
+        return self._run(work)
+
     # ------------------------------------------------------------------ idempotency
     def has_document(self, file_hash: str, *, chunk_strategy: str) -> bool:
         """True when this exact byte-set is already parsed, chunked and embedded."""
