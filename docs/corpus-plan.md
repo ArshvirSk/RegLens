@@ -3,9 +3,10 @@
 **Verified on 2026-10-02.** Every claim below comes from an actual request made that day,
 with the HTTP status recorded. Where something could not be verified, it says so.
 
-* Machine-readable list: [`data/corpus_plan.yaml`](../data/corpus_plan.yaml) (102 entries)
-* Validated manifest: [`data/manifest.csv`](../data/manifest.csv) (95 queued, 7 excluded
-  entry points) — `make validate-manifest` reports 0 errors, 0 warnings
+* Machine-readable list: [`data/corpus_plan.yaml`](../data/corpus_plan.yaml) (104 entries)
+* Validated manifest: [`data/manifest.csv`](../data/manifest.csv) (97 queued — 20 of them
+  already fetched and hashed — plus 7 excluded entry points) — `make validate-manifest`
+  reports 0 errors, 0 warnings
 
 ---
 
@@ -52,10 +53,12 @@ buried in code comments.
 | `https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx` (Master Directions index) | HTTP 200, ~786 KB, but the document list is inside the ASP.NET `__VIEWSTATE` blob: 386 `ViewMasDirections` references and **zero parseable `<a>` anchors**. Body content is injected client-side. |
 | `https://www.rbi.org.in/Scripts/BS_CircularIndexDisplay.aspx` (notifications index) | HTTP 200 but no parseable document anchors either. |
 | `https://m.rbi.org.in/scripts/BS_ViewMasDirections.aspx?id=<id>` (mobile mirror) | HTTP 200/302 with the **document text in the body** and, for some IDs, direct `rbidocs` PDF links. Titles are generic ("Home-Reserve Bank of India"), so the ID → document mapping is not self-describing. |
-| `https://rbidocs.rbi.org.in/.../MD*.PDF` | Returns **`text/html`** (an interstitial, ~45 KB) with a plain GET. With a `Referer` header it returns **HTTP 200 `application/pdf`** — verified with a 2,049,883-byte KYC PDF whose header is `%PDF-1.6`. |
+| `https://rbidocs.rbi.org.in/.../MD*.PDF` | Runs an F5 bot challenge. The project's polite `RegLens/0.1` UA gets **connection resets (6/6 attempts)**; a browser UA alone gets the ~45 KB `text/html` interstitial; **browser UA + `Referer` returns HTTP 200 `application/pdf`** — verified with a 2,049,883-byte KYC PDF whose header is `%PDF-1.6`. Its `robots.txt` serves the challenge HTML to both UAs (parsed as "no rules", so nothing is self-blocked). |
 
 **Consequence.** RBI documents are queued as direct PDF links (the `rbidocs` URLs), and the
-fetcher sends a per-host `Referer` (`FetchPolicy.referer_hosts`). The three RBI listing pages
+fetcher sends a per-host `Referer` (`FetchPolicy.referer_hosts`) plus a per-host browser UA
+(`FetchPolicy.browser_ua_hosts`) for that host only — while robots rules are still enforced
+for both identities, so the UA swap never widens what may be fetched. The three RBI listing pages
 are recorded as `status: excluded` entry points for the Phase 4 refresh job, which will need a
 browser-based adapter (Playwright) or a manual review step. This is the single largest
 automation gap in the project and it is deliberately not papered over.
@@ -98,17 +101,17 @@ pick would silently grab the wrong file, and the corpus would stop being a decis
 
 | Category | Count | Notes |
 |---|---|---|
-| RBI master directions | 17 | KYC (banks + NBFC), IRAC 2025, ALM 2025 (LCR/FALLCR), investment portfolio, IT outsourcing, IT governance, digital lending, PSL, NBFC P2P, PPI, securitisation, credit/debit cards, account aggregator, risk management & inter-bank dealings, wilful defaulters, credit information |
-| RBI notification / master circular | 3 | Basel III LCR notification, Integrated Ombudsman Scheme, IRAC master circular (kept so the supersession graph has a real edge) |
+| RBI master directions | 18 | KYC (banks + NBFC, plus the Commercial Banks KYC Directions 2025), IRAC 2025, ALM 2025 (LCR/FALLCR), investment portfolio, IT outsourcing, IT governance, digital lending, PSL, NBFC P2P, PPI, securitisation, credit/debit cards, account aggregator, risk management & inter-bank dealings, wilful defaulters, credit information |
+| RBI notification / master circular | 4 | Basel III LCR notification, Integrated Ombudsman Scheme (notification + consolidated scheme text), IRAC master circular (kept so the supersession graph has a real edge) |
 | SEBI regulations | 5 | LODR, NCS, ICDR, CRA, Debenture Trustees |
 | SEBI master circulars | 7 | LODR compliance, NCS issue/listing, NCS disclosure, ICDR, CRA, Debenture Trustees, plus one operational circular |
 | SEBI circulars | 4 | Cyber incident reporting (FIRE), KRA information sharing, OBPP framework, position limits |
 | Annual reports | 20 | 10 institutions × FY2024, FY2025 |
 | Earnings-call transcripts | 40 | 10 institutions × 4 quarters of FY2025 |
 | Excluded entry points | 7 | 3 RBI + 4 SEBI listing pages, for the refresh job only |
-| **Total rows** | **102** | 95 queued for download |
+| **Total rows** | **104** | 97 queued for download, 20 already fetched |
 
-**Corpus target.** 95 documents for the MVP (PRD asks for 100; the gap is 5 documents and is
+**Corpus target.** 97 documents for the MVP (PRD asks for 100; the gap is 3 documents and is
 expected to close with the optional institutions above). Scale-up to 300–500 is a Phase 5
 concern and would use the same plan file.
 
@@ -116,19 +119,26 @@ concern and would use the same plan file.
 
 ## 4. Honest gaps
 
-1. **Three RBI titles are unconfirmed.** `rbi_md_kyc_nbfc_2016`, `rbi_md_credit_information_amendment`
-   and `rbi_md_digital_lending_2025` have titles taken from third-party citations plus the
-   mobile mirror's body text, because RBI's own pages do not expose a machine-readable title.
-   Each is flagged in the manifest `notes` with "confirm in Phase 1", where the PDF itself is
-   the authority.
-2. **RBI `issue_date` is empty for all rows.** The manifest validator warns until Phase 1
-   extracts dates from the PDF cover pages. Fabricating dates now would poison the Phase 3
-   temporal filter, which is exactly the failure mode the PRD warns about ("superseded rules
-   cited as current").
+1. **Three RBI titles were unconfirmed; the fetched PDFs resolved them on 2026-10-02.**
+   `rbi_md_digital_lending_2025` pointed at the Filing of Supervisory Returns Directions 2024
+   (corrected to landing id=12848), `rbi_notif_integrated_ombudsman_2021` at an unrelated
+   Basel III circular (corrected to id=12192, with the consolidated scheme text added as its
+   own row), and `rbi_md_credit_information_amendment` at the Commercial Banks KYC Directions
+   2025 (that content became `rbi_md_kyc_commercial_2025`; the CIC Directions came from
+   id=12926). Two `doc_id` years were also wrong and were renamed: `rbi_md_kyc_nbfc_2016` →
+   `_2025` and `rbi_md_risk_interbank_2019` → `_2016`. Each correction is recorded in the
+   row's `notes`.
+2. **`issue_date` is filled for the 20 fetched RBI rows only** — read from each PDF's page 1
+   on 2026-10-02, then re-checked mechanically: the first header date in the stored bytes
+   equals the manifest date for 20/20 rows. The remaining rows get theirs when they are
+   fetched. Fabricating dates would poison the Phase 3 temporal filter, which is exactly the
+   failure mode the PRD warns about ("superseded rules cited as current").
 3. **Transcript availability is not guaranteed.** Some institutions publish only an analyst
    presentation or a results press release. The manifest note for each row says what to
    substitute; nothing is assumed to exist.
-4. **No document has been downloaded yet.** Nothing in this report claims otherwise: the
-   hashes are empty until `make download -- --yes --accept-terms` runs.
+4. **20 of the 97 queued documents are downloaded** (all RBI: 18 Master Directions +
+   2 Ombudsman rows). Every stored payload re-opens as a PDF and is recorded content-addressed
+   under `data/raw/` (gitignored) with its SHA-256 in the manifest. The other 77 rows are
+   landing/listing pages awaiting a human candidate pick or a later-phase fetch.
 5. **Bajaj Finance and Bank of Baroda are absent** because their IR paths 404'd during
    verification. Adding them needs the correct URL, found by hand.

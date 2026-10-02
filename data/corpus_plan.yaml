@@ -20,8 +20,10 @@
 #
 # Verification provenance (2026-10-02, see docs/corpus-plan.md for the full report)
 #   * Every URL below returned HTTP 200 on 2026-10-02 unless its note says otherwise.
-#   * rbidocs.rbi.org.in serves PDFs only when a Referer header is sent; the bundled
-#     fetcher sends the landing-page referer for that host.
+#   * rbidocs.rbi.org.in runs an F5 bot challenge: the polite RegLens UA gets connection
+#     resets, and a browser UA without a Referer gets an HTML interstitial. The bundled
+#     fetcher sends a browser UA plus the landing-page referer for that host only, and
+#     still enforces robots rules for both identities.
 #   * www.rbi.org.in/robots.txt answers 418 (WAF) and its document pages render from
 #     ASP.NET viewstate, so RBI *listing* pages are recorded for manual browsing while
 #     individual RBI documents are recorded as direct PDF links.
@@ -36,17 +38,19 @@ documents:
     doc_type: master_direction
     title: "Master Direction - Know Your Customer (KYC), 2016 (as amended)"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD18KYCF6E92C82E1E1419D87323E3869BC9F13.PDF
+    issue_date: "2016-02-25"
     discovery: direct
     notes: "landing page https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=11566 ; PDF reachable with Referer; PDF filename encodes MD18KYC"
 
-  - doc_id: rbi_md_kyc_nbfc_2016
+  - doc_id: rbi_md_kyc_nbfc_2025
     source: rbi
     issuer: RBI
     doc_type: master_direction
-    title: "Master Direction - Know Your Customer (KYC) for NBFCs / AML obligations"
+    title: "Reserve Bank of India (Non-Banking Financial Companies - Know Your Customer) Directions, 2025"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/361MD1E2F8EA063454AD5AFA1D02A1BA5ACA7.PDF
+    issue_date: "2025-11-28"
     discovery: direct
-    notes: "landing page ...BS_ViewMasDirections.aspx?id=12943 ; title from a third-party citation and the mobile mirror's body text, not from the PDF itself -> confirm title and issue date in Phase 1"
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12943 ; PDF header ref RBI/DOR/2025-26/361 DOR.AML.REC.No.280/14.01.003/2025-26 dated November 28, 2025 (Updated as on December 29, 2025); doc_id year corrected from 2016 to 2025 on 2026-10-02 after reading page 1 of the fetched PDF - the original plan guessed the year from a third-party citation"
 
   - doc_id: rbi_md_irac_2025
     source: rbi
@@ -54,6 +58,7 @@ documents:
     doc_type: master_direction
     title: "Reserve Bank of India (Commercial Banks - Income Recognition, Asset Classification and Provisioning) Directions, 2025"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/164MD.PDF
+    issue_date: "2025-11-28"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=13146 ; body text on the mobile mirror contains asset classification and provisioning language; claim-level source for NPA questions"
 
@@ -63,6 +68,7 @@ documents:
     doc_type: master_direction
     title: "Reserve Bank of India (Commercial Banks - Asset Liability Management) Directions, 2025"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/163MD.PDF
+    issue_date: "2025-11-28"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=13147 ; mobile mirror body mentions FALLCR and LCR -> primary source for liquidity-ratio questions"
 
@@ -72,6 +78,7 @@ documents:
     doc_type: master_direction
     title: "Master Direction - Classification, Valuation and Operation of Investment Portfolio of Commercial Banks"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/104MDINVESTMENTPORTFOLIOC6B7053A02894342A00142968C70FC82.PDF
+    issue_date: "2023-09-12"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=12534 ; PDF filename encodes the title"
 
@@ -81,6 +88,7 @@ documents:
     doc_type: master_direction
     title: "Master Direction on Outsourcing of Information Technology Services"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/102MDITSERVICES56B33FD530B1433187D75CB7C06C8F70.PDF
+    issue_date: "2023-04-10"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=12486 ; PDF filename encodes the title; mobile mirror body uses 'outsourcing' 49 times"
 
@@ -90,6 +98,7 @@ documents:
     doc_type: master_direction
     title: "Master Direction on Information Technology Governance, Risk, Controls and Assurance Practices"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/107MDITGOVERNANCE3303572008604C67AC25B84292D85567.PDF
+    issue_date: "2023-11-07"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=12562 ; PDF filename encodes the title"
 
@@ -97,10 +106,11 @@ documents:
     source: rbi
     issuer: RBI
     doc_type: master_direction
-    title: "Master Direction - Reserve Bank of India (Digital Lending) Directions"
-    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD11024D1EF9CB39B44ABB23DF586173E0CDE.PDF
+    title: "Reserve Bank of India (Digital Lending) Directions, 2025"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/36NT8C402BE7C2A349E0BFFF3C526668CD7A.PDF
+    issue_date: "2025-05-08"
     discovery: direct
-    notes: "landing page ...BS_ViewMasDirections.aspx?id=12613 ; citation used this id for the digital lending directions -> confirm the exact year in Phase 1"
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12848 ; PDF ref RBI/2025-26/36 DOR.STR.REC.19/21.07.001/2025-26 dated May 8, 2025; the earlier id=12613 URL actually served the Filing of Supervisory Returns Directions 2024 (diagnosed 2026-10-02 by reading page 1 of the fetched PDF)"
 
   - doc_id: rbi_md_psl_2020
     source: rbi
@@ -108,6 +118,7 @@ documents:
     doc_type: master_direction
     title: "Master Directions - Priority Sector Lending (PSL) - Targets and Classification"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MDPSL803EE903174E4C85AFA14C335A5B0909.PDF
+    issue_date: "2020-09-04"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=11959 ; index entry dated September 04, 2020; PDF filename encodes MDPSL; covers co-lending by banks and NBFCs"
 
@@ -117,6 +128,7 @@ documents:
     doc_type: master_direction
     title: "Master Direction - Non-Banking Financial Company - Peer to Peer Lending Platform (Reserve Bank) Directions, 2017"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MDP2PB9A1F7F3BDAC463EAF1EEE48A43F2F6C.PDF
+    issue_date: "2017-10-04"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=11137 ; PDF filename encodes MDP2P"
 
@@ -126,6 +138,7 @@ documents:
     doc_type: master_direction
     title: "Master Direction on Issuance and Operation of Prepaid Payment Instruments"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/82MDPPIS2708202181CF0A6FCD1B47B88CAE8E92A228B160.PDF
+    issue_date: "2021-08-27"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=12156 ; PDF filename encodes 82MDPPIS dated 27-08-2021"
 
@@ -135,6 +148,7 @@ documents:
     doc_type: master_direction
     title: "Master Direction - Reserve Bank of India (Securitisation of Standard Assets) Directions, 2021"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/85MDSTANDARDASSETSBE149B86CD3A4B368A5D24471DAD2300.PDF
+    issue_date: "2021-09-24"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=12165 ; PDF filename encodes STANDARDASSETS; applies to banks and NBFCs including HFCs"
 
@@ -144,6 +158,7 @@ documents:
     doc_type: master_direction
     title: "Master Direction - Credit Card and Debit Card - Issuance and Conduct Directions, 2022"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/92MDCREDITDEBITCARDC423AFFB5E7945149C95CDD2F71E9158.PDF
+    issue_date: "2022-04-21"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=12300 ; PDF filename encodes CREDITDEBITCARD"
 
@@ -153,17 +168,19 @@ documents:
     doc_type: master_direction
     title: "Master Direction - Non-Banking Financial Company - Account Aggregator (Reserve Bank) Directions, 2016"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD46859213614C3046C1BF9B7CF563FF1346.PDF
+    issue_date: "2016-09-02"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=10598 ; citation describes the registration and operation framework for account aggregators -> confirm title"
 
-  - doc_id: rbi_md_risk_interbank_2019
+  - doc_id: rbi_md_risk_interbank_2016
     source: rbi
     issuer: RBI
     doc_type: master_direction
     title: "Master Direction - Risk Management and Inter-Bank Dealings"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD3191FD1C01B7704FB9B24E7073F651AB51.PDF
+    issue_date: "2016-07-05"
     discovery: direct
-    notes: "landing page ...BS_ViewMasDirections.aspx?id=10485 ; title confirmed by search result for this id"
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=10485 ; title confirmed by search result for this id; PDF page 1 dated July 5, 2016 -> doc_id year corrected from 2019 to 2016 on 2026-10-02 (the original year came from a search snippet for this id, the document itself is from 2016)"
 
   - doc_id: rbi_md_wilful_defaulters_2024
     source: rbi
@@ -171,17 +188,29 @@ documents:
     doc_type: master_direction
     title: "Master Direction on Treatment of Wilful Defaulters and Large Defaulters"
     url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD122F0B6356D6BC14C85A960DEE7CDD9FBD8.PDF
+    issue_date: "2024-07-30"
     discovery: direct
     notes: "landing page ...BS_ViewMasDirections.aspx?id=12713 ; title confirmed by search result for this id"
 
-  - doc_id: rbi_md_credit_information_amendment
+  - doc_id: rbi_md_credit_information_2025
     source: rbi
     issuer: RBI
     doc_type: master_direction
-    title: "Reserve Bank of India (Credit Information Companies) (Amendment) Directions"
-    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/169MD.PDF
+    title: "Reserve Bank of India (Credit Information Companies) Directions, 2025"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/378MD65D46FCCF0C34491B34505C6E1DACFFE.PDF
+    issue_date: "2025-11-28"
     discovery: direct
-    notes: "landing page ...BS_ViewMasDirections.aspx?id=13141 ; title from citation; generic PDF filename -> confirm title and date in Phase 1"
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12926 ; PDF ref RBI/DOR/2025-26/378 DOR.FIN.REC.No.297/20.16.056/2025-26 dated November 28, 2025 (Updated as on July 01, 2026); consolidated Master Directions; the old URL 169MD.PDF served the Commercial Banks KYC Directions 2025 (diagnosed 2026-10-02), now its own row below; doc_id changed from rbi_md_credit_information_amendment"
+
+  - doc_id: rbi_md_kyc_commercial_2025
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Reserve Bank of India (Commercial Banks - Know Your Customer) Directions, 2025"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/169MD.PDF
+    issue_date: "2025-11-28"
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=13141 ; PDF ref RBI/DOR/2025-26/169 DOR.AML.REC.No.88/14.01.002/2025-26 dated November 28, 2025 (Updated as on October 1, 2026); content verified 2026-10-02 from the bytes first fetched under the credit-information placeholder; compare with rbi_md_kyc_2016 for the supersession edge"
 
   - doc_id: rbi_notif_lcr_basel3
     source: rbi
@@ -196,10 +225,21 @@ documents:
     source: rbi
     issuer: RBI
     doc_type: notification
-    title: "Reserve Bank - Integrated Ombudsman Scheme, 2021"
-    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/NT976BE9580F4E044588822EF3B6CF493D15.PDF
+    title: "Reserve Bank - Integrated Ombudsman Scheme, 2021 (notification)"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/RBIIOS11118E9D443AD3984523920DFFF736AB69C3.PDF
+    issue_date: "2021-11-12"
     discovery: direct
-    notes: "landing page ...BS_ViewMasDirections.aspx?id=12160 ; 'NT' filename prefix indicates a notification rather than a master direction; title from citation -> confirm"
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12192 ; 1-page notification Ref CEPD. PRD. No.S873/13.01.001/2021-22 dated November 12, 2021, in supersession of the 2017/2018/2019 ombudsman schemes; scheme text is the next row; the earlier id=12160 URL served an unrelated Basel III circular (diagnosed 2026-10-02)"
+
+  - doc_id: rbi_scheme_integrated_ombudsman_2021
+    source: rbi
+    issuer: RBI
+    doc_type: notification
+    title: "Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022)"
+    url: https://rbidocs.rbi.org.in/rdocs/content/pdfs/RBIOS2021_amendments05082022.pdf
+    issue_date: "2022-08-05"
+    discovery: direct
+    notes: "full 19-page scheme linked from landing page id=12192 ; footnotes record amendments notified August 5, 2022 (Ref CEPD. PRD. No. S544/13.01.001/2022-23); scheme originally notified November 12, 2021 (see rbi_notif_integrated_ombudsman_2021); the sibling RBIOS2021_121121_A.pdf is only the original 4-page complaint form, already inside this copy"
 
   - doc_id: rbi_mc_irac_master_circular
     source: rbi
@@ -372,10 +412,10 @@ documents:
     source: sebi
     issuer: SEBI
     doc_type: circular
-    title: "Review of Position Limits for Clients and Penalty Provisions for Violation / Breach of Position Limits"
-    url: https://www.sebi.gov.in/legal/circulars/sep-2026/review-of-position-limits-for-clients-and-penalty-provisions-for-violation-breach-of-position-limits_103992.html
+    title: "Review of Position Limits for Clients and Penalty Provisions for Violation / Breach of Position Limits for Commodity Derivatives Segment"
+    url: https://www.sebi.gov.in/legal/circulars/sep-2026/review-of-position-limits-for-clients-and-penalty-provisions-for-violation-breach-of-position-limits-for-commodity-derivatives-segment_104387.html
     discovery: listing
-    notes: "Listing page (HTTP 200 verified). Included as a 'does the answer change over time' example."
+    notes: "Listing page (HTTP 200 verified). URL corrected from the parsed SEBI index after a hand-reconstructed slug returned 404 - an illustration of why links must come from the page, never be typed in. Included as a 'does the answer change over time' example."
 
   # ------------------------------------------------------------------ SEBI (entry points for refresh)
   - doc_id: sebi_index_circulars

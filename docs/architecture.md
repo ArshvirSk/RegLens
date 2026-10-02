@@ -48,7 +48,7 @@ regenerates `data/manifest.csv`; `make download` is a dry run unless
 
 | Source | Finding (verified 2026-10-02) |
 |---|---|
-| RBI | `robots.txt` answers **HTTP 418** from the WAF for every user agent tried, and document pages render their body from ASP.NET `__VIEWSTATE` (the index page contains ~386 `ViewMasDirections` references but zero parseable anchors). Deep links must come from an index/known ID, and PDFs on `rbidocs.rbi.org.in` return an HTML interstitial unless a `Referer` header is sent. |
+| RBI | `robots.txt` answers **HTTP 418** from the WAF for every user agent tried, and document pages render their body from ASP.NET `__VIEWSTATE` (the index page contains ~386 `ViewMasDirections` references but zero parseable anchors). Deep links must come from an index/known ID, and PDFs on `rbidocs.rbi.org.in` need a browser UA *and* a `Referer` header — the polite `RegLens/0.1` UA gets connection resets (6/6), measured in `docs/corpus-plan.md` §2. |
 | SEBI | `robots.txt` allows crawling (`Disallow:` empty except `/js`, `/css`). Legal listings are server-rendered and parse cleanly into deep links. |
 | Bank IR pages | Listing pages, not documents. Annual-report and transcript URLs embed a fiscal year and change annually. |
 
@@ -58,8 +58,9 @@ would make the corpus a side effect rather than a decision. Also rejected: scrap
 viewstate with a headless browser in Phase 0 — that is real work, and it belongs in the
 Phase 4 refresh job where its output can be diffed and reviewed.
 
-*Consequence.* 95 documents are queued for review and 7 entry-point/listing URLs are marked
-`excluded` (they exist so the refresh job knows where to look, not to be ingested).
+*Consequence.* 97 documents are queued for review — 20 RBI ones are already fetched and
+hashed — and 7 entry-point/listing URLs are marked `excluded` (they exist so the refresh job
+knows where to look, not to be ingested).
 
 ### 2.2 Raw files are content-addressed and immutable
 
@@ -215,6 +216,6 @@ honour is exactly how a superseded rule gets cited as current.
 |---|---|
 | RBI pages are not machine-parseable | Documented; direct PDF links are queued, refresh job in Phase 4 needs a browser adapter. |
 | Listing rows need a human to name the exact file | By design. `make download` is a dry run and `--resolve-listings` prints candidates for review. |
-| Titles/dates for a few RBI documents come from third-party citations | Flagged in the manifest `notes` with "confirm in Phase 1"; Phase 1 fills `issue_date` from the PDF itself, which is also what the temporal filter needs. |
+| Titles/dates for a few RBI documents come from third-party citations | Resolved for the 20 fetched rows on 2026-10-02: page 1 of each stored PDF supplied the real title and `issue_date` (3 wrong URLs fixed, 2 `doc_id` years renamed — see `docs/corpus-plan.md` §4). Rows still planned get theirs when fetched, which is also what the temporal filter needs. |
 | Postgres FTS ≠ BM25 | To be measured, not assumed (Phase 2). |
 | Judge reliability | Phase 1 validates the judge against 20 hand-graded answers and reports the agreement. |

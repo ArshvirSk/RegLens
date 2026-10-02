@@ -85,7 +85,10 @@ Constraints, in order of how much they change the design:
 The per-host `Referer` deserves a mention because it is a real-world detail no design document
 would have predicted: `rbidocs.rbi.org.in` returns an HTML interstitial (~45 KB, `text/html`)
 for a plain GET of a PDF, and the real PDF (2 MB, `application/pdf`) with a `Referer` header.
-That was found by testing, not by reading.
+That was found by testing, not by reading. A post-Phase-0 fetch run refined it: the polite
+`RegLens/0.1` UA gets connection resets outright, so a per-host **browser UA** was added
+alongside the Referer (`FetchPolicy.browser_ua_hosts`), with the 6/6 measurements recorded
+in `docs/corpus-plan.md` §2.
 
 ### 2.4 The database schema
 
