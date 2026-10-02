@@ -1,0 +1,81 @@
+# RegLens local stack: Postgres+pgvector, FastAPI, Next.js.
+#
+#   docker compose up -d --build     # or: make up
+#
+# Host ports are 5433 (postgres), 8000 (api), 3000 (web). Postgres uses 5433 on the
+# host so it cannot collide with a locally installed server on 5432; inside the
+# compose network the database is always reachable at postgres:5432.
+name: reglens
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-reglens}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reglens_local_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-reglens}
+      # Phase 3 uses this role for text-to-SQL. Created by the init script below.
+      REGLENS_READONLY_USER: ${REGLENS_READONLY_USER:-reglens_ro}
+      REGLENS_READONLY_PASSWORD: ${REGLENS_READONLY_PASSWORD:-reglens_ro_local_dev}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-reglens} -d ${POSTGRES_DB:-reglens}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override the host-side URL from .env: inside the network the DB is `postgres`.
+      REGLENS_DATABASE_URL: postgresql://${POSTGRES_USER:-reglens}:${POSTGRES_PASSWORD:-reglens_local_dev}@postgres:5432/${POSTGRES_DB:-reglens}
+      REGLENS_DATA_DIR: /app/data
+    command:
+      - uvicorn
+      - reglens.api.main:app
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --reload
+    ports:
+      - "${REGLENS_API_PORT:-8000}:8000"
+    volumes:
+      # Editable dev mount: uv sync installs the project in editable mode, so
+      # --reload picks up source changes without a rebuild.
+      - ./src:/app/src:ro
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_started
+
+volumes:
+  pgdata:
