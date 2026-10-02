@@ -21,6 +21,7 @@ from reglens.ingestion.manifest import (
     DocumentRecord,
     load_corpus_plan,
     load_manifest,
+    payload_matches_url,
     plan_summary,
     records_from_plan,
     validate_records,
@@ -279,6 +280,63 @@ def cmd_download(args: argparse.Namespace) -> int:
     return EXIT_OK if not report.failures else EXIT_ERROR
 
 
+def cmd_repair_raw(args: argparse.Namespace) -> int:
+    """Quarantine stored payloads that are not the document they claim to be.
+
+    The first real fetch recorded 18 HTML interstitials as PDFs because nothing checked
+    the bytes. This command is the standing fix: it is idempotent, moves rejected payloads
+    to ``data/derived/rejected/`` (out of the immutable raw store), demotes the rows, and
+    leaves a note saying what was found. A dry run unless ``--apply`` is passed.
+    """
+    settings = get_settings()
+    records = load_manifest()
+    demoted: list[tuple[str, str]] = []
+
+    for record in records:
+        if not record.local_path:
+            continue
+        path = settings.raw_dir / record.local_path
+        if not path.is_file():
+            continue
+        ok, detail = payload_matches_url(record.url, path.read_bytes())
+        if ok:
+            continue
+        if args.apply:
+            rejected_dir = settings.derived_dir / "rejected"
+            rejected_dir.mkdir(parents=True, exist_ok=True)
+            rejected = rejected_dir / path.name
+            suffix_index = 2
+            while rejected.exists():
+                rejected = rejected_dir / f"{path.stem}__{suffix_index}{path.suffix}"
+                suffix_index += 1
+            path.replace(rejected)
+            note = f"payload rejected on repair: {detail}"
+            record.notes = f"{record.notes} | {note}" if record.notes else note
+            record.status = "failed"
+            record.file_hash = ""
+            record.local_path = ""
+        demoted.append((record.doc_id, detail))
+
+    if args.apply:
+        write_manifest(records, settings.manifest_path)
+
+    payload = {
+        "applied": args.apply,
+        "demoted": len(demoted),
+        "details": dict(demoted),
+    }
+    verb = "quarantined" if args.apply else "would quarantine"
+    lines = [f"{verb} {len(demoted)} row(s) whose stored payload is not the document"]
+    for doc_id, detail in demoted:
+        lines.append(f"  {doc_id}: {detail}")
+    if not demoted:
+        lines.append("  nothing to do - raw store matches the manifest")
+    elif not args.apply:
+        lines.append("  dry run: pass --apply to write the demoted rows")
+    _emit(payload, as_json=args.json, text="\n".join(lines))
+    return EXIT_OK
+
+
 def cmd_migrate(args: argparse.Namespace) -> int:
     from reglens.db.pool import connect
     from reglens.db.runner import MigrationError, apply_migrations, migration_status
@@ -353,6 +411,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--resolve-listings", action="store_true", help="print candidate links for listing pages"
     )
     download.set_defaults(func=cmd_download)
+
+    repair = sub.add_parser(
+        "repair-raw", help="quarantine stored payloads that are not the document they claim to be"
+    )
+    repair.add_argument(
+        "--apply", action="store_true", help="write the demoted rows back to the manifest"
+    )
+    repair.set_defaults(func=cmd_repair_raw)
 
     migrate = sub.add_parser("migrate", help="apply SQL migrations")
     migrate.add_argument(

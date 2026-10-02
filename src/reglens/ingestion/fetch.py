@@ -14,11 +14,22 @@ Design constraints that shaped this module:
   skipped without a network request at all, so re-running is free.
 * **Listing-page discovery.** Bank investor-relations pages are listing pages, not single
   PDFs. ``resolve_listing`` extracts candidate PDF links for human review rather than
-  guessing, because filenames and page structure change without warning.
+  guessing,  because filenames and page structure change without warning.
+* **Payloads are validated, not assumed.** A URL ending in ``.pdf`` that answers
+  with an HTML challenge page is rejected before it is hashed and stored: an
+  interstitial recorded as a fetched document is worse than a failure, because
+  idempotency would then skip that row forever. Rejected bytes are kept under
+  ``data/derived/rejected`` for diagnosis.
+* **Right user-agent per host.** The identifying UA is the default everywhere.
+  Hosts whose WAF refuses non-browser clients get a browser-like UA for that
+  host only, and robots rules written for our real identity are enforced
+  regardless of which UA the request carries.
 """
 
 from __future__ import annotations
 
+import json
+import ssl
 import time
 from collections.abc import Iterable
 from dataclasses import dataclass, field
@@ -29,12 +40,14 @@ from typing import Literal
 from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
 
+import certifi
 import httpx
 from tenacity import Retrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from reglens.config import Settings, get_settings
 from reglens.ingestion.manifest import (
     DocumentRecord,
+    payload_matches_url,
     raw_relative_path,
     sha256_bytes,
     sha256_file,
@@ -58,6 +71,16 @@ class FetchPolicy:
     #: own pages. rbidocs.rbi.org.in returns an HTML interstitial instead of the PDF
     #: without it (verified 2026-10-02), so the referer is derived per host.
     referer_hosts: tuple[tuple[str, str], ...] = (("rbidocs.rbi.org.in", "https://m.rbi.org.in/"),)
+    #: Hosts whose bot defense (F5) drops the connection for a non-browser
+    #: user-agent instead of serving the document. Verified 2026-10-02:
+    #: rbidocs answered 6/6 requests with a real PDF for a Chrome UA and
+    #: reset 6/6 connections for the polite one. Only these hosts see the
+    #: browser UA; every other host keeps the identifying one.
+    browser_ua_hosts: tuple[str, ...] = ("rbidocs.rbi.org.in",)
+    browser_user_agent: str = (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+    )
 
     @classmethod
     def from_settings(cls, settings: Settings) -> FetchPolicy:
@@ -139,7 +162,11 @@ class RobotsCache:
         parser = self._parser(client, url)
         if parser is None:
             return True, "robots.txt unavailable or unpublished"
-        if parser.can_fetch(self._policy.user_agent, url):
+        # Enforce the rules that target our real identity even on hosts where the
+        # request will carry a browser UA: swapping the UA must never widen what
+        # robots.txt allows.
+        identities = {self._policy.user_agent, user_agent_for(url, self._policy)}
+        if all(parser.can_fetch(identity, url) for identity in identities):
             return True, "allowed by robots.txt"
         return False, "disallowed by robots.txt"
 
@@ -173,6 +200,28 @@ def referer_for(url: str, policy: FetchPolicy) -> str | None:
     return None
 
 
+def user_agent_for(url: str, policy: FetchPolicy) -> str:
+    """The UA to send: a browser-like one only for hosts that block bots."""
+    host = urlparse(url).netloc.lower()
+    for pattern in policy.browser_ua_hosts:
+        if host == pattern or host.endswith("." + pattern):
+            return policy.browser_user_agent
+    return policy.user_agent
+
+
+def build_ssl_context() -> ssl.SSLContext:
+    """Trust certifi *and* the OS store, with verification fully enabled.
+
+    recindia.nic.in chains to a self-signed root that certifi lacks but system
+    stores carry (measured 2026-10-02: certifi-only 0/4 handshakes, this 4/4).
+    Adding trust anchors is not ``verify=False``: every chain is still checked,
+    and hostname checking stays on.
+    """
+    context = ssl.create_default_context(cafile=certifi.where())
+    context.load_default_certs()
+    return context
+
+
 def build_client(policy: FetchPolicy) -> httpx.Client:
     return httpx.Client(
         headers={
@@ -181,6 +230,7 @@ def build_client(policy: FetchPolicy) -> httpx.Client:
         },
         timeout=policy.timeout_seconds,
         follow_redirects=True,
+        verify=build_ssl_context(),
     )
 
 
@@ -249,8 +299,10 @@ def fetch_bytes(
     if not allowed:
         return FetchResult(url, url, 0, b"", "", 0, error="blocked by robots.txt")
     throttle.wait(url)
+    headers: dict[str, str] = {"User-Agent": user_agent_for(url, policy)}
     referer = referer_for(url, policy)
-    headers = {"Referer": referer} if referer else None
+    if referer:
+        headers["Referer"] = referer
     try:
         return _get_with_retry(client, url, policy, headers=headers)
     except httpx.HTTPStatusError as exc:
@@ -275,6 +327,8 @@ class DownloadReport:
     skipped: list[str] = field(default_factory=list)
     failures: list[tuple[str, str]] = field(default_factory=list)
     new_rows: list[DocumentRecord] = field(default_factory=list)
+    #: doc_id -> PDF/office links found on its landing page, awaiting a human decision.
+    unresolved: dict[str, list[str]] = field(default_factory=dict)
     dry_run: bool = True
 
     def counts(self) -> dict[str, int]:
@@ -287,6 +341,7 @@ class DownloadReport:
         for action in self.actions:
             summary[action.kind] = summary.get(action.kind, 0) + 1
         summary["downloaded_now"] = len(self.downloaded)
+        summary["landing_cached"] = len(self.unresolved)
         summary["failed_now"] = len(self.failures)
         return summary
 
@@ -326,7 +381,12 @@ def plan_downloads(
         if not record.url:
             actions.append(DownloadAction(record.doc_id, record.url, "error", "row has no url"))
             continue
-        actions.append(DownloadAction(record.doc_id, record.url, "download", "not fetched yet"))
+        reason = (
+            "resolve document from landing page"
+            if record.discovery == "listing"
+            else "not fetched yet"
+        )
+        actions.append(DownloadAction(record.doc_id, record.url, "download", reason))
     if limit is not None:
         kept: list[DownloadAction] = []
         to_download = 0
@@ -386,6 +446,30 @@ def download_manifest(
                 record.http_status = str(result.status_code)
                 record.notes = _append_note(record.notes, f"fetch failed: {result.error}")
                 continue
+            if record.discovery == "listing":
+                # The URL is a landing/detail page, not the document. Caching it as the
+                # document would let an investor-relations index page be parsed as if it
+                # were an annual report, which is exactly the silent-wrongness this
+                # project exists to avoid. The page goes to data/derived (regenerable),
+                # the row stays `planned`, and the candidate links are written out for a
+                # human to confirm.
+                landing, candidates = _cache_landing(record, result, settings=active)
+                record.http_status = str(result.status_code)
+                record.fetched_at = datetime.now(UTC).isoformat(timespec="seconds")
+                record.notes = _append_note_once(record.notes, f"landing cached: {landing}")
+                report.unresolved[record.doc_id] = candidates
+                continue
+            ok, detail = payload_matches_url(record.url, result.content)
+            if not ok:
+                # An interstitial, challenge page or bot-check is not the document.
+                # Rejecting it before hashing is what stops idempotency from quietly
+                # skipping a bad row forever on every later run.
+                _stash_rejected(record, result, settings=active, reason=detail)
+                report.failures.append((record.doc_id, f"payload rejected: {detail}"))
+                record.status = "failed"
+                record.http_status = str(result.status_code)
+                record.notes = _append_note_once(record.notes, f"payload rejected: {detail}")
+                continue
             digest = sha256_bytes(result.content)
             suffix = result.suffix
             relative = raw_relative_path(record, digest, suffix)
@@ -393,16 +477,14 @@ def download_manifest(
             target.parent.mkdir(parents=True, exist_ok=True)
             if not target.exists():
                 target.write_bytes(result.content)
-            updated = record.model_copy(
-                update={
-                    "status": "fetched",
-                    "file_hash": digest,
-                    "local_path": relative,
-                    "http_status": str(result.status_code),
-                    "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
-                }
-            )
-            records[by_id[record.doc_id]] = updated
+            # Mutate in place rather than replacing the row: the failure path already
+            # does, and a caller holding a reference to a manifest row must see the same
+            # state the rewritten CSV carries.
+            record.status = "fetched"
+            record.file_hash = digest
+            record.local_path = relative
+            record.http_status = str(result.status_code)
+            record.fetched_at = datetime.now(UTC).isoformat(timespec="seconds")
             report.downloaded.append(record.doc_id)
     finally:
         if owns_client:
@@ -415,6 +497,69 @@ def download_manifest(
 
 def _append_note(existing: str, note: str) -> str:
     return f"{existing} | {note}" if existing else note
+
+
+def _append_note_once(existing: str, note: str) -> str:
+    """Append ``note`` only if absent, so re-running does not pile up duplicates."""
+    return existing if note in existing else _append_note(existing, note)
+
+
+#: Extensions that can plausibly be the document behind a landing page. HTML is excluded
+#: on purpose: a navigation page is not a candidate document.
+DOCUMENT_PATTERNS: tuple[str, ...] = (".pdf", ".xlsx", ".xls", ".csv", ".docx", ".zip")
+
+
+def _cache_landing(
+    record: DocumentRecord, result: FetchResult, *, settings: Settings
+) -> tuple[str, list[str]]:
+    """Cache a landing page under ``data/derived`` and return ``(path, doc links)``.
+
+    ``data/derived`` is for artefacts a human or a resolver can regenerate; only
+    ``data/raw`` is immutable. The candidate list is written beside the page so the
+    resolution step never has to re-fetch the page just to remember what it linked to.
+    """
+    page = result.content.decode("utf-8", errors="replace")
+    candidates = filter_document_links(
+        extract_links(page, result.final_url), patterns=DOCUMENT_PATTERNS
+    )
+    landing_dir = settings.derived_dir / "landings"
+    landing_dir.mkdir(parents=True, exist_ok=True)
+    landing_path = landing_dir / f"{record.doc_id}{result.suffix}"
+    landing_path.write_bytes(result.content)
+
+    resolution_dir = settings.derived_dir / "resolutions"
+    resolution_dir.mkdir(parents=True, exist_ok=True)
+    (resolution_dir / f"{record.doc_id}.json").write_text(
+        json.dumps(
+            {
+                "doc_id": record.doc_id,
+                "landing_url": result.final_url,
+                "http_status": result.status_code,
+                "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
+                "candidates": candidates,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    relative = landing_path.relative_to(settings.derived_dir.parent)
+    return str(relative).replace("\\", "/"), candidates
+
+
+def _stash_rejected(
+    record: DocumentRecord, result: FetchResult, *, settings: Settings, reason: str
+) -> str:
+    """Keep a rejected payload under ``data/derived/rejected`` for inspection.
+
+    It stays out of ``data/raw``: the raw store holds documents, and a challenge page is
+    not one. Keeping it anyway is what makes a blocked host diagnosable afterwards.
+    """
+    rejected_dir = settings.derived_dir / "rejected"
+    rejected_dir.mkdir(parents=True, exist_ok=True)
+    path = rejected_dir / f"{record.doc_id}{result.suffix}"
+    path.write_bytes(result.content)
+    relative = path.relative_to(settings.derived_dir.parent)
+    return str(relative).replace("\\", "/")
 
 
 # ------------------------------------------------------------------ listing pages

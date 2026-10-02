@@ -69,7 +69,12 @@ class JsonFormatter(logging.Formatter):
 
 
 def setup_logging(level: str = "INFO", *, stream: Any = None) -> None:
-    """Configure the root logger once. Safe to call repeatedly."""
+    """Configure the root logger once. Safe to call repeatedly.
+
+    Third-party HTTP loggers are dropped to WARNING: a 95-document fetch prints one line
+    per request per redirect, which buries the fetch report it belongs to. Those requests
+    are still visible as ``http_status`` in the manifest.
+    """
     handler = logging.StreamHandler(stream or sys.stdout)
     handler.setFormatter(JsonFormatter())
     root = logging.getLogger()
@@ -77,6 +82,8 @@ def setup_logging(level: str = "INFO", *, stream: Any = None) -> None:
         root.removeHandler(existing)
     root.addHandler(handler)
     root.setLevel(level.upper())
+    for name in ("httpx", "httpcore", "urllib3", "asyncio"):
+        logging.getLogger(name).setLevel(logging.WARNING)
 
 
 def get_logger(name: str) -> logging.Logger:

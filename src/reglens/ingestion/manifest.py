@@ -20,6 +20,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
+from urllib.parse import urlparse
 
 import yaml
 from pydantic import BaseModel, ConfigDict
@@ -440,6 +441,19 @@ def validate_records(records: list[DocumentRecord]) -> ValidationReport:
                         "file on disk does not match the recorded hash (raw files are immutable)",
                     )
                 )
+            else:
+                # Same check the fetcher applies on download: an HTML interstitial
+                # recorded as a PDF would otherwise pass every hash validation.
+                ok, detail = _payload_matches_url(record.url, raw_path.read_bytes())
+                if record.url and not ok:
+                    issues.append(
+                        Issue(
+                            "error",
+                            doc_id,
+                            "local_path",
+                            f"stored payload is not the document: {detail}",
+                        )
+                    )
 
     known_ids = {record.doc_id for record in records}
     for record in records:
@@ -465,8 +479,44 @@ def validate_records(records: list[DocumentRecord]) -> ValidationReport:
     return ValidationReport(issues=issues, record_count=len(records))
 
 
+def _payload_matches_url(url: str, payload: bytes) -> tuple[bool, str]:
+    """Check that the bytes are what the URL claims to be.
+
+    Found by running the real fetch: rbidocs answered a PDF URL with a ~45 KB
+    ``<!DOCTYPE`` interstitial, and nothing in the pipeline objected - 18 HTML pages were
+    hashed and recorded as fetched documents. An interstitial recorded as evidence is
+    worse than a failure, because idempotency would then skip those rows forever.
+    """
+    path = urlparse(url).path.lower()
+    head = payload[:80].lstrip()
+    if path.endswith(".pdf"):
+        if payload[:5] == b"%PDF-":
+            return True, "pdf"
+        snippet = head[:40].decode("utf-8", errors="replace").replace("\n", " ")
+        return False, f"expected %PDF- header, got {snippet!r}"
+    if path.endswith((".xlsx", ".xlsm")):
+        if payload[:2] == b"PK":
+            return True, "zip-based excel"
+        return False, "expected a zip-based Excel workbook"
+    if path.endswith(".xls"):
+        if payload[:8] == b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1":
+            return True, "ole excel"
+        return False, "expected an OLE Excel workbook"
+    return True, "unverified type"
+
+
+def payload_matches_url(url: str, payload: bytes) -> tuple[bool, str]:
+    """Public wrapper so the fetcher and the validator share one implementation."""
+    return _payload_matches_url(url, payload)
+
+
 def verify_raw_store(records: list[DocumentRecord]) -> ValidationReport:
-    """Re-hash every fetched file. Used by CI and ``reglens status``."""
+    """Re-hash every fetched file and check it is still the right kind of file.
+
+    Used by CI and ``reglens status``. The payload check exists because a download that
+    recorded an HTML interstitial must be caught on the next run, not by a human who
+    happens to open the file.
+    """
     issues: list[Issue] = []
     settings = get_settings()
     for record in records:
@@ -476,11 +526,23 @@ def verify_raw_store(records: list[DocumentRecord]) -> ValidationReport:
         if not path.is_file():
             issues.append(Issue("error", record.doc_id, "local_path", f"missing raw file {path}"))
             continue
-        actual = sha256_file(path)
+        payload = path.read_bytes()
+        actual = sha256_bytes(payload)
         if actual != record.file_hash:
             issues.append(
                 Issue("error", record.doc_id, "file_hash", f"hash mismatch: {actual[:12]}…")
             )
+        if record.url:
+            ok, detail = _payload_matches_url(record.url, payload)
+            if not ok:
+                issues.append(
+                    Issue(
+                        "error",
+                        record.doc_id,
+                        "local_path",
+                        f"stored payload is not the document: {detail}",
+                    )
+                )
     return ValidationReport(issues=issues, record_count=len(records))
 
 
