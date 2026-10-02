@@ -1,0 +1,505 @@
+# RegLens corpus plan — the reviewed source of data/manifest.csv.
+#
+# Regenerate the manifest from this file with:   make corpus-plan
+# This file is human-editable on purpose: adding a document is a reviewed decision, not
+# whatever a crawler happened to reach.
+#
+# Field notes
+#   doc_id       stable id, lowercase; it is the citation key, so never renumber it
+#   source       rbi | sebi | bank_ir | exchange | other
+#   doc_type     master_direction | master_circular | circular | notification | regulation
+#                | annual_report | transcript | quarterly_results | press_release | other
+#   discovery    direct  = url is the document itself
+#                listing = url is a landing/listing page; the exact PDF is resolved and
+#                          named in `notes`, then confirmed by a human before ingest
+#   status       planned | fetched | parsed | failed | excluded  (fetch state is preserved
+#                across regenerations, so re-running never loses a hash)
+#   issue_date   left empty where it has not been read from the document yet. Fabricating
+#                dates would corrupt the Phase 3 temporal filter; Phase 1 extracts them
+#                from the PDF cover page and fills them in.
+#
+# Verification provenance (2026-10-02, see docs/corpus-plan.md for the full report)
+#   * Every URL below returned HTTP 200 on 2026-10-02 unless its note says otherwise.
+#   * rbidocs.rbi.org.in serves PDFs only when a Referer header is sent; the bundled
+#     fetcher sends the landing-page referer for that host.
+#   * www.rbi.org.in/robots.txt answers 418 (WAF) and its document pages render from
+#     ASP.NET viewstate, so RBI *listing* pages are recorded for manual browsing while
+#     individual RBI documents are recorded as direct PDF links.
+#   * www.sebi.gov.in/robots.txt allows crawling except /js and /css; its legal listings
+#     are server-rendered and were parsed to produce the deep links below.
+verified_on: "2026-10-02"
+documents:
+  # ------------------------------------------------------------------ RBI (regulatory)
+  - doc_id: rbi_md_kyc_2016
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction - Know Your Customer (KYC), 2016 (as amended)"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD18KYCF6E92C82E1E1419D87323E3869BC9F13.PDF
+    discovery: direct
+    notes: "landing page https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=11566 ; PDF reachable with Referer; PDF filename encodes MD18KYC"
+
+  - doc_id: rbi_md_kyc_nbfc_2016
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction - Know Your Customer (KYC) for NBFCs / AML obligations"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/361MD1E2F8EA063454AD5AFA1D02A1BA5ACA7.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12943 ; title from a third-party citation and the mobile mirror's body text, not from the PDF itself -> confirm title and issue date in Phase 1"
+
+  - doc_id: rbi_md_irac_2025
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Reserve Bank of India (Commercial Banks - Income Recognition, Asset Classification and Provisioning) Directions, 2025"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/164MD.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=13146 ; body text on the mobile mirror contains asset classification and provisioning language; claim-level source for NPA questions"
+
+  - doc_id: rbi_md_alm_2025
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Reserve Bank of India (Commercial Banks - Asset Liability Management) Directions, 2025"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/163MD.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=13147 ; mobile mirror body mentions FALLCR and LCR -> primary source for liquidity-ratio questions"
+
+  - doc_id: rbi_md_investment_2023
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction - Classification, Valuation and Operation of Investment Portfolio of Commercial Banks"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/104MDINVESTMENTPORTFOLIOC6B7053A02894342A00142968C70FC82.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12534 ; PDF filename encodes the title"
+
+  - doc_id: rbi_md_it_outsourcing_2023
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction on Outsourcing of Information Technology Services"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/102MDITSERVICES56B33FD530B1433187D75CB7C06C8F70.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12486 ; PDF filename encodes the title; mobile mirror body uses 'outsourcing' 49 times"
+
+  - doc_id: rbi_md_it_governance_2023
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction on Information Technology Governance, Risk, Controls and Assurance Practices"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/107MDITGOVERNANCE3303572008604C67AC25B84292D85567.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12562 ; PDF filename encodes the title"
+
+  - doc_id: rbi_md_digital_lending_2025
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction - Reserve Bank of India (Digital Lending) Directions"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD11024D1EF9CB39B44ABB23DF586173E0CDE.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12613 ; citation used this id for the digital lending directions -> confirm the exact year in Phase 1"
+
+  - doc_id: rbi_md_psl_2020
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Directions - Priority Sector Lending (PSL) - Targets and Classification"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MDPSL803EE903174E4C85AFA14C335A5B0909.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=11959 ; index entry dated September 04, 2020; PDF filename encodes MDPSL; covers co-lending by banks and NBFCs"
+
+  - doc_id: rbi_md_nbfc_p2p_2017
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction - Non-Banking Financial Company - Peer to Peer Lending Platform (Reserve Bank) Directions, 2017"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MDP2PB9A1F7F3BDAC463EAF1EEE48A43F2F6C.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=11137 ; PDF filename encodes MDP2P"
+
+  - doc_id: rbi_md_ppi_2021
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction on Issuance and Operation of Prepaid Payment Instruments"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/82MDPPIS2708202181CF0A6FCD1B47B88CAE8E92A228B160.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12156 ; PDF filename encodes 82MDPPIS dated 27-08-2021"
+
+  - doc_id: rbi_md_securitisation_2021
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction - Reserve Bank of India (Securitisation of Standard Assets) Directions, 2021"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/85MDSTANDARDASSETSBE149B86CD3A4B368A5D24471DAD2300.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12165 ; PDF filename encodes STANDARDASSETS; applies to banks and NBFCs including HFCs"
+
+  - doc_id: rbi_md_credit_debit_card_2022
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction - Credit Card and Debit Card - Issuance and Conduct Directions, 2022"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/92MDCREDITDEBITCARDC423AFFB5E7945149C95CDD2F71E9158.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12300 ; PDF filename encodes CREDITDEBITCARD"
+
+  - doc_id: rbi_md_account_aggregator_2016
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction - Non-Banking Financial Company - Account Aggregator (Reserve Bank) Directions, 2016"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD46859213614C3046C1BF9B7CF563FF1346.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=10598 ; citation describes the registration and operation framework for account aggregators -> confirm title"
+
+  - doc_id: rbi_md_risk_interbank_2019
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction - Risk Management and Inter-Bank Dealings"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD3191FD1C01B7704FB9B24E7073F651AB51.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=10485 ; title confirmed by search result for this id"
+
+  - doc_id: rbi_md_wilful_defaulters_2024
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Master Direction on Treatment of Wilful Defaulters and Large Defaulters"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/MD122F0B6356D6BC14C85A960DEE7CDD9FBD8.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12713 ; title confirmed by search result for this id"
+
+  - doc_id: rbi_md_credit_information_amendment
+    source: rbi
+    issuer: RBI
+    doc_type: master_direction
+    title: "Reserve Bank of India (Credit Information Companies) (Amendment) Directions"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/169MD.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=13141 ; title from citation; generic PDF filename -> confirm title and date in Phase 1"
+
+  - doc_id: rbi_notif_lcr_basel3
+    source: rbi
+    issuer: RBI
+    doc_type: notification
+    title: "Basel III Framework on Liquidity Standards - Liquidity Coverage Ratio (LCR), Liquidity Risk Monitoring Tools and LCR Disclosure Standards"
+    url: https://www.rbi.org.in/Scripts/Notification.aspx?Id=2490
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified). The PDF is linked from the page; resolve and record the PDF URL at fetch time. Keep the LCR question in the eval set anchored to the ALM Directions as well."
+
+  - doc_id: rbi_notif_integrated_ombudsman_2021
+    source: rbi
+    issuer: RBI
+    doc_type: notification
+    title: "Reserve Bank - Integrated Ombudsman Scheme, 2021"
+    url: https://rbidocs.rbi.org.in/rdocs/notification/PDFs/NT976BE9580F4E044588822EF3B6CF493D15.PDF
+    discovery: direct
+    notes: "landing page ...BS_ViewMasDirections.aspx?id=12160 ; 'NT' filename prefix indicates a notification rather than a master direction; title from citation -> confirm"
+
+  - doc_id: rbi_mc_irac_master_circular
+    source: rbi
+    issuer: RBI
+    doc_type: master_circular
+    title: "Master Circular - Prudential Norms on Income Recognition, Asset Classification and Provisioning Pertaining to Advances"
+    url: https://m.rbi.org.in/Scripts/BS_ViewMasCirculardetails.aspx?id=12472
+    discovery: listing
+    notes: "Master circular index page for this topic (HTTP 200 verified). Superseded in substance by the 2025 IRAC Directions: keep both so the supersession graph has a real edge to learn from."
+
+  # ------------------------------------------------------------------ RBI (entry points for refresh)
+  - doc_id: rbi_index_master_directions
+    source: rbi
+    issuer: RBI
+    doc_type: other
+    title: "RBI Master Directions index"
+    url: https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx
+    discovery: listing
+    status: excluded
+    notes: "entry point only, not a document; excluded from the corpus. Content is rendered from ASP.NET viewstate, so the Phase 4 refresh job needs a browser-based adapter (Playwright) or manual review."
+
+  - doc_id: rbi_index_master_circulars
+    source: rbi
+    issuer: RBI
+    doc_type: other
+    title: "RBI Master Circulars index"
+    url: https://www.rbi.org.in/Scripts/BS_ViewMasCirculardetails.aspx
+    discovery: listing
+    status: excluded
+    notes: "entry point only, not a document; excluded from the corpus."
+
+  - doc_id: rbi_index_notifications
+    source: rbi
+    issuer: RBI
+    doc_type: other
+    title: "RBI notifications and circulars index"
+    url: https://www.rbi.org.in/Scripts/BS_CircularIndexDisplay.aspx
+    discovery: listing
+    status: excluded
+    notes: "entry point only, not a document; excluded from the corpus. Phase 4 refresh watches this page."
+
+  # ------------------------------------------------------------------ SEBI (regulatory)
+  - doc_id: sebi_reg_lodr_2015
+    source: sebi
+    issuer: SEBI
+    doc_type: regulation
+    title: "SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015 (last amended July 14, 2026)"
+    url: https://www.sebi.gov.in/legal/regulations/jul-2026/securities-and-exchange-board-of-india-listing-obligations-and-disclosure-requirements-regulations-2015-last-amended-on-july-14-2026-_102974.html
+    discovery: listing
+    notes: "Listing page for the regulation (HTTP 200 verified); the consolidated PDF is linked from it. Governing text for listed banks' disclosure duties."
+
+  - doc_id: sebi_mc_lodr_compliance_2026
+    source: sebi
+    issuer: SEBI
+    doc_type: master_circular
+    title: "Master Circular for compliance with the provisions of the SEBI (LODR) Regulations, 2015 by listed entities"
+    url: https://www.sebi.gov.in/legal/master-circulars/jan-2026/master-circular-for-compliance-with-the-provisions-of-the-securities-and-exchange-board-of-india-listing-obligations-and-disclosure-requirements-regulations-2015-by-listed-entities_99432.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified); consolidated PDF linked from it."
+
+  - doc_id: sebi_reg_ncs_2021
+    source: sebi
+    issuer: SEBI
+    doc_type: regulation
+    title: "SEBI (Issue and Listing of Non-Convertible Securities) Regulations, 2021 (last amended January 21, 2026)"
+    url: https://www.sebi.gov.in/legal/regulations/jan-2026/securities-and-exchange-board-of-india-issue-and-listing-of-non-convertible-securities-regulations-2021-last-amended-as-on-january-21-2026-_99288.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified). Applies to bank/NBFC bond issuance and listing."
+
+  - doc_id: sebi_mc_ncs_listing_2025
+    source: sebi
+    issuer: SEBI
+    doc_type: master_circular
+    title: "Master Circular for issue and listing of Non-convertible Securities, Securitised Debt Instruments, Security Receipts, Municipal Debt Securities and Commercial Paper"
+    url: https://www.sebi.gov.in/legal/master-circulars/oct-2025/master-circular-for-issue-and-listing-of-non-convertible-securities-securitised-debt-instruments-security-receipts-municipal-debt-securities-and-commercial-paper_97343.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified). Key document for bank/NBFC debt issuance questions."
+
+  - doc_id: sebi_mc_ncs_disclosure_2025
+    source: sebi
+    issuer: SEBI
+    doc_type: master_circular
+    title: "Master Circular for listing obligations and disclosure requirements for Non-convertible Securities, Securitised Debt Instruments and/or Commercial Paper"
+    url: https://www.sebi.gov.in/legal/master-circulars/jul-2025/master-circular-for-listing-obligations-and-disclosure-requirements-for-non-convertible-securities-securitized-debt-instruments-and-or-commercial-paper_95230.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified)."
+
+  - doc_id: sebi_reg_icdr_2018
+    source: sebi
+    issuer: SEBI
+    doc_type: regulation
+    title: "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018 (last amended March 21, 2026)"
+    url: https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified). Relevant to bank capital-raising questions."
+
+  - doc_id: sebi_mc_icdr_2026
+    source: sebi
+    issuer: SEBI
+    doc_type: master_circular
+    title: "Master Circular for Issue of Capital and Disclosure Requirements"
+    url: https://www.sebi.gov.in/legal/master-circulars/feb-2026/master-circular-for-issue-of-capital-and-disclosure-requirements_99611.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified)."
+
+  - doc_id: sebi_reg_cra_1999
+    source: sebi
+    issuer: SEBI
+    doc_type: regulation
+    title: "SEBI (Credit Rating Agencies) Regulations, 1999 (last amended January 15, 2026)"
+    url: https://www.sebi.gov.in/legal/regulations/jan-2026/securities-and-exchange-board-of-india-credit-rating-agencies-regulations-1999-last-amended-on-january-15-2026-_99126.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified). Relevant because bank/NBFC issuances carry ratings."
+
+  - doc_id: sebi_mc_cra_2025
+    source: sebi
+    issuer: SEBI
+    doc_type: master_circular
+    title: "Master Circular for Credit Rating Agencies (CRAs)"
+    url: https://www.sebi.gov.in/legal/master-circulars/jul-2025/master-circular-for-credit-rating-agencies-cras-_95221.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified)."
+
+  - doc_id: sebi_reg_debenture_trustees_1993
+    source: sebi
+    issuer: SEBI
+    doc_type: regulation
+    title: "SEBI (Debenture Trustees) Regulations, 1993 (last amended October 27, 2025)"
+    url: https://www.sebi.gov.in/legal/regulations/oct-2025/securities-and-exchange-board-of-india-debenture-trustees-regulations-1993-last-amended-on-october-27-2025-_97887.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified)."
+
+  - doc_id: sebi_mc_debenture_trustees_2026
+    source: sebi
+    issuer: SEBI
+    doc_type: master_circular
+    title: "Master Circular for Debenture Trustees"
+    url: https://www.sebi.gov.in/legal/master-circulars/sep-2026/master-circular-for-debenture-trustees_104743.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified)."
+
+  - doc_id: sebi_circ_cyber_incident_fire_2026
+    source: sebi
+    issuer: SEBI
+    doc_type: circular
+    title: "Alignment of SEBI's Cyber Incident Reporting Portal with FIRE Format"
+    url: https://www.sebi.gov.in/legal/circulars/aug-2026/alignment-of-sebi-s-cyber-incident-reporting-portal-with-fire-format_103915.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified). Operational-circular example for the route/temporal tests."
+
+  - doc_id: sebi_circ_kra_info_sharing_2026
+    source: sebi
+    issuer: SEBI
+    doc_type: circular
+    title: "Enabling sharing of information by KYC Registration Agencies (KRAs) with entities regulated by IFSCA"
+    url: https://www.sebi.gov.in/legal/circulars/aug-2026/enabling-sharing-of-information-by-kyc-registration-agencies-kras-with-entities-regulated-by-international-financial-services-centres-authority_103823.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified)."
+
+  - doc_id: sebi_circ_obpp_2026
+    source: sebi
+    issuer: SEBI
+    doc_type: circular
+    title: "Modification in the regulatory framework for Online Bond Platform Providers (OBPPs)"
+    url: https://www.sebi.gov.in/legal/circulars/aug-2026/modification-in-the-regulatory-framework-for-online-bond-platform-providers-obpps-including-measures-for-promoting-ease-of-doing-business_103647.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified)."
+
+  - doc_id: sebi_circ_position_limits_2026
+    source: sebi
+    issuer: SEBI
+    doc_type: circular
+    title: "Review of Position Limits for Clients and Penalty Provisions for Violation / Breach of Position Limits"
+    url: https://www.sebi.gov.in/legal/circulars/sep-2026/review-of-position-limits-for-clients-and-penalty-provisions-for-violation-breach-of-position-limits_103992.html
+    discovery: listing
+    notes: "Listing page (HTTP 200 verified). Included as a 'does the answer change over time' example."
+
+  # ------------------------------------------------------------------ SEBI (entry points for refresh)
+  - doc_id: sebi_index_circulars
+    source: sebi
+    issuer: SEBI
+    doc_type: other
+    title: "SEBI circulars listing"
+    url: https://www.sebi.gov.in/sebiweb/home/HomeAction.do?doListing=yes&sid=1&ssid=7&smid=0
+    discovery: listing
+    status: excluded
+    notes: "Entry point only; server-rendered and machine-parseable, so the Phase 4 refresh job uses it directly."
+
+  - doc_id: sebi_index_master_circulars
+    source: sebi
+    issuer: SEBI
+    doc_type: other
+    title: "SEBI master circulars listing"
+    url: https://www.sebi.gov.in/sebiweb/home/HomeAction.do?doListing=yes&sid=1&ssid=6&smid=0
+    discovery: listing
+    status: excluded
+    notes: "Entry point only."
+
+  - doc_id: sebi_index_regulations
+    source: sebi
+    issuer: SEBI
+    doc_type: other
+    title: "SEBI regulations listing"
+    url: https://www.sebi.gov.in/sebiweb/home/HomeAction.do?doListing=yes&sid=1&ssid=3&smid=0
+    discovery: listing
+    status: excluded
+    notes: "Entry point only."
+
+  - doc_id: sebi_index_legal_all
+    source: sebi
+    issuer: SEBI
+    doc_type: other
+    title: "SEBI legal section (all listings)"
+    url: https://www.sebi.gov.in/sebiweb/home/HomeAction.do?doListingAll=yes&sid=1&ssid=0&smid=0
+    discovery: listing
+    status: excluded
+    notes: "Entry point only."
+  # ------------------------------------------------------------------ Bank and NBFC filings
+  # Every filing row points at the issuer's investor-relations page (discovery: listing),
+  # because annual-report and transcript URLs carry a fiscal year and break every year.
+  # `notes` names the target document; the fetcher resolves candidates from the page and a
+  # human confirms the exact file before it is ingested. Fiscal years are Indian FYs
+  # (FY2025 = year ended 31 March 2025).
+  #
+  # --- State Bank of India (PSU bank; largest by assets, most RBI-facing) ---
+  - {doc_id: sbi_ar_fy2025, source: bank_ir, issuer: SBI, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "State Bank of India Annual Report FY2024-25", url: "https://sbi.co.in/web/investor-relations", notes: "target: FY2024-25 annual report PDF on the IR page"}
+  - {doc_id: sbi_ar_fy2024, source: bank_ir, issuer: SBI, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "State Bank of India Annual Report FY2023-24", url: "https://sbi.co.in/web/investor-relations", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: sbi_transcript_fy2025_q4, source: bank_ir, issuer: SBI, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "State Bank of India Q4 FY2025 earnings call transcript", url: "https://sbi.co.in/web/investor-relations", notes: "target: Q4 FY2024-25 transcript; if SBI publishes only an analyst-meet presentation, record that instead"}
+  - {doc_id: sbi_transcript_fy2025_q3, source: bank_ir, issuer: SBI, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "State Bank of India Q3 FY2025 earnings call transcript", url: "https://sbi.co.in/web/investor-relations", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: sbi_transcript_fy2025_q2, source: bank_ir, issuer: SBI, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "State Bank of India Q2 FY2025 earnings call transcript", url: "https://sbi.co.in/web/investor-relations", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: sbi_transcript_fy2025_q1, source: bank_ir, issuer: SBI, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "State Bank of India Q1 FY2025 earnings call transcript", url: "https://sbi.co.in/web/investor-relations", notes: "target: Q1 FY2024-25 transcript"}
+  #
+  # --- HDFC Bank (largest private bank; merger-era disclosure changes) ---
+  - {doc_id: hdfcbank_ar_fy2025, source: bank_ir, issuer: HDFCBANK, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "HDFC Bank Annual Report FY2024-25", url: "https://www.hdfcbank.com/personal/about-us/investor-relations", notes: "target: FY2024-25 annual report PDF; IR page fetched 1.2 MB, resolves to the results/annual-report section"}
+  - {doc_id: hdfcbank_ar_fy2024, source: bank_ir, issuer: HDFCBANK, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "HDFC Bank Annual Report FY2023-24", url: "https://www.hdfcbank.com/personal/about-us/investor-relations", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: hdfcbank_transcript_fy2025_q4, source: bank_ir, issuer: HDFCBANK, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "HDFC Bank Q4 FY2025 earnings call transcript", url: "https://www.hdfcbank.com/personal/about-us/investor-relations", notes: "target: Q4 FY2024-25 transcript"}
+  - {doc_id: hdfcbank_transcript_fy2025_q3, source: bank_ir, issuer: HDFCBANK, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "HDFC Bank Q3 FY2025 earnings call transcript", url: "https://www.hdfcbank.com/personal/about-us/investor-relations", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: hdfcbank_transcript_fy2025_q2, source: bank_ir, issuer: HDFCBANK, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "HDFC Bank Q2 FY2025 earnings call transcript", url: "https://www.hdfcbank.com/personal/about-us/investor-relations", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: hdfcbank_transcript_fy2025_q1, source: bank_ir, issuer: HDFCBANK, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "HDFC Bank Q1 FY2025 earnings call transcript", url: "https://www.hdfcbank.com/personal/about-us/investor-relations", notes: "target: Q1 FY2024-25 transcript"}
+  #
+  # --- ICICI Bank (large private bank; detailed segment disclosure) ---
+  - {doc_id: icicibank_ar_fy2025, source: bank_ir, issuer: ICICIBANK, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "ICICI Bank Annual Report FY2024-25", url: "https://www.icicibank.com/about-us/investor-relations", notes: "target: FY2024-25 annual report PDF"}
+  - {doc_id: icicibank_ar_fy2024, source: bank_ir, issuer: ICICIBANK, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "ICICI Bank Annual Report FY2023-24", url: "https://www.icicibank.com/about-us/investor-relations", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: icicibank_transcript_fy2025_q4, source: bank_ir, issuer: ICICIBANK, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "ICICI Bank Q4 FY2025 earnings call transcript", url: "https://www.icicibank.com/about-us/investor-relations", notes: "target: Q4 FY2024-25 transcript"}
+  - {doc_id: icicibank_transcript_fy2025_q3, source: bank_ir, issuer: ICICIBANK, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "ICICI Bank Q3 FY2025 earnings call transcript", url: "https://www.icicibank.com/about-us/investor-relations", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: icicibank_transcript_fy2025_q2, source: bank_ir, issuer: ICICIBANK, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "ICICI Bank Q2 FY2025 earnings call transcript", url: "https://www.icicibank.com/about-us/investor-relations", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: icicibank_transcript_fy2025_q1, source: bank_ir, issuer: ICICIBANK, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "ICICI Bank Q1 FY2025 earnings call transcript", url: "https://www.icicibank.com/about-us/investor-relations", notes: "target: Q1 FY2024-25 transcript"}
+  #
+  # --- Axis Bank (large private bank; NIM and deposit-cost questions) ---
+  - {doc_id: axisbank_ar_fy2025, source: bank_ir, issuer: AXISBANK, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "Axis Bank Annual Report FY2024-25", url: "https://www.axisbank.com/shareholders-corner/financial-results/annual-reports", notes: "target: FY2024-25 annual report PDF; the annual-reports listing page itself was verified"}
+  - {doc_id: axisbank_ar_fy2024, source: bank_ir, issuer: AXISBANK, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "Axis Bank Annual Report FY2023-24", url: "https://www.axisbank.com/shareholders-corner/financial-results/annual-reports", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: axisbank_transcript_fy2025_q4, source: bank_ir, issuer: AXISBANK, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "Axis Bank Q4 FY2025 earnings call transcript", url: "https://www.axisbank.com/shareholders-corner/financial-results/annual-reports", notes: "target: Q4 FY2024-25 transcript from the shareholders corner"}
+  - {doc_id: axisbank_transcript_fy2025_q3, source: bank_ir, issuer: AXISBANK, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "Axis Bank Q3 FY2025 earnings call transcript", url: "https://www.axisbank.com/shareholders-corner/financial-results/annual-reports", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: axisbank_transcript_fy2025_q2, source: bank_ir, issuer: AXISBANK, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "Axis Bank Q2 FY2025 earnings call transcript", url: "https://www.axisbank.com/shareholders-corner/financial-results/annual-reports", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: axisbank_transcript_fy2025_q1, source: bank_ir, issuer: AXISBANK, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "Axis Bank Q1 FY2025 earnings call transcript", url: "https://www.axisbank.com/shareholders-corner/financial-results/annual-reports", notes: "target: Q1 FY2024-25 transcript"}
+  #
+  # --- Kotak Mahindra Bank (private bank plus group NBFC/broking structure) ---
+  - {doc_id: kotak_ar_fy2025, source: bank_ir, issuer: KOTAK, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "Kotak Mahindra Bank Annual Report FY2024-25", url: "https://www.kotak.com/en/investor-relations/financial-results.html", notes: "target: FY2024-25 annual report PDF"}
+  - {doc_id: kotak_ar_fy2024, source: bank_ir, issuer: KOTAK, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "Kotak Mahindra Bank Annual Report FY2023-24", url: "https://www.kotak.com/en/investor-relations/financial-results.html", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: kotak_transcript_fy2025_q4, source: bank_ir, issuer: KOTAK, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "Kotak Mahindra Bank Q4 FY2025 earnings call transcript", url: "https://www.kotak.com/en/investor-relations/financial-results.html", notes: "target: Q4 FY2024-25 transcript"}
+  - {doc_id: kotak_transcript_fy2025_q3, source: bank_ir, issuer: KOTAK, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "Kotak Mahindra Bank Q3 FY2025 earnings call transcript", url: "https://www.kotak.com/en/investor-relations/financial-results.html", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: kotak_transcript_fy2025_q2, source: bank_ir, issuer: KOTAK, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "Kotak Mahindra Bank Q2 FY2025 earnings call transcript", url: "https://www.kotak.com/en/investor-relations/financial-results.html", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: kotak_transcript_fy2025_q1, source: bank_ir, issuer: KOTAK, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "Kotak Mahindra Bank Q1 FY2025 earnings call transcript", url: "https://www.kotak.com/en/investor-relations/financial-results.html", notes: "target: Q1 FY2024-25 transcript"}
+  #
+  # --- IndusInd Bank (mid-size private bank; sharp NPA and derivative-accounting episodes) ---
+  - {doc_id: indusind_ar_fy2025, source: bank_ir, issuer: INDUSIND, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "IndusInd Bank Annual Report FY2024-25", url: "https://www.indusind.com/in/en/personal/investor-relations.html", notes: "target: FY2024-25 annual report PDF"}
+  - {doc_id: indusind_ar_fy2024, source: bank_ir, issuer: INDUSIND, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "IndusInd Bank Annual Report FY2023-24", url: "https://www.indusind.com/in/en/personal/investor-relations.html", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: indusind_transcript_fy2025_q4, source: bank_ir, issuer: INDUSIND, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "IndusInd Bank Q4 FY2025 earnings call transcript", url: "https://www.indusind.com/in/en/personal/investor-relations.html", notes: "target: Q4 FY2024-25 transcript"}
+  - {doc_id: indusind_transcript_fy2025_q3, source: bank_ir, issuer: INDUSIND, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "IndusInd Bank Q3 FY2025 earnings call transcript", url: "https://www.indusind.com/in/en/personal/investor-relations.html", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: indusind_transcript_fy2025_q2, source: bank_ir, issuer: INDUSIND, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "IndusInd Bank Q2 FY2025 earnings call transcript", url: "https://www.indusind.com/in/en/personal/investor-relations.html", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: indusind_transcript_fy2025_q1, source: bank_ir, issuer: INDUSIND, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "IndusInd Bank Q1 FY2025 earnings call transcript", url: "https://www.indusind.com/in/en/personal/investor-relations.html", notes: "target: Q1 FY2024-25 transcript"}
+  #
+  # --- Federal Bank (smaller private bank; comparison anchor for the large banks) ---
+  - {doc_id: federalbank_ar_fy2025, source: bank_ir, issuer: FEDERALBANK, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "Federal Bank Annual Report FY2024-25", url: "https://www.federalbank.co.in/financial-results", notes: "target: FY2024-25 annual report PDF"}
+  - {doc_id: federalbank_ar_fy2024, source: bank_ir, issuer: FEDERALBANK, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "Federal Bank Annual Report FY2023-24", url: "https://www.federalbank.co.in/financial-results", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: federalbank_transcript_fy2025_q4, source: bank_ir, issuer: FEDERALBANK, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "Federal Bank Q4 FY2025 earnings call transcript", url: "https://www.federalbank.co.in/financial-results", notes: "target: Q4 FY2024-25 transcript"}
+  - {doc_id: federalbank_transcript_fy2025_q3, source: bank_ir, issuer: FEDERALBANK, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "Federal Bank Q3 FY2025 earnings call transcript", url: "https://www.federalbank.co.in/financial-results", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: federalbank_transcript_fy2025_q2, source: bank_ir, issuer: FEDERALBANK, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "Federal Bank Q2 FY2025 earnings call transcript", url: "https://www.federalbank.co.in/financial-results", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: federalbank_transcript_fy2025_q1, source: bank_ir, issuer: FEDERALBANK, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "Federal Bank Q1 FY2025 earnings call transcript", url: "https://www.federalbank.co.in/financial-results", notes: "target: Q1 FY2024-25 transcript"}
+  #
+  # --- Cholamandalam Investment and Finance (large retail NBFC; vehicle and LAP focus) ---
+  - {doc_id: cholamandalam_ar_fy2025, source: bank_ir, issuer: CHOLAMANDALAM, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "Cholamandalam Investment and Finance Company Annual Report FY2024-25", url: "https://www.cholamandalam.com/investors/", notes: "target: FY2024-25 annual report PDF; NBFC, so NIAR and securitisation questions apply"}
+  - {doc_id: cholamandalam_ar_fy2024, source: bank_ir, issuer: CHOLAMANDALAM, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "Cholamandalam Investment and Finance Company Annual Report FY2023-24", url: "https://www.cholamandalam.com/investors/", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: cholamandalam_transcript_fy2025_q4, source: bank_ir, issuer: CHOLAMANDALAM, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "Cholamandalam Q4 FY2025 earnings call transcript", url: "https://www.cholamandalam.com/investors/", notes: "target: Q4 FY2024-25 transcript"}
+  - {doc_id: cholamandalam_transcript_fy2025_q3, source: bank_ir, issuer: CHOLAMANDALAM, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "Cholamandalam Q3 FY2025 earnings call transcript", url: "https://www.cholamandalam.com/investors/", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: cholamandalam_transcript_fy2025_q2, source: bank_ir, issuer: CHOLAMANDALAM, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "Cholamandalam Q2 FY2025 earnings call transcript", url: "https://www.cholamandalam.com/investors/", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: cholamandalam_transcript_fy2025_q1, source: bank_ir, issuer: CHOLAMANDALAM, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "Cholamandalam Q1 FY2025 earnings call transcript", url: "https://www.cholamandalam.com/investors/", notes: "target: Q1 FY2024-25 transcript"}
+  #
+  # --- Shriram Finance (diversified NBFC; historically high-yield, AUM-mix questions) ---
+  - {doc_id: shriramfinance_ar_fy2025, source: bank_ir, issuer: SHRIRAMFIN, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "Shriram Finance Annual Report FY2024-25", url: "https://www.shriramfinance.in/investors", notes: "target: FY2024-25 annual report PDF"}
+  - {doc_id: shriramfinance_ar_fy2024, source: bank_ir, issuer: SHRIRAMFIN, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "Shriram Finance Annual Report FY2023-24", url: "https://www.shriramfinance.in/investors", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: shriramfinance_transcript_fy2025_q4, source: bank_ir, issuer: SHRIRAMFIN, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "Shriram Finance Q4 FY2025 earnings call transcript", url: "https://www.shriramfinance.in/investors", notes: "target: Q4 FY2024-25 transcript"}
+  - {doc_id: shriramfinance_transcript_fy2025_q3, source: bank_ir, issuer: SHRIRAMFIN, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "Shriram Finance Q3 FY2025 earnings call transcript", url: "https://www.shriramfinance.in/investors", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: shriramfinance_transcript_fy2025_q2, source: bank_ir, issuer: SHRIRAMFIN, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "Shriram Finance Q2 FY2025 earnings call transcript", url: "https://www.shriramfinance.in/investors", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: shriramfinance_transcript_fy2025_q1, source: bank_ir, issuer: SHRIRAMFIN, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "Shriram Finance Q1 FY2025 earnings call transcript", url: "https://www.shriramfinance.in/investors", notes: "target: Q1 FY2024-25 transcript"}
+  #
+  # --- REC Limited (PSU infrastructure NBFC; RBI and government-bank interplay) ---
+  - {doc_id: rec_ar_fy2025, source: bank_ir, issuer: REC, doc_type: annual_report, fiscal_period: FY2025, discovery: listing, title: "REC Limited Annual Report FY2024-25", url: "https://recindia.nic.in/financial-results", notes: "target: FY2024-25 annual report PDF; REC is a PSU NBFC, so it appears in RBI and government reporting at once"}
+  - {doc_id: rec_ar_fy2024, source: bank_ir, issuer: REC, doc_type: annual_report, fiscal_period: FY2024, discovery: listing, title: "REC Limited Annual Report FY2023-24", url: "https://recindia.nic.in/financial-results", notes: "target: FY2023-24 annual report PDF"}
+  - {doc_id: rec_transcript_fy2025_q4, source: bank_ir, issuer: REC, doc_type: transcript, fiscal_period: FY2025-Q4, discovery: listing, title: "REC Limited Q4 FY2025 earnings call transcript", url: "https://recindia.nic.in/financial-results", notes: "target: Q4 FY2024-25 transcript; if REC publishes only results and presentations, substitute those"}
+  - {doc_id: rec_transcript_fy2025_q3, source: bank_ir, issuer: REC, doc_type: transcript, fiscal_period: FY2025-Q3, discovery: listing, title: "REC Limited Q3 FY2025 earnings call transcript", url: "https://recindia.nic.in/financial-results", notes: "target: Q3 FY2024-25 transcript"}
+  - {doc_id: rec_transcript_fy2025_q2, source: bank_ir, issuer: REC, doc_type: transcript, fiscal_period: FY2025-Q2, discovery: listing, title: "REC Limited Q2 FY2025 earnings call transcript", url: "https://recindia.nic.in/financial-results", notes: "target: Q2 FY2024-25 transcript"}
+  - {doc_id: rec_transcript_fy2025_q1, source: bank_ir, issuer: REC, doc_type: transcript, fiscal_period: FY2025-Q1, discovery: listing, title: "REC Limited Q1 FY2025 earnings call transcript", url: "https://recindia.nic.in/financial-results", notes: "target: Q1 FY2024-25 transcript"}

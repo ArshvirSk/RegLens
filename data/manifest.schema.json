@@ -1,0 +1,188 @@
+{
+  "description": "One manifest row. Fields are permissive on purpose: validation is a separate,\naggregate step (:func:`validate_records`) so an operator sees every problem at once\ninstead of one pydantic error at a time.",
+  "properties": {
+    "doc_id": {
+      "title": "Doc Id",
+      "type": "string"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "issuer": {
+      "title": "Issuer",
+      "type": "string"
+    },
+    "doc_type": {
+      "title": "Doc Type",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "url": {
+      "title": "Url",
+      "type": "string"
+    },
+    "issue_date": {
+      "default": "",
+      "title": "Issue Date",
+      "type": "string"
+    },
+    "effective_date": {
+      "default": "",
+      "title": "Effective Date",
+      "type": "string"
+    },
+    "fiscal_period": {
+      "default": "",
+      "title": "Fiscal Period",
+      "type": "string"
+    },
+    "discovery": {
+      "default": "direct",
+      "title": "Discovery",
+      "type": "string"
+    },
+    "status": {
+      "default": "planned",
+      "title": "Status",
+      "type": "string"
+    },
+    "file_hash": {
+      "default": "",
+      "title": "File Hash",
+      "type": "string"
+    },
+    "local_path": {
+      "default": "",
+      "title": "Local Path",
+      "type": "string"
+    },
+    "parse_quality": {
+      "default": "",
+      "title": "Parse Quality",
+      "type": "string"
+    },
+    "http_status": {
+      "default": "",
+      "title": "Http Status",
+      "type": "string"
+    },
+    "fetched_at": {
+      "default": "",
+      "title": "Fetched At",
+      "type": "string"
+    },
+    "supersedes": {
+      "default": "",
+      "title": "Supersedes",
+      "type": "string"
+    },
+    "amends": {
+      "default": "",
+      "title": "Amends",
+      "type": "string"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    }
+  },
+  "required": [
+    "doc_id",
+    "source",
+    "issuer",
+    "doc_type",
+    "title",
+    "url"
+  ],
+  "title": "RegLens corpus manifest row",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "x-manifest-columns": [
+    "doc_id",
+    "source",
+    "issuer",
+    "doc_type",
+    "title",
+    "url",
+    "issue_date",
+    "effective_date",
+    "fiscal_period",
+    "discovery",
+    "status",
+    "file_hash",
+    "local_path",
+    "parse_quality",
+    "http_status",
+    "fetched_at",
+    "supersedes",
+    "amends",
+    "notes"
+  ],
+  "x-required-fields": [
+    "doc_id",
+    "source",
+    "issuer",
+    "doc_type",
+    "title",
+    "url",
+    "discovery",
+    "status"
+  ],
+  "x-enums": {
+    "source": [
+      "rbi",
+      "sebi",
+      "bank_ir",
+      "exchange",
+      "other"
+    ],
+    "doc_type": [
+      "master_direction",
+      "master_circular",
+      "circular",
+      "notification",
+      "regulation",
+      "annual_report",
+      "transcript",
+      "quarterly_results",
+      "press_release",
+      "other"
+    ],
+    "status": [
+      "planned",
+      "fetched",
+      "parsed",
+      "failed",
+      "excluded"
+    ],
+    "discovery": [
+      "direct",
+      "listing"
+    ]
+  },
+  "x-allowed-host-suffixes": [
+    "rbi.org.in",
+    "sebi.gov.in",
+    "bseindia.com",
+    "nseindia.com",
+    "sbi.co.in",
+    "hdfcbank.com",
+    "icicibank.com",
+    "axisbank.com",
+    "kotak.com",
+    "indusind.com",
+    "federalbank.co.in",
+    "bajajfinserv.in",
+    "bajajfinserv.com",
+    "cholamandalam.com",
+    "cholainvest.com",
+    "shriramfinance.in",
+    "recindia.nic.in",
+    "pfcindia.com"
+  ]
+}
