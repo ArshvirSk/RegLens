@@ -244,6 +244,12 @@ def build_report(
         )
     if failures:
         caveats.append(f"{len(failures)} question(s) failed and are excluded from every aggregate.")
+    held_out = sum(1 for question in questions if question.held_out)
+    if held_out:
+        caveats.append(
+            f"{held_out} held-out question(s) are included in aggregates: use the "
+            "per-question records to recompute dev-only numbers before tuning a config."
+        )
 
     return {
         "kind": "golden-eval",
