@@ -1,8 +1,9 @@
-"""CLI eval command: preflight gates, not the pipeline itself.
+"""CLI eval and reindex commands: preflight gates, not the pipeline itself.
 
-Three refusals must hold before any tokens are spent: no questions, unreviewed drafts
-without an explicit flag, and a missing API key. The pipeline and scoring are covered
-by tests/unit/test_eval_run.py; this file only pins the gates.
+Refusals that must hold before any tokens are spent: no questions, unreviewed drafts
+without an explicit flag, a missing API key, and (reindex) a purge that never runs on a
+dry run or without credentials. The pipeline and scoring are covered by
+tests/unit/test_eval_run.py; this file only pins the gates.
 """
 
 from __future__ import annotations
@@ -67,3 +68,59 @@ def test_eval_yes_without_api_key_fails_before_touching_the_index(
     code = main(["eval", "--yes", "--allow-drafts"])
     assert code == EXIT_ERROR
     assert "GEMINI_API_KEY" in capsys.readouterr().err
+
+
+class FakeStore:
+    """Count-only store; any purge attempt fails the test unless expected."""
+
+    def __init__(self, chunks: int = 0, *, allow_purge: bool = False) -> None:
+        self.chunks = chunks
+        self.allow_purge = allow_purge
+        self.purged = 0
+
+    def count_chunks(self) -> int:
+        return self.chunks
+
+    def purge_chunks(self) -> int:
+        if not self.allow_purge:
+            raise AssertionError("purge must not run on a dry run or without credentials")
+        self.purged = self.chunks
+        return self.purged
+
+
+def test_reindex_dry_run_never_purges(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    store = FakeStore(42)
+    monkeypatch.setattr("reglens.indexing.vector_store.PgVectorStore", lambda **_k: store)
+    assert main(["reindex"]) == EXIT_OK
+    out = capsys.readouterr().out
+    assert "DRY RUN" in out
+    assert "42 chunk(s)" in out
+    assert store.purged == 0
+
+
+def test_reindex_yes_without_api_key_never_purges(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    store = FakeStore(42)
+    monkeypatch.setattr("reglens.indexing.vector_store.PgVectorStore", lambda **_k: store)
+    # conftest strips both Gemini env keys and points REGLENS_ENV_FILE nowhere
+    assert main(["reindex", "--yes"]) == EXIT_ERROR
+    assert "GEMINI_API_KEY" in capsys.readouterr().err
+    assert store.purged == 0
+
+
+def test_reindex_unreachable_database_is_a_preflight_error(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    class DeadStore:
+        def __init__(self, **_k: object) -> None:
+            pass
+
+        def count_chunks(self) -> int:
+            raise RuntimeError("connection refused")
+
+    monkeypatch.setattr("reglens.indexing.vector_store.PgVectorStore", DeadStore)
+    assert main(["reindex"]) == EXIT_ERROR
+    assert "unreachable" in capsys.readouterr().err

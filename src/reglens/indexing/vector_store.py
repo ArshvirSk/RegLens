@@ -52,6 +52,14 @@ LIMIT $3
 """
 
 
+def deleted_count(status: str) -> int:
+    """Rows affected from asyncpg's ``DELETE <n>`` command tag (0 when unparseable)."""
+    try:
+        return int(status.split()[1])
+    except (IndexError, ValueError):
+        return 0
+
+
 def vector_literal(values: list[float]) -> str:
     """pgvector's text input, with round-trip-exact floats."""
     if not values:
@@ -264,6 +272,24 @@ class PgVectorStore:
                 self.settings.corpus_version,
             )
             return int(row[0])
+
+        return self._run(work)
+
+    def purge_chunks(self) -> int:
+        """Delete every chunk of the active corpus version; documents are kept.
+
+        Document rows carry the file hashes the idempotency probe reads, so purging
+        chunks only means a following ingest re-embeds everything (has_document is
+        false until chunks exist again) without re-hashing or re-downloading. Used by
+        ``reglens reindex`` after a chunking or embedding config change.
+        """
+
+        async def work(connection: asyncpg.Connection) -> int:
+            status = await connection.execute(
+                "DELETE FROM chunks WHERE corpus_version = $1",
+                self.settings.corpus_version,
+            )
+            return deleted_count(status)
 
         return self._run(work)
 

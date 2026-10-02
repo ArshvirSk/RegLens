@@ -41,7 +41,6 @@ EXIT_NOT_IMPLEMENTED = 2
 EXIT_ERROR = 3
 
 NOT_IMPLEMENTED = {
-    "reindex": (1, "rebuild the vector and keyword indexes for the active corpus version"),
     "refresh": (4, "poll for new circulars, ingest idempotently, bump corpus_version"),
 }
 
@@ -320,6 +319,57 @@ def cmd_ingest(args: argparse.Namespace) -> int:
         f"{payload['embed_input_tokens']} embed tokens, "
         f"${payload['embed_cost_usd']:.6f}, {payload['seconds']}s "
         f"(skipped {payload['skipped_count']} already indexed, {payload['failed_count']} failed)"
+    ]
+    for doc_id, error in payload["failed"]:
+        lines.append(f"  FAILED {doc_id}: {error}")
+    _emit(payload, as_json=args.json, text="\n".join(lines))
+    return EXIT_ERROR if payload["failed"] else EXIT_OK
+
+
+def cmd_reindex(args: argparse.Namespace) -> int:
+    """Rebuild the vector index for the active corpus version (Phase 1).
+
+    Purges the version's chunks (documents and their file hashes stay, so nothing is
+    re-downloaded) and re-runs the ingest pipeline. Needed after a chunking or
+    embedding config change, when ``ingest`` alone would skip everything as already
+    indexed. Dry run unless ``--yes``: rebuilding costs a full re-embed.
+    """
+    from reglens.config.settings import MissingApiKeyError
+    from reglens.indexing.vector_store import PgVectorStore
+
+    settings = get_settings()
+    store = PgVectorStore(settings=settings)
+    try:
+        existing = store.count_chunks()
+    except Exception as exc:  # database unreachable is a preflight failure, not a crash
+        print(f"cannot reindex: index unreachable: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+    if not args.yes:
+        print(
+            f"DRY RUN (pass --yes to purge and re-embed): corpus_version="
+            f"{settings.corpus_version!r} has {existing} chunk(s) that would be "
+            "deleted and rebuilt (documents kept; no downloads)"
+        )
+        return EXIT_OK
+
+    try:
+        settings.require_gemini_key()
+    except MissingApiKeyError as exc:
+        print(f"cannot reindex: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+    purged = store.purge_chunks()
+    from reglens.ingestion.ingest import ingest_corpus
+
+    report = ingest_corpus(settings=settings, only=set(args.only) if args.only else None)
+    payload = report.as_dict()
+    lines = [
+        f"reindexed: purged {purged} chunk(s), rebuilt {payload['chunks']} chunk(s) "
+        f"across {payload['documents']} document(s)",
+        f"  embed tokens: {payload['embed_input_tokens']} "
+        f"(${payload['embed_cost_usd']:.6f}), {payload['seconds']}s "
+        f"(failed {payload['failed_count']})",
     ]
     for doc_id, error in payload["failed"]:
         lines.append(f"  FAILED {doc_id}: {error}")
@@ -731,6 +781,15 @@ def build_parser() -> argparse.ArgumentParser:
     parse_compare.add_argument("--only", nargs="*", help="restrict to these doc_ids")
     parse_compare.add_argument("--limit", type=int, help="compare at most N documents")
     parse_compare.set_defaults(func=cmd_parse_compare)
+
+    reindex = sub.add_parser(
+        "reindex", help="rebuild the vector and keyword indexes for the active corpus version"
+    )
+    reindex.add_argument(
+        "--yes", action="store_true", help="actually purge and re-embed (default: dry run)"
+    )
+    reindex.add_argument("--only", nargs="*", help="restrict to these doc_ids")
+    reindex.set_defaults(func=cmd_reindex)
 
     migrate = sub.add_parser("migrate", help="apply SQL migrations")
     migrate.add_argument(

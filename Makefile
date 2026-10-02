@@ -74,7 +74,7 @@ ingest:  ## Parse + chunk + index the corpus (Phase 1)
 	@$(TASKS) ingest $(ARGS)
 
 reindex:  ## Rebuild indexes for the active corpus version (Phase 1)
-	@$(TASKS) reindex
+	@$(TASKS) reindex $(ARGS)
 
 eval:  ## Run the golden eval set and write a versioned report (Phase 1)
 	@$(TASKS) eval $(ARGS)
