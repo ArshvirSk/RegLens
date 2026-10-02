@@ -12,6 +12,8 @@ import argparse
 import asyncio
 import json
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from reglens import __version__
@@ -23,6 +25,7 @@ from reglens.ingestion.manifest import (
     load_manifest,
     payload_matches_url,
     plan_summary,
+    raw_path_for,
     records_from_plan,
     validate_records,
     write_manifest,
@@ -30,6 +33,7 @@ from reglens.ingestion.manifest import (
 )
 from reglens.observability.cost import describe_pricing
 from reglens.observability.logging import setup_logging
+from reglens.observability.repro import git_commit
 
 EXIT_OK = 0
 EXIT_INVALID = 1
@@ -337,6 +341,104 @@ def cmd_repair_raw(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def _render_parser_report(report: dict[str, Any]) -> str:
+    """Markdown twin of report.json so the comparison is readable in a review."""
+    aggregate = report["aggregate"]
+    lines = [
+        "# Parser comparison report",
+        "",
+        f"- generated: {report['generated_at']}",
+        f"- git commit: {report['git_commit']}",
+        f"- experiment config_hash: {report['config_hash']}",
+        f"- corpus_version: {report['corpus_version']}",
+        f"- documents: {aggregate['documents']}",
+        f"- mean agreement (token Jaccard): {aggregate['mean_agreement']}",
+        f"- faster count: {aggregate['faster_count']}",
+        "",
+        "| doc_id | pages | pymupdf s | pdfplumber s | agreement | quality pymupdf/plumber |",
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    for row in report["documents"]:
+        lines.append(
+            f"| {row['doc_id']} | {row['pages']} | {row['pymupdf']['seconds']} "
+            f"| {row['pdfplumber']['seconds']} | {row['agreement_token_jaccard']} "
+            f"| {row['pymupdf']['quality']}/{row['pdfplumber']['quality']} |"
+        )
+    lines += ["", "## Totals", ""]
+    for parser, stats in aggregate["per_parser"].items():
+        lines.append(f"- **{parser}**: {stats}")
+    lines += [
+        "",
+        "Timings are single wall-clock runs: indicative, not microbenchmarks. Pages listed "
+        "in `scan_pages` yielded almost no text and are the OCR candidates.",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def cmd_parse_compare(args: argparse.Namespace) -> int:
+    """Parse every fetched PDF with both parsers; write a versioned report."""
+    from reglens.ingestion.parse import compare_parsers
+
+    settings = get_settings()
+    try:
+        records = load_manifest()
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"cannot compare parsers: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+    selected = [
+        record
+        for record in records
+        if record.status == "fetched" and (not args.only or record.doc_id in args.only)
+    ]
+    if args.limit is not None:
+        selected = selected[: args.limit]
+    documents: list[tuple[str, Path]] = []
+    for record in selected:
+        path = raw_path_for(record)
+        if path is not None and path.is_file():
+            documents.append((record.doc_id, path))
+    if not documents:
+        print("no fetched documents with local files to compare", file=sys.stderr)
+        return EXIT_ERROR
+
+    experiment = load_experiment(settings.experiment_config)
+    report = compare_parsers(documents, min_chars_per_page=experiment.parsing.min_chars_per_page)
+    generated_at = datetime.now(UTC)
+    envelope: dict[str, Any] = {
+        "kind": "parser-comparison",
+        "generated_at": generated_at.isoformat(timespec="seconds"),
+        "git_commit": git_commit(),
+        "config_hash": experiment.fingerprint(),
+        "corpus_version": settings.corpus_version,
+        "seed": settings.seed,
+        **report,
+    }
+    stamp = generated_at.strftime("%Y-%m-%dT%H%M%SZ")
+    out_dir = settings.eval_results_dir / f"{stamp}-parser-comparison"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "report.json").write_text(
+        json.dumps(envelope, indent=2, default=str), encoding="utf-8"
+    )
+    (out_dir / "report.md").write_text(_render_parser_report(envelope), encoding="utf-8")
+
+    if args.json:
+        print(json.dumps(envelope, indent=2, default=str))
+    else:
+        aggregate = report["aggregate"]
+        print(f"compared {aggregate['documents']} document(s) with {report['parsers']}")
+        print(f"  mean agreement (token Jaccard): {aggregate['mean_agreement']}")
+        print(f"  faster: {aggregate['faster_count']}")
+        for parser, stats in aggregate["per_parser"].items():
+            print(
+                f"  {parser}: {stats['total_seconds']}s total, {stats['total_chars']} chars, "
+                f"mean quality {stats['mean_quality']}"
+            )
+        print(f"  report: {out_dir}")
+    return EXIT_OK
+
+
 def cmd_migrate(args: argparse.Namespace) -> int:
     from reglens.db.pool import connect
     from reglens.db.runner import MigrationError, apply_migrations, migration_status
@@ -419,6 +521,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--apply", action="store_true", help="write the demoted rows back to the manifest"
     )
     repair.set_defaults(func=cmd_repair_raw)
+
+    parse_compare = sub.add_parser(
+        "parse-compare",
+        help="parse every fetched PDF with both parsers and write a versioned report",
+    )
+    parse_compare.add_argument("--only", nargs="*", help="restrict to these doc_ids")
+    parse_compare.add_argument("--limit", type=int, help="compare at most N documents")
+    parse_compare.set_defaults(func=cmd_parse_compare)
 
     migrate = sub.add_parser("migrate", help="apply SQL migrations")
     migrate.add_argument(

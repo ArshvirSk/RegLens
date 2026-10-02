@@ -1,0 +1,491 @@
+{
+  "kind": "parser-comparison",
+  "generated_at": "2026-10-02T18:33:04+00:00",
+  "git_commit": "ec64f125eb5deeb9901e58b8c1a00f677c0ad62b",
+  "config_hash": "e98261b916838c6f32d6c0e0db425a70560bf431848aa037efd2c2edac1d0eef",
+  "corpus_version": "0.1.0",
+  "seed": 1337,
+  "parsers": [
+    "pymupdf",
+    "pdfplumber"
+  ],
+  "documents": [
+    {
+      "doc_id": "rbi_md_kyc_2016",
+      "file": "rbi_md_kyc_2016__7ee5c336f273.pdf",
+      "pages": 107,
+      "agreement_token_jaccard": 0.9503,
+      "pymupdf": {
+        "seconds": 0.824,
+        "chars": 240980,
+        "pages": 107,
+        "pages_with_text": 107,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 20.065,
+        "chars": 232160,
+        "pages": 107,
+        "pages_with_text": 107,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_kyc_nbfc_2025",
+      "file": "rbi_md_kyc_nbfc_2025__c7c2dbdaa191.pdf",
+      "pages": 96,
+      "agreement_token_jaccard": 0.9995,
+      "pymupdf": {
+        "seconds": 0.475,
+        "chars": 187600,
+        "pages": 96,
+        "pages_with_text": 96,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 14.806,
+        "chars": 183282,
+        "pages": 96,
+        "pages_with_text": 96,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_irac_2025",
+      "file": "rbi_md_irac_2025__6ab1cf6bdf23.pdf",
+      "pages": 54,
+      "agreement_token_jaccard": 0.9996,
+      "pymupdf": {
+        "seconds": 0.276,
+        "chars": 93648,
+        "pages": 54,
+        "pages_with_text": 54,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 7.693,
+        "chars": 91084,
+        "pages": 54,
+        "pages_with_text": 54,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_alm_2025",
+      "file": "rbi_md_alm_2025__f7ead6579b5e.pdf",
+      "pages": 174,
+      "agreement_token_jaccard": 0.9927,
+      "pymupdf": {
+        "seconds": 1.35,
+        "chars": 324925,
+        "pages": 174,
+        "pages_with_text": 174,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 39.939,
+        "chars": 296488,
+        "pages": 174,
+        "pages_with_text": 174,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_investment_2023",
+      "file": "rbi_md_investment_2023__1164e9784f3f.pdf",
+      "pages": 104,
+      "agreement_token_jaccard": 0.9397,
+      "pymupdf": {
+        "seconds": 0.636,
+        "chars": 181661,
+        "pages": 104,
+        "pages_with_text": 104,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 18.612,
+        "chars": 171706,
+        "pages": 104,
+        "pages_with_text": 104,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_it_outsourcing_2023",
+      "file": "rbi_md_it_outsourcing_2023__9d0682ce4da5.pdf",
+      "pages": 31,
+      "agreement_token_jaccard": 0.9599,
+      "pymupdf": {
+        "seconds": 0.207,
+        "chars": 56522,
+        "pages": 31,
+        "pages_with_text": 31,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 5.274,
+        "chars": 54853,
+        "pages": 31,
+        "pages_with_text": 31,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_it_governance_2023",
+      "file": "rbi_md_it_governance_2023__8ad6286676b2.pdf",
+      "pages": 26,
+      "agreement_token_jaccard": 0.9619,
+      "pymupdf": {
+        "seconds": 0.189,
+        "chars": 49274,
+        "pages": 26,
+        "pages_with_text": 26,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 5.186,
+        "chars": 47247,
+        "pages": 26,
+        "pages_with_text": 26,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_digital_lending_2025",
+      "file": "rbi_md_digital_lending_2025__2dd838cf9bcb.pdf",
+      "pages": 24,
+      "agreement_token_jaccard": 0.9612,
+      "pymupdf": {
+        "seconds": 0.155,
+        "chars": 43905,
+        "pages": 24,
+        "pages_with_text": 24,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 3.784,
+        "chars": 42519,
+        "pages": 24,
+        "pages_with_text": 24,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_psl_2020",
+      "file": "rbi_md_psl_2020__31dfd5bc3086.pdf",
+      "pages": 43,
+      "agreement_token_jaccard": 0.9048,
+      "pymupdf": {
+        "seconds": 0.381,
+        "chars": 80846,
+        "pages": 43,
+        "pages_with_text": 43,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 9.902,
+        "chars": 77401,
+        "pages": 43,
+        "pages_with_text": 43,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_nbfc_p2p_2017",
+      "file": "rbi_md_nbfc_p2p_2017__7245950835a2.pdf",
+      "pages": 38,
+      "agreement_token_jaccard": 0.9596,
+      "pymupdf": {
+        "seconds": 0.329,
+        "chars": 93131,
+        "pages": 38,
+        "pages_with_text": 38,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 9.454,
+        "chars": 89839,
+        "pages": 38,
+        "pages_with_text": 38,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_ppi_2021",
+      "file": "rbi_md_ppi_2021__39ee8614df76.pdf",
+      "pages": 40,
+      "agreement_token_jaccard": 0.9936,
+      "pymupdf": {
+        "seconds": 0.325,
+        "chars": 99684,
+        "pages": 40,
+        "pages_with_text": 40,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 9.183,
+        "chars": 95904,
+        "pages": 40,
+        "pages_with_text": 40,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_securitisation_2021",
+      "file": "rbi_md_securitisation_2021__d2f6988b150f.pdf",
+      "pages": 61,
+      "agreement_token_jaccard": 0.9706,
+      "pymupdf": {
+        "seconds": 0.497,
+        "chars": 120961,
+        "pages": 61,
+        "pages_with_text": 61,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 10.689,
+        "chars": 117684,
+        "pages": 61,
+        "pages_with_text": 61,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_credit_debit_card_2022",
+      "file": "rbi_md_credit_debit_card_2022__a409ce642141.pdf",
+      "pages": 35,
+      "agreement_token_jaccard": 0.9635,
+      "pymupdf": {
+        "seconds": 0.289,
+        "chars": 78159,
+        "pages": 35,
+        "pages_with_text": 35,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 7.154,
+        "chars": 76576,
+        "pages": 35,
+        "pages_with_text": 35,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_account_aggregator_2016",
+      "file": "rbi_md_account_aggregator_2016__9edfdf0dffef.pdf",
+      "pages": 57,
+      "agreement_token_jaccard": 0.9592,
+      "pymupdf": {
+        "seconds": 0.476,
+        "chars": 118859,
+        "pages": 57,
+        "pages_with_text": 56,
+        "quality": 0.9825,
+        "scan_pages": [
+          57
+        ]
+      },
+      "pdfplumber": {
+        "seconds": 10.79,
+        "chars": 114210,
+        "pages": 57,
+        "pages_with_text": 56,
+        "quality": 0.9825,
+        "scan_pages": [
+          57
+        ]
+      }
+    },
+    {
+      "doc_id": "rbi_md_risk_interbank_2016",
+      "file": "rbi_md_risk_interbank_2016__4ddcfd7ef8be.pdf",
+      "pages": 67,
+      "agreement_token_jaccard": 0.9924,
+      "pymupdf": {
+        "seconds": 0.369,
+        "chars": 101530,
+        "pages": 67,
+        "pages_with_text": 67,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 9.437,
+        "chars": 85552,
+        "pages": 67,
+        "pages_with_text": 67,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_wilful_defaulters_2024",
+      "file": "rbi_md_wilful_defaulters_2024__980d5b68e995.pdf",
+      "pages": 36,
+      "agreement_token_jaccard": 0.957,
+      "pymupdf": {
+        "seconds": 0.33,
+        "chars": 66787,
+        "pages": 36,
+        "pages_with_text": 36,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 8.19,
+        "chars": 64045,
+        "pages": 36,
+        "pages_with_text": 36,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_md_credit_information_2025",
+      "file": "rbi_md_credit_information_2025__3a0e77747285.pdf",
+      "pages": 92,
+      "agreement_token_jaccard": 0.9986,
+      "pymupdf": {
+        "seconds": 0.651,
+        "chars": 145734,
+        "pages": 92,
+        "pages_with_text": 90,
+        "quality": 0.9783,
+        "scan_pages": [
+          73,
+          86
+        ]
+      },
+      "pdfplumber": {
+        "seconds": 18.401,
+        "chars": 138510,
+        "pages": 92,
+        "pages_with_text": 90,
+        "quality": 0.9783,
+        "scan_pages": [
+          73,
+          86
+        ]
+      }
+    },
+    {
+      "doc_id": "rbi_md_kyc_commercial_2025",
+      "file": "rbi_md_kyc_commercial_2025__ad0aa33862df.pdf",
+      "pages": 101,
+      "agreement_token_jaccard": 0.9993,
+      "pymupdf": {
+        "seconds": 0.563,
+        "chars": 205413,
+        "pages": 101,
+        "pages_with_text": 101,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 16.644,
+        "chars": 200472,
+        "pages": 101,
+        "pages_with_text": 101,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_notif_integrated_ombudsman_2021",
+      "file": "rbi_notif_integrated_ombudsman_2021__9e2dec84d847.pdf",
+      "pages": 1,
+      "agreement_token_jaccard": 1.0,
+      "pymupdf": {
+        "seconds": 0.015,
+        "chars": 2245,
+        "pages": 1,
+        "pages_with_text": 1,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 0.169,
+        "chars": 2087,
+        "pages": 1,
+        "pages_with_text": 1,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    },
+    {
+      "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+      "file": "rbi_scheme_integrated_ombudsman_2021__0d51cced7cce.pdf",
+      "pages": 19,
+      "agreement_token_jaccard": 1.0,
+      "pymupdf": {
+        "seconds": 0.125,
+        "chars": 32515,
+        "pages": 19,
+        "pages_with_text": 19,
+        "quality": 1.0,
+        "scan_pages": []
+      },
+      "pdfplumber": {
+        "seconds": 3.773,
+        "chars": 31533,
+        "pages": 19,
+        "pages_with_text": 19,
+        "quality": 1.0,
+        "scan_pages": []
+      }
+    }
+  ],
+  "aggregate": {
+    "documents": 20,
+    "faster_count": {
+      "pymupdf": 20,
+      "pdfplumber": 0
+    },
+    "mean_agreement": 0.9732,
+    "per_parser": {
+      "pymupdf": {
+        "total_seconds": 8.462,
+        "total_chars": 2324379,
+        "total_pages_with_text": 1203,
+        "mean_quality": 0.998
+      },
+      "pdfplumber": {
+        "total_seconds": 229.145,
+        "total_chars": 2213152,
+        "total_pages_with_text": 1203,
+        "mean_quality": 0.998
+      }
+    },
+    "scan_pages_detected": [
+      57,
+      73,
+      86
+    ]
+  }
+}
