@@ -1,0 +1,56 @@
+# Phase 1 baseline: intentionally naive, and kept runnable for the rest of the project.
+# Everything that Phase 2+ adds is switched OFF here. Never "fix" this file: it is the
+# reference point every ablation is measured against.
+name: baseline_naive
+phase: 1
+description: >
+  Fixed-size chunks, one hosted embedding model, dense retrieval only, no reranking,
+  no query rewriting, no temporal filtering. Simple grounded generation with citations.
+corpus_version: null # filled from REGLENS_CORPUS_VERSION at run time
+
+chunking:
+  strategy: fixed
+  chunk_size_tokens: 512
+  overlap_tokens: 64
+  min_chunk_tokens: 48
+  contextual_headers: false
+  parent_child: false
+
+indexing:
+  embedding_provider: openai
+  embedding_model: text-embedding-3-small
+  embedding_dim: 1536
+  normalize_embeddings: true
+  batch_size: 64
+  keyword_index: none
+  store: pgvector
+
+retrieval:
+  mode: dense
+  top_k: 10
+  candidate_k: 50
+  fusion: none
+  rerank: false
+  rerank_model: null
+  rerank_top_n: 5
+  temporal_filter: false
+  metadata_filter: true
+
+rewriting:
+  enabled: false
+  acronym_expansion: false
+  decomposition: false
+  multi_query: false
+  hyde: false
+
+generation:
+  model: gpt-4o-mini
+  temperature: 0.0
+  max_output_tokens: 900
+  require_citations: true
+  min_support_score: 0.0
+  verify_citations: false
+
+notes:
+  - "Baseline exists to be beaten, and to make each later delta attributable."
+  - "Generation must answer only from retrieved context and cite [doc, page, clause]."

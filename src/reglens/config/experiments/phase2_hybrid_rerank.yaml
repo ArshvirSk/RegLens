@@ -1,0 +1,56 @@
+# Target configuration for Phase 2. Kept in the repo from Phase 0 so the toggle surface
+# is explicit, but nothing here is enabled until each piece is implemented AND measured
+# against baseline_naive. Expect to edit this file as ablations land.
+name: phase2_hybrid_rerank
+phase: 2
+description: >
+  Clause-aware chunking with contextual headers, hybrid (dense + Postgres FTS) retrieval
+  fused with RRF, cross-encoder reranking, and acronym-expanding query rewriting.
+corpus_version: null
+
+chunking:
+  strategy: clause_aware
+  chunk_size_tokens: 512
+  overlap_tokens: 64
+  min_chunk_tokens: 48
+  contextual_headers: true
+  parent_child: false
+
+indexing:
+  embedding_provider: openai
+  embedding_model: text-embedding-3-small
+  embedding_dim: 1536
+  normalize_embeddings: true
+  batch_size: 64
+  keyword_index: postgres_fts
+  store: pgvector
+
+retrieval:
+  mode: hybrid
+  top_k: 10
+  candidate_k: 50
+  fusion: rrf
+  rrf_k: 60
+  rerank: true
+  rerank_model: BAAI/bge-reranker-base
+  rerank_top_n: 5
+  temporal_filter: false
+  metadata_filter: true
+
+rewriting:
+  enabled: true
+  acronym_expansion: true
+  decomposition: false
+  multi_query: false
+  hyde: false
+
+generation:
+  model: gpt-4o-mini
+  temperature: 0.0
+  max_output_tokens: 900
+  require_citations: true
+  min_support_score: 0.0
+  verify_citations: false
+
+notes:
+  - "Each toggle above must be ablated one at a time; see docs/experiments.md."
