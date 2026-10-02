@@ -1,0 +1,75 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies from the lockfile
+        run: uv sync --all-groups --frozen
+
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+
+      - name: Unit tests
+        run: uv run pytest -m "not integration and not eval"
+
+      - name: Validate corpus manifest against its schema
+        run: uv run python -m reglens.cli validate-manifest
+
+  compose-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate docker compose file
+        run: docker compose -f docker-compose.yml config --quiet
+        env:
+          POSTGRES_PASSWORD: ci
+          REGLENS_READONLY_DATABASE_URL: postgresql://ro:ro@localhost:5433/reglens
+
+  integration:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: reglens
+          POSTGRES_PASSWORD: reglens_local_dev
+          POSTGRES_DB: reglens
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U reglens -d reglens"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --all-groups --frozen
+      - name: Apply migrations
+        run: uv run python -m reglens.cli migrate
+        env:
+          REGLENS_DATABASE_URL: postgresql://reglens:reglens_local_dev@localhost:5433/reglens
+      - name: Integration tests
+        run: uv run pytest -m integration
+        env:
+          REGLENS_DATABASE_URL: postgresql://reglens:reglens_local_dev@localhost:5433/reglens

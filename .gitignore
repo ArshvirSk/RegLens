@@ -1,0 +1,42 @@
+# --- secrets ---
+.env
+.env.local
+
+# --- raw corpus (never commit source PDFs/HTML; manifest.csv carries hashes) ---
+data/raw/**
+!data/raw/.gitkeep
+data/parsed/**
+!data/parsed/.gitkeep
+data/derived/**
+!data/derived/.gitkeep
+
+# --- python ---
+__pycache__/
+*.py[cod]
+.venv/
+.venv*/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+.uv/
+
+# --- node / next ---
+node_modules/
+web/.next/
+web/out/
+web/next-env.d.ts
+web/.turbo/
+
+# --- local state ---
+*.log
+logs/
+eval/results/local_*
+.tmp/
+web/.tmp-npm.log
+
+# --- editor / Freebuff workspace metadata (not project source) ---
+.freebuff/
