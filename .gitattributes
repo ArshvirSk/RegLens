@@ -1,0 +1,20 @@
+# Normalize to LF. This build host checks out on Windows where core.autocrlf would
+# otherwise write CRLF into shell scripts, the Makefile, and YAML, which then break on
+# Linux CI runners and in the Linux containers.
+* text=auto eol=lf
+
+# Windows-only files keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets: never normalize.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.zip binary
