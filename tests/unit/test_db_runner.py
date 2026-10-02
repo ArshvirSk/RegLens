@@ -87,3 +87,16 @@ def test_chunks_table_has_no_embedding_model_column() -> None:
     a per-row column, so an ablation cannot be compared against mixed vectors by accident."""
     sql = "\n".join(migration.sql for migration in discover_migrations())
     assert "embedding_model" not in sql.split("CREATE TABLE IF NOT EXISTS chunks")[1].split(");")[0]
+
+
+def test_dimension_change_migration_renders_the_configured_dimension() -> None:
+    """A changed embedding dimension must arrive as a new migration, not an edit."""
+    migrations = discover_migrations()
+    alters = [
+        migration for migration in migrations if "ALTER COLUMN embedding TYPE" in migration.sql
+    ]
+    assert alters, "expected a migration that changes the chunks.embedding dimension"
+    expected_dim = get_settings().embedding_dim
+    for migration in alters:
+        assert f"vector({expected_dim})" in migration.sql
+        assert "${" not in migration.sql
