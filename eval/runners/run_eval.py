@@ -194,6 +194,22 @@ def _totals(
     }
 
 
+def _judge_scores(records: list[dict[str, Any]]) -> dict[str, JudgeScore]:
+    """Judge scores by question id, from saved records (errored entries kept —
+    ``agreement()`` drops them and counts them out rather than pairing nothing)."""
+    scores: dict[str, JudgeScore] = {}
+    for record in records:
+        judged = record.get("judge")
+        if judged is not None:
+            scores[record["id"]] = JudgeScore(
+                correctness=judged["correctness"],
+                faithfulness=judged["faithfulness"],
+                notes=judged["notes"],
+                error=judged["error"],
+            )
+    return scores
+
+
 def build_report(
     *,
     records: list[dict[str, Any]],
@@ -218,18 +234,8 @@ def build_report(
         "agreement": None,
     }
     if judge_enabled and human_grades:
-        scores: dict[str, JudgeScore] = {}
-        for record in records:
-            judged = record.get("judge")
-            if judged is not None:
-                scores[record["id"]] = JudgeScore(
-                    correctness=judged["correctness"],
-                    faithfulness=judged["faithfulness"],
-                    notes=judged["notes"],
-                    error=judged["error"],
-                )
-        report: AgreementReport = agreement(scores, human_grades)
-        judge_section["agreement"] = report.as_dict()
+        result: AgreementReport = agreement(_judge_scores(records), human_grades)
+        judge_section["agreement"] = result.as_dict()
 
     counts_by_type: dict[str, int] = {}
     for question in questions:
@@ -418,6 +424,25 @@ def write_report(report: dict[str, Any], results_dir: Path) -> tuple[Path, Path]
     json_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     md_path.write_text(render_markdown(report), encoding="utf-8")
     return json_path, md_path
+
+
+def attach_agreement(report: dict[str, Any], human_grades: list[HumanGrade]) -> dict[str, Any]:
+    """Post-hoc twin of the ``human_grades`` branch in :func:`build_report`.
+
+    Hand grades are written *after* reading a saved run, so they must pair with that
+    report's stored judge scores — re-running the eval would pair them with newly
+    generated answers. Same ``agreement()`` and same record mapping as run time, so
+    the embedded section is identical whichever route produced it.
+    """
+    if not report.get("judge", {}).get("enabled"):
+        raise ValueError("report has no judge scores to agree with (judge disabled)")
+    result = agreement(_judge_scores(report.get("questions", [])), human_grades)
+    if result.paired == 0:
+        raise ValueError(
+            f"none of the {len(human_grades)} hand grade(s) match a judged question id"
+        )
+    report["judge"]["agreement"] = result.as_dict()
+    return report
 
 
 def run_eval(

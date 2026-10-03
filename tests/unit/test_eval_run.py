@@ -11,9 +11,11 @@ import json
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
+import pytest
 from eval.runners.golden import GoldenQuestion, write_golden
 from eval.runners.judge import JudgeScore
 from eval.runners.run_eval import (
+    attach_agreement,
     build_report,
     evaluate,
     render_markdown,
@@ -209,6 +211,98 @@ def test_build_report_includes_agreement_when_grades_supplied() -> None:
     assert agreement_section["paired"] == 1
     assert agreement_section["exact_agreement"]["correctness"] == 1.0
     assert agreement_section["exact_agreement"]["faithfulness"] == 0.0
+
+
+def test_attach_agreement_reproduces_the_run_time_section() -> None:
+    """Post-hoc pairing must be byte-identical to passing --human-grades at run time:
+    grades are written after reading a saved run, never before."""
+    from eval.runners.judge import HumanGrade
+
+    settings = get_settings()
+    experiment = load_experiment("baseline_naive")
+    questions = [question()]
+    records, _ = evaluate(
+        questions,
+        lambda q: make_ask([make_chunk("c1", "rbi_md_kyc_2016", 30)])(q.question),
+        k=10,
+        experiment=experiment,
+        judge=type(
+            "J",
+            (),
+            {"judge": lambda self, **kw: JudgeScore(correctness=2, faithfulness=1)},
+        )(),
+    )
+    grades = [HumanGrade("q0001", correctness=2, faithfulness=2)]
+    at_run = build_report(
+        records=records,
+        failures=[],
+        questions=questions,
+        experiment=experiment,
+        settings=settings,
+        judge_enabled=True,
+        human_grades=grades,
+    )
+    saved = build_report(
+        records=records,
+        failures=[],
+        questions=questions,
+        experiment=experiment,
+        settings=settings,
+        judge_enabled=True,
+    )
+    assert saved["judge"]["agreement"] is None
+
+    attach_agreement(saved, grades)
+
+    assert saved["judge"]["agreement"] == at_run["judge"]["agreement"]
+    assert saved["judge"]["agreement"]["paired"] == 1
+
+
+def test_attach_agreement_refuses_a_report_without_a_judge() -> None:
+    from eval.runners.judge import HumanGrade
+
+    records, _ = evaluate(
+        [question()],
+        lambda q: make_ask([make_chunk("c1", "rbi_md_kyc_2016", 30)])(q.question),
+        k=10,
+        experiment=load_experiment("baseline_naive"),
+    )
+    report = build_report(
+        records=records,
+        failures=[],
+        questions=[question()],
+        experiment=load_experiment("baseline_naive"),
+        settings=get_settings(),
+        judge_enabled=False,
+    )
+    with pytest.raises(ValueError, match="judge"):
+        attach_agreement(report, [HumanGrade("q0001", correctness=1, faithfulness=1)])
+
+
+def test_attach_agreement_refuses_when_no_grade_matches_a_question() -> None:
+    from eval.runners.judge import HumanGrade
+
+    records, _ = evaluate(
+        [question()],
+        lambda q: make_ask([make_chunk("c1", "rbi_md_kyc_2016", 30)])(q.question),
+        k=10,
+        experiment=load_experiment("baseline_naive"),
+        judge=type(
+            "J",
+            (),
+            {"judge": lambda self, **kw: JudgeScore(correctness=2, faithfulness=2)},
+        )(),
+    )
+    report = build_report(
+        records=records,
+        failures=[],
+        questions=[question()],
+        experiment=load_experiment("baseline_naive"),
+        settings=get_settings(),
+        judge_enabled=True,
+    )
+    with pytest.raises(ValueError, match="match a judged question id"):
+        attach_agreement(report, [HumanGrade("q9999", correctness=1, faithfulness=1)])
 
 
 def test_run_eval_writes_matching_json_and_md(tmp_path) -> None:

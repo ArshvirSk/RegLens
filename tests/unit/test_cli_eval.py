@@ -8,6 +8,8 @@ tests/unit/test_eval_run.py; this file only pins the gates.
 
 from __future__ import annotations
 
+import json
+
 import pytest
 from eval.runners.golden import GoldenQuestion
 
@@ -140,3 +142,134 @@ def test_reindex_dimension_mismatch_never_purges(
     assert main(["reindex", "--yes"]) == EXIT_ERROR
     assert "vector(1)" in capsys.readouterr().err
     assert store.purged == 0
+
+
+# ------------------------------------------------------------------ eval --agree-with
+def judged_report(report_id: str) -> dict:
+    """A minimal-but-complete run report: enough envelope for render_markdown."""
+    records = [
+        {
+            "id": "q0001",
+            "type": "lookup",
+            "recall": 1.0,
+            "rr": 1.0,
+            "ndcg": 1.0,
+            "refused": False,
+            "citation_precision": 1.0,
+            "judge": {"correctness": 2, "faithfulness": 1, "notes": "", "error": None},
+        },
+        {
+            "id": "q0002",
+            "type": "lookup",
+            "recall": 1.0,
+            "rr": 1.0,
+            "ndcg": 1.0,
+            "refused": True,
+            "citation_precision": None,
+            "judge": {"correctness": 0, "faithfulness": 2, "notes": "", "error": None},
+        },
+    ]
+    return {
+        "kind": "golden-eval",
+        "schema_version": 1,
+        "generated_at": "2026-10-03T12:00:00+00:00",
+        "report_id": report_id,
+        "git_commit": "0123456789abcdef",
+        "config_hash": "abcdef123456",
+        "experiment": "baseline_naive",
+        "corpus_version": "0.1.0",
+        "models": {"embedding": "gemini-embedding-001", "generation": "g", "judge": "j"},
+        "golden": {
+            "total": 2,
+            "counts_by_type": {"lookup": 2},
+            "reviewed": 2,
+            "draft": 0,
+            "held_out": 0,
+        },
+        "judge": {
+            "enabled": True,
+            "prompt_version": "judge-v1",
+            "model": "j",
+            "agreement": None,
+        },
+        "aggregates": {
+            "questions": 2,
+            "answerable": 2,
+            "unanswerable": 0,
+            "retrieval": {
+                "k": 10,
+                "recall_at_k": 1.0,
+                "recall_at_k_defined": 2,
+                "mrr": 1.0,
+                "mrr_defined": 2,
+                "ndcg_at_k": 1.0,
+                "ndcg_at_k_defined": 2,
+            },
+            "generation": {
+                "citation_precision": 1.0,
+                "citation_precision_defined": 1,
+                "refusal_rate": 0.5,
+                "answers_with_citations": 1,
+                "correct_refusals": 0,
+            },
+        },
+        "totals": {
+            "embed_input_tokens": 0,
+            "answer_input_tokens": 0,
+            "answer_output_tokens": 0,
+            "judge_input_tokens": 0,
+            "judge_output_tokens": 0,
+            "estimated_cost_usd": None,
+        },
+        "failures": [],
+        "caveats": [],
+        "questions": records,
+    }
+
+
+def test_eval_agree_requires_human_grades(tmp_path, capsys: pytest.CaptureFixture[str]) -> None:
+    report_path = tmp_path / "r.json"
+    report_path.write_text("{}", encoding="utf-8")
+    assert main(["eval", "--agree-with", str(report_path)]) == EXIT_INVALID
+    assert "--human-grades" in capsys.readouterr().err
+
+
+def test_eval_agree_attaches_agreement_without_spending(tmp_path, capsys) -> None:
+    report_id = "2026-10-03T120000Z_baseline_naive_abcdef123456"
+    report_path = tmp_path / f"{report_id}.json"
+    report_path.write_text(json.dumps(judged_report(report_id)), encoding="utf-8")
+    grades = tmp_path / "grades.jsonl"
+    grades.write_text(
+        '{"question_id": "q0001", "correctness": 2, "faithfulness": 2}\n'
+        '{"question_id": "q0002", "correctness": 1, "faithfulness": 2}\n',
+        encoding="utf-8",
+    )
+
+    # The post-hoc path must not require a golden set, an index, or an API key.
+    code = main(
+        ["eval", "--agree-with", str(report_path), "--human-grades", str(grades)]
+    )
+    assert code == EXIT_OK
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    section = payload["judge"]["agreement"]
+    assert section["paired"] == 2
+    # judge F: q0001 1-vs-2 misses, q0002 2-vs-2 hits; correctness: one hit, one miss
+    assert section["exact_agreement"] == {"correctness": 0.5, "faithfulness": 0.5}
+    markdown = report_path.with_suffix(".md").read_text(encoding="utf-8")
+    assert "human agreement (paired=2)" in markdown
+    assert "agreement attached" in capsys.readouterr().out
+
+
+def test_eval_agree_rejects_a_file_that_is_not_a_run_report(tmp_path, capsys) -> None:
+    report_path = tmp_path / "notes.json"
+    report_path.write_text(json.dumps({"report_id": "something_else"}), encoding="utf-8")
+    grades = tmp_path / "grades.jsonl"
+    grades.write_text(
+        '{"question_id": "q0001", "correctness": 2, "faithfulness": 2}\n', encoding="utf-8"
+    )
+    code = main(
+        ["eval", "--agree-with", str(report_path), "--human-grades", str(grades)]
+    )
+    assert code == EXIT_INVALID
+    assert "report_id" in capsys.readouterr().err

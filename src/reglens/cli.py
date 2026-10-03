@@ -399,6 +399,15 @@ def cmd_eval(args: argparse.Namespace) -> int:
     ``--allow-drafts``, an empty index — because a run that fails halfway still writes a
     report, and a report with 6 failed questions is worse than no report.
     """
+    if args.agree_with is not None:
+        if args.human_grades is None:
+            print(
+                "--agree-with requires --human-grades PATH (JSONL of hand grades)",
+                file=sys.stderr,
+            )
+            return EXIT_INVALID
+        return cmd_eval_agree(args)
+
     from eval.runners.golden import load_golden, validate_golden
     from eval.runners.judge import GeminiJudge, load_human_grades
     from eval.runners.run_eval import make_ask_fn, run_eval
@@ -524,6 +533,63 @@ def cmd_eval(args: argparse.Namespace) -> int:
         text="\n".join(lines),
     )
     return EXIT_OK if report["questions"] else EXIT_ERROR
+
+
+def cmd_eval_agree(args: argparse.Namespace) -> int:
+    """Attach hand grades to an already-written report — no tokens, no pipeline.
+
+    Grading happens *after* a run, against that run's saved answers, so pairing the
+    grades with a fresh eval would grade different answers than the ones read. This
+    computes the same ``agreement()`` the run-time ``--human-grades`` flag uses and
+    rewrites the json + md pair in place: both routes report identical numbers
+    (eval/README.md)."""
+    from eval.runners.judge import load_human_grades
+    from eval.runners.run_eval import attach_agreement, render_markdown
+
+    json_path: Path = args.agree_with
+    try:
+        report = json.loads(json_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"cannot read report: {exc}", file=sys.stderr)
+        return EXIT_INVALID
+    if json_path.stem != report.get("report_id"):
+        print(
+            f"cannot agree: {json_path.name} does not match its report_id "
+            f"{report.get('report_id')!r} (not a run report?)",
+            file=sys.stderr,
+        )
+        return EXIT_INVALID
+    try:
+        human_grades = load_human_grades(args.human_grades)
+    except (OSError, ValueError) as exc:
+        print(f"cannot load human grades: {exc}", file=sys.stderr)
+        return EXIT_INVALID
+    try:
+        attach_agreement(report, human_grades)
+    except ValueError as exc:
+        print(f"cannot agree: {exc}", file=sys.stderr)
+        return EXIT_INVALID
+    json_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+    md_path = json_path.with_suffix(".md")
+    md_path.write_text(render_markdown(report), encoding="utf-8")
+    section = report["judge"]["agreement"]
+    exact = section["exact_agreement"]
+    within = section["within_one_agreement"]
+    _emit(
+        report if args.json else {"report": str(json_path)},
+        as_json=args.json,
+        text="\n".join(
+            [
+                f"agreement attached: {json_path.name} (+ {md_path.name})",
+                f"  paired={section['paired']} from {len(human_grades)} hand grade(s)",
+                f"  exact: correctness={exact['correctness']} "
+                f"faithfulness={exact['faithfulness']}",
+                f"  within-one: correctness={within['correctness']} "
+                f"faithfulness={within['faithfulness']}",
+            ]
+        ),
+    )
+    return EXIT_OK
 
 
 def cmd_repair_raw(args: argparse.Namespace) -> int:
@@ -786,6 +852,12 @@ def build_parser() -> argparse.ArgumentParser:
     eval_parser.add_argument("--no-judge", action="store_true", help="skip LLM-as-judge scoring")
     eval_parser.add_argument(
         "--human-grades", type=Path, help="JSONL of hand grades for judge agreement"
+    )
+    eval_parser.add_argument(
+        "--agree-with",
+        type=Path,
+        metavar="REPORT.json",
+        help="pair --human-grades with a saved report instead of running the eval",
     )
     eval_parser.set_defaults(func=cmd_eval)
 
