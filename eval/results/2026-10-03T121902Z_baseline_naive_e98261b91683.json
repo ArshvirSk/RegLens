@@ -1,0 +1,4632 @@
+{
+  "kind": "golden-eval",
+  "schema_version": 1,
+  "generated_at": "2026-10-03T12:19:02+00:00",
+  "report_id": "2026-10-03T121902Z_baseline_naive_e98261b91683",
+  "git_commit": "3817111aea0dd5471738ef70a0c2a5a9fb775f92",
+  "config_hash": "e98261b916838c6f32d6c0e0db425a70560bf431848aa037efd2c2edac1d0eef",
+  "experiment": "baseline_naive",
+  "experiment_summary": [
+    "parsing: parser=pymupdf ocr_fallback=False",
+    "chunking: fixed size=512 overlap=64 contextual_headers=False parent_child=False",
+    "embeddings: gemini/gemini-embedding-001 dim=3072 keyword_index=none",
+    "retrieval: mode=dense top_k=10 candidate_k=50 fusion=none rerank=False temporal_filter=False",
+    "rewriting: enabled=False acronyms=False decompose=False hyde=False",
+    "generation: gemini-3.5-flash-lite temperature=0.0 verify_citations=False min_support=0.0"
+  ],
+  "corpus_version": "0.1.0",
+  "seed": 1337,
+  "models": {
+    "embedding": "gemini-embedding-001",
+    "generation": "gemini-3.5-flash-lite",
+    "judge": "gemini-3.6-flash"
+  },
+  "golden": {
+    "total": 40,
+    "counts_by_type": {
+      "lookup": 13,
+      "numeric": 9,
+      "temporal": 6,
+      "comparison": 5,
+      "multi_hop": 4,
+      "unanswerable": 3
+    },
+    "reviewed": 0,
+    "draft": 40,
+    "held_out": 7,
+    "validation_ok": true
+  },
+  "judge": {
+    "enabled": true,
+    "prompt_version": "judge-v1",
+    "model": "gemini-3.6-flash",
+    "agreement": null
+  },
+  "aggregates": {
+    "questions": 40,
+    "answerable": 37,
+    "unanswerable": 3,
+    "retrieval": {
+      "k": 10,
+      "recall_at_k": 0.972972972972973,
+      "recall_at_k_defined": 37,
+      "mrr": 0.781981981981982,
+      "mrr_defined": 37,
+      "ndcg_at_k": 0.7959262473670464,
+      "ndcg_at_k_defined": 37
+    },
+    "generation": {
+      "refusal_rate": 0.275,
+      "correct_refusals": 3,
+      "answered_rate": 0.725,
+      "citation_precision": 1.0,
+      "citation_precision_defined": 28,
+      "answers_with_citations": 28
+    }
+  },
+  "totals": {
+    "embed_input_tokens": 862,
+    "answer_input_tokens": 250444,
+    "answer_output_tokens": 4259,
+    "judge_input_tokens": 255985,
+    "judge_output_tokens": 18030,
+    "estimated_cost_usd": 0.34551125
+  },
+  "failures": [],
+  "caveats": [
+    "40 of 40 questions are drafts (unreviewed): these numbers are not quotable until the owner signs off (eval/golden/schema.md).",
+    "7 held-out question(s) are included in aggregates: use the per-question records to recompute dev-only numbers before tuning a config."
+  ],
+  "questions": [
+    {
+      "id": "q0001",
+      "type": "lookup",
+      "question": "How often must a bank carry out KYC periodic updation for high-risk, medium-risk and low-risk customers under the Commercial Banks KYC Directions, 2025?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 1.0,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00037",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 40,
+          "page_end": 41,
+          "score": 0.751595
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00038",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 41,
+          "page_end": 42,
+          "score": 0.748883
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00036",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 40,
+          "page_end": 41,
+          "score": 0.747923
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00045",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 39,
+          "page_end": 40,
+          "score": 0.745941
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00040",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 43,
+          "page_end": 44,
+          "score": 0.740272
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00041",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 44,
+          "page_end": 45,
+          "score": 0.738302
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00057",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 61,
+          "page_end": 62,
+          "score": 0.731298
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00046",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 40,
+          "page_end": 41,
+          "score": 0.728809
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00000",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.727012
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00049",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 42,
+          "page_end": 43,
+          "score": 0.724072
+        }
+      ],
+      "answer": {
+        "text": "Under the Commercial Banks KYC Directions, 2025, the bank must carry out periodic updation of KYC:\n- \"at least once in every two years for high-risk customers\" [Reserve Bank of India (Commercial Banks - Know Your Customer) Directions, 2025, p.40-41, clause n/a]\n- \"once in every eight years for medium risk customers\" [Reserve Bank of India (Commercial Banks - Know Your Customer) Directions, 2025, p.40-41, clause n/a]\n- \"once in every 10 years for low-risk customers\" [Reserve Bank of India (Commercial Banks - Know Your Customer) Directions, 2025, p.40-41, clause n/a] \n\nThis is to be done \"from the date of opening of the account / last KYC updation.\" [Reserve Bank of India (Commercial Banks - Know Your Customer) Directions, 2025, p.40-41, clause n/a]",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank of India (Commercial Banks - Know Your Customer) Directions, 2025, p.40-41, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6310,
+        "output_tokens": 227,
+        "latency_ms": 1607
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 34,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately provides the correct frequencies for periodic KYC updation for all risk categories as specified in the reference answer and context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6612,
+        "output_tokens": 281
+      }
+    },
+    {
+      "id": "q0002",
+      "type": "lookup",
+      "question": "Under the KYC Master Direction, 2016, what risk categories must REs place customers in?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 1.0,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00022",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 20,
+          "page_end": 21,
+          "score": 0.758135
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00045",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 39,
+          "page_end": 40,
+          "score": 0.740256
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00017",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 15,
+          "page_end": 16,
+          "score": 0.733577
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00018",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 16,
+          "page_end": 17,
+          "score": 0.728956
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00053",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 45,
+          "page_end": 46,
+          "score": 0.728429
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00019",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 17,
+          "page_end": 19,
+          "score": 0.725486
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00017",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 19,
+          "page_end": 21,
+          "score": 0.725108
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00000",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.720835
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00036",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 40,
+          "page_end": 41,
+          "score": 0.717628
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00018",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 20,
+          "page_end": 22,
+          "score": 0.71681
+        }
+      ],
+      "answer": {
+        "text": "Under the KYC Master Direction, 2016, REs must place customers into \"low, medium and high-risk category, based on the assessment and risk perception of the RE.\" [Master Direction - Know Your Customer (KYC), 2016 (as amended), p.20-21, n/a]",
+        "refused": false,
+        "citations": [
+          "[Master Direction - Know Your Customer (KYC), 2016 (as amended), p.20-21, n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6532,
+        "output_tokens": 71,
+        "latency_ms": 1215
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 21,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately and fully answers the question using a direct quote from the context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6642,
+        "output_tokens": 321
+      }
+    },
+    {
+      "id": "q0003",
+      "type": "lookup",
+      "question": "How must banks classify their entire investment portfolio under the 2023 Investment Portfolio Directions?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": true,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 1.0,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00013",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 14,
+          "page_end": 15,
+          "score": 0.775693
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00014",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 15,
+          "page_end": 16,
+          "score": 0.760071
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00054",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 56,
+          "page_end": 58,
+          "score": 0.757704
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00015",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 16,
+          "page_end": 17,
+          "score": 0.757658
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00055",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 57,
+          "page_end": 59,
+          "score": 0.756675
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00011",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.755933
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00016",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 17,
+          "page_end": 18,
+          "score": 0.754976
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00002",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 3,
+          "page_end": 4,
+          "score": 0.754518
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00001",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 1,
+          "page_end": 3,
+          "score": 0.750172
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00052",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 53,
+          "page_end": 55,
+          "score": 0.749515
+        }
+      ],
+      "answer": {
+        "text": "Under the 2023 Investment Portfolio Directions, banks must classify their entire investment portfolio (except investments in their own subsidiaries, joint ventures, and associates) \"under three categories, viz., Held to Maturity (HTM), Available for Sale (AFS) and Fair Value through Profit and Loss (FVTPL)\" [Master Direction - Classification, Valuation and Operation of Investment Portfolio of Commercial Banks, p.14-15, clause n/a]. Additionally, \"Held for Trading (HFT) shall be a separate investment sub-category within FVTPL\" [Master Direction - Classification, Valuation and Operation of Investment Portfolio of Commercial Banks, p.14-15, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Master Direction - Classification, Valuation and Operation of Investment Portfolio of Commercial Banks, p.14-15, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6109,
+        "output_tokens": 145,
+        "latency_ms": 1735
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 17,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately and fully captures all details required by the reference answer and is entirely supported by the context passages.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6378,
+        "output_tokens": 461
+      }
+    },
+    {
+      "id": "q0004",
+      "type": "lookup",
+      "question": "What rank and reporting constraints apply to the CISO under the IT Governance Directions, 2023?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.25,
+      "ndcg": 0.43067655807339306,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00007",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 8,
+          "page_end": 10,
+          "score": 0.709823
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00006",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.707515
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00015",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 18,
+          "page_end": 19,
+          "score": 0.695848
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00014",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 17,
+          "page_end": 18,
+          "score": 0.694887
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00000",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.684304
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00001",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 2,
+          "page_end": 3,
+          "score": 0.681809
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00021",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 24,
+          "page_end": 26,
+          "score": 0.680779
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00008",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 9,
+          "page_end": 11,
+          "score": 0.680019
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00002",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.678764
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00022",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 26,
+          "page_end": 26,
+          "score": 0.67783
+        }
+      ],
+      "answer": {
+        "text": "Based on the provided context, the rank and reporting constraints that apply to the Chief Information Security Officer (CISO) are:\n\n* \"A senior level executive (preferably in the rank of a General Manager or an equivalent position) shall be designated as the Chief Information Security Officer (CISO).\" [Master Direction on Information Technology Governance, Risk, Controls and Assurance Practices, p.17-18, clause n/a]\n* \"The CISO shall not have any direct reporting relationship with the Head of IT Function and shall not be given any business targets.\" [Master Direction on Information Technology Governance, Risk, Controls and Assurance Practices, p.17-18, clause n/a]\n* \"The CISO shall directly report to the Executive Director or equivalent executive overseeing the risk management function\" [Master Direction on Information Technology Governance, Risk, Controls and Assurance Practices, p.18-19, clause n/a]",
+        "refused": false,
+        "citations": [
+          "[Master Direction on Information Technology Governance, Risk, Controls and Assurance Practices, p.17-18, clause n/a]",
+          "[Master Direction on Information Technology Governance, Risk, Controls and Assurance Practices, p.18-19, clause n/a]"
+        ],
+        "citation_total": 2,
+        "citation_resolved": 2,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6264,
+        "output_tokens": 193,
+        "latency_ms": 1559
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 20,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer fully addresses all aspects of the reference answer with complete accuracy and is entirely supported by the provided text.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6094,
+        "output_tokens": 361
+      }
+    },
+    {
+      "id": "q0005",
+      "type": "lookup",
+      "question": "Can a card-issuer breach the sanctioned credit limit without the cardholder's explicit consent under the 2022 Credit Card and Debit Card Directions?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.3333333333333333,
+      "ndcg": 0.5249810332008933,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00035",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 32,
+          "page_end": 33,
+          "score": 0.752939
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00014",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.750291
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00008",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.747315
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00036",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 33,
+          "page_end": 34,
+          "score": 0.742718
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00031",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 28,
+          "page_end": 29,
+          "score": 0.731325
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00007",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.723863
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00003",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 3,
+          "page_end": 4,
+          "score": 0.721128
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00002",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 3,
+          "page_end": 3,
+          "score": 0.717316
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00032",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 29,
+          "page_end": 30,
+          "score": 0.714663
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00010",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.714496
+        }
+      ],
+      "answer": {
+        "text": "No, card-issuers must \"ensure that the credit limit as sanctioned and advised to the cardholder is not breached at any point in time without seeking explicit consent from the cardholder.\" [Master Direction - Credit Card and Debit Card - Issuance and Conduct Directions, 2022, p.7-8, clause n/a]",
+        "refused": false,
+        "citations": [
+          "[Master Direction - Credit Card and Debit Card - Issuance and Conduct Directions, 2022, p.7-8, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6081,
+        "output_tokens": 71,
+        "latency_ms": 1382
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 30,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer is fully correct and directly supported by the context passages.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6135,
+        "output_tokens": 274
+      }
+    },
+    {
+      "id": "q0006",
+      "type": "lookup",
+      "question": "What consent does an Account Aggregator need before providing services to a customer?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.2,
+      "ndcg": 0.4415801103577823,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00009",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.794516
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00013",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 14,
+          "page_end": 15,
+          "score": 0.757345
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00010",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 10,
+          "page_end": 12,
+          "score": 0.757158
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00011",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 11,
+          "page_end": 13,
+          "score": 0.754833
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00008",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.753514
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00012",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 12,
+          "page_end": 14,
+          "score": 0.748389
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00007",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.739428
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00001",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.734472
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00005",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.733512
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00006",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.732255
+        }
+      ],
+      "answer": {
+        "text": "An Account Aggregator shall provide services to a customer based on the customer’s \"explicit consent\" [Master Direction - Non-Banking Financial Company - Account Aggregator (Reserve Bank) Directions, 2016, p.7-8, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Master Direction - Non-Banking Financial Company - Account Aggregator (Reserve Bank) Directions, 2016, p.7-8, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6266,
+        "output_tokens": 56,
+        "latency_ms": 1199
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 15,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 1,
+        "faithfulness": 2,
+        "notes": "The candidate correctly states that explicit consent is required, but misses the detail regarding backing by appropriate agreements or authorisations.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6180,
+        "output_tokens": 311
+      }
+    },
+    {
+      "id": "q0007",
+      "type": "lookup",
+      "question": "How is a guarantor's liability treated under the Wilful Defaulters Directions, 2024?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.8772153153380493,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00015",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 15,
+          "page_end": 17,
+          "score": 0.776414
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00009",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.761671
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00001",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 1,
+          "page_end": 3,
+          "score": 0.745563
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00014",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 15,
+          "page_end": 16,
+          "score": 0.740787
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00000",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.73954
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00002",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 2,
+          "page_end": 4,
+          "score": 0.738414
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00016",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 17,
+          "page_end": 18,
+          "score": 0.736864
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00005",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.726201
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00003",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.725851
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00020",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 21,
+          "page_end": 22,
+          "score": 0.724153
+        }
+      ],
+      "answer": {
+        "text": "Based on the provided document, a guarantor's liability is treated as follows:\n\n* \"As per Section 128 of the Indian Contract Act, 1872, the liability of the guarantor is coextensive with that of the principal debtor unless it is otherwise provided by the contract.\" [Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.16, 8 (1)]\n* \"When a default happens in making payment/ repayment by the principal debtor, the lender will be able to proceed against the guarantor even without exhausting the remedies against the principal debtor.\" [Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.16, 8 (2)]\n* \"Where a lender has made a claim on the guarantor on account of the default made by the principal debtor, the liability of the guarantor is immediate.\" [Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.16, 8 (3)]\n* \"In case the said guarantor refuses to comply with the demand made by the lender, such guarantor shall also be considered for classification as a wilful defaulter by following the mechanism as set out in para 4 of these Directions.\" [Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.16, 8 (4)]",
+        "refused": false,
+        "citations": [
+          "[Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.16, 8 (1)]",
+          "[Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.16, 8 (2)]",
+          "[Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.16, 8 (3)]",
+          "[Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.16, 8 (4)]"
+        ],
+        "citation_total": 4,
+        "citation_resolved": 4,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6313,
+        "output_tokens": 286,
+        "latency_ms": 2156
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 20,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer includes the exact statement required by the reference answer and provides further accurate details directly supported by the context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6405,
+        "output_tokens": 179
+      }
+    },
+    {
+      "id": "q0008",
+      "type": "lookup",
+      "question": "Where must an RE store digital lending data, and what is the rule for data processed outside India?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 1.0,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00011",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.772796
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00010",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.7449
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00006",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.730059
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00013",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 14,
+          "page_end": 15,
+          "score": 0.72486
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00003",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.724127
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00012",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 13,
+          "page_end": 14,
+          "score": 0.722872
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00007",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.72245
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00004",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.716999
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00008",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.713767
+        },
+        {
+          "chunk_id": "rbi_md_nbfc_p2p_2017__fixed__00006",
+          "doc_id": "rbi_md_nbfc_p2p_2017",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.71374
+        }
+      ],
+      "answer": {
+        "text": "RE shall ensure that \"all data is stored only in servers located within India, while ensuring compliance with statutory obligations/ regulatory instructions\" [Reserve Bank of India (Digital Lending) Directions, 2025, p. 12-13, n/a]. Furthermore, \"in case the data is processed outside India, the same shall be deleted from servers outside India and brought back to India within 24 hours of processing\" [Reserve Bank of India (Digital Lending) Directions, 2025, p. 12-13, n/a].",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank of India (Digital Lending) Directions, 2025, p.12-13, n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 5952,
+        "output_tokens": 120,
+        "latency_ms": 1397
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 20,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately and fully answers both parts of the question, quoting directly from the context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6214,
+        "output_tokens": 432
+      }
+    },
+    {
+      "id": "q0009",
+      "type": "lookup",
+      "question": "Which IT outsourcing arrangements do the 2023 Outsourcing Directions apply to?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": true,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.2,
+      "ndcg": 0.45560514958746035,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00001",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 2,
+          "page_end": 4,
+          "score": 0.733436
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00003",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.722151
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00002",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.716059
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00000",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 1,
+          "page_end": 3,
+          "score": 0.706844
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00004",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.704255
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00005",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.702647
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00006",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.702399
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00008",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 10,
+          "page_end": 12,
+          "score": 0.701602
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00024",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 28,
+          "page_end": 30,
+          "score": 0.700864
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00009",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 11,
+          "page_end": 13,
+          "score": 0.685604
+        }
+      ],
+      "answer": {
+        "text": "Based on the provided document, the Directions apply to \"Material Outsourcing of Information Technology (‘IT’) Services arrangements (as defined in clause 3(a)(ii) below) entered by the REs\" [Master Direction on Outsourcing of Information Technology Services, p.6-7, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Master Direction on Outsourcing of Information Technology Services, p.6-7, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6251,
+        "output_tokens": 64,
+        "latency_ms": 1177
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 15,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately identifies that the directions apply to Material Outsourcing of IT Services arrangements entered into by Regulated Entities, fully aligning with both the reference answer and the context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6271,
+        "output_tokens": 215
+      }
+    },
+    {
+      "id": "q0010",
+      "type": "lookup",
+      "question": "Is there a cap on the amount in a dispute that can be taken to the RBI Ombudsman?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 1.0,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00004",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.73027
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00005",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.721434
+        },
+        {
+          "chunk_id": "rbi_notif_integrated_ombudsman_2021__fixed__00000",
+          "doc_id": "rbi_notif_integrated_ombudsman_2021",
+          "page_start": 1,
+          "page_end": 1,
+          "score": 0.718195
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00010",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.717346
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00007",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.697957
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00006",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.696452
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00000",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 1,
+          "page_end": 1,
+          "score": 0.693394
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00034",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 34,
+          "page_end": 36,
+          "score": 0.691673
+        },
+        {
+          "chunk_id": "rbi_md_credit_debit_card_2022__fixed__00038",
+          "doc_id": "rbi_md_credit_debit_card_2022",
+          "page_start": 34,
+          "page_end": 35,
+          "score": 0.690505
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00008",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.68901
+        }
+      ],
+      "answer": {
+        "text": "\"There is no limit on the amount in a dispute that can be brought before the Ombudsman for which the Ombudsman can pass an Award.\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.4-5, clause n/a]",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.4-5, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6187,
+        "output_tokens": 67,
+        "latency_ms": 1270
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 22,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 1,
+        "faithfulness": 2,
+        "notes": "The candidate correctly states that there is no limit on the dispute amount, but omits the compensation caps specified in the reference answer.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6461,
+        "output_tokens": 526
+      }
+    },
+    {
+      "id": "q0011",
+      "type": "lookup",
+      "question": "What Free Full Credit Report policy must a Credit Information Company maintain?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.5,
+      "ndcg": 0.6509209298071326,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00018",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 19,
+          "page_end": 20,
+          "score": 0.772409
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00003",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 4,
+          "page_end": 6,
+          "score": 0.744835
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00017",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 18,
+          "page_end": 19,
+          "score": 0.712638
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00002",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.705681
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00020",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 21,
+          "page_end": 22,
+          "score": 0.703334
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00022",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 23,
+          "page_end": 24,
+          "score": 0.703025
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00008",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.700059
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00019",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 20,
+          "page_end": 21,
+          "score": 0.698627
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00016",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 18,
+          "page_end": 19,
+          "score": 0.696112
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00013",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 15,
+          "page_end": 16,
+          "score": 0.695532
+        }
+      ],
+      "answer": {
+        "text": "A CIC shall have a board-approved policy \"on making available the Free Full Credit Report (FFCR)\" [Reserve Bank of India (Credit Information Companies) Directions, 2025, p.5, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank of India (Credit Information Companies) Directions, 2025, p.5, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6045,
+        "output_tokens": 49,
+        "latency_ms": 1233
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 13,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately reflects the reference answer and is fully supported by the provided context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6270,
+        "output_tokens": 222
+      }
+    },
+    {
+      "id": "q0012",
+      "type": "lookup",
+      "question": "Who reports the liquidity risk profile to a bank's ALCO under the ALM Directions, 2025?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.9197207891481876,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00010",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 13,
+          "page_end": 14,
+          "score": 0.794805
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00009",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.770581
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00011",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 14,
+          "page_end": 15,
+          "score": 0.760364
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00000",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.74822
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00007",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.740138
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00017",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 20,
+          "page_end": 21,
+          "score": 0.739066
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00100",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 103,
+          "page_end": 105,
+          "score": 0.738608
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00004",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 5,
+          "page_end": 7,
+          "score": 0.736046
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00099",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 102,
+          "page_end": 104,
+          "score": 0.727037
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00006",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 7,
+          "page_end": 9,
+          "score": 0.72605
+        }
+      ],
+      "answer": {
+        "text": "\"The ALM Support Group consisting of operating staff shall be responsible for analysing, monitoring, and reporting the liquidity risk profile to the ALCO.\" [Reserve Bank of India (Commercial Banks - Asset Liability Management) Directions, 2025, p.14, clause n/a]",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank of India (Commercial Banks - Asset Liability Management) Directions, 2025, p.14, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6301,
+        "output_tokens": 60,
+        "latency_ms": 1233
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 22,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer directly quotes the exact provision from the context, fully answering the question correctly and faithfully.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6053,
+        "output_tokens": 241
+      }
+    },
+    {
+      "id": "q0013",
+      "type": "lookup",
+      "question": "What is the Minimum Retention Requirement meant to ensure under the 2021 Securitisation Directions?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.8503449055347546,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00009",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.747864
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00010",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.730742
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00031",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 32,
+          "page_end": 33,
+          "score": 0.71482
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00043",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 43,
+          "page_end": 44,
+          "score": 0.707279
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00008",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.703978
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00025",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 26,
+          "page_end": 27,
+          "score": 0.699176
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00053",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 53,
+          "page_end": 54,
+          "score": 0.6962
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00028",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 29,
+          "page_end": 30,
+          "score": 0.69462
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00054",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 54,
+          "page_end": 55,
+          "score": 0.69411
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00012",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 13,
+          "page_end": 14,
+          "score": 0.690327
+        }
+      ],
+      "answer": {
+        "text": "The Minimum Retention Requirement (MRR) is \"primarily designed to ensure that the originators have a continuing stake in the performance of securitised assets so as to ensure that they carry out proper due diligence of loans to be securitised.\" [Master Direction - Reserve Bank of India (Securitisation of Standard Assets) Directions, 2021, p.9-10, n/a]",
+        "refused": false,
+        "citations": [
+          "[Master Direction - Reserve Bank of India (Securitisation of Standard Assets) Directions, 2021, p.9-10, n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6049,
+        "output_tokens": 84,
+        "latency_ms": 1526
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 21,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately quotes the exact requirement from the context, perfectly matching the reference answer.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6102,
+        "output_tokens": 330
+      }
+    },
+    {
+      "id": "q0014",
+      "type": "numeric",
+      "question": "For how long must a PPI issuer keep a log of all transactions?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.2,
+      "ndcg": 0.38685280723454163,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00027",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 18,
+          "page_end": 19,
+          "score": 0.730091
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00031",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 21,
+          "page_end": 21,
+          "score": 0.729415
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00028",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 19,
+          "page_end": 20,
+          "score": 0.725884
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00026",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 17,
+          "page_end": 18,
+          "score": 0.721866
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00009",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.718333
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00040",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 27,
+          "page_end": 28,
+          "score": 0.717546
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00033",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 22,
+          "page_end": 23,
+          "score": 0.714313
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00032",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 21,
+          "page_end": 22,
+          "score": 0.713432
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00030",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 20,
+          "page_end": 21,
+          "score": 0.711378
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00044",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 29,
+          "page_end": 30,
+          "score": 0.710638
+        }
+      ],
+      "answer": {
+        "text": "PPI issuers are required to \"maintain a log of all the transactions undertaken using the PPIs for at least ten years\" [Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.6-7, 6.3].",
+        "refused": false,
+        "citations": [
+          "[Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.6-7, 6.3]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6149,
+        "output_tokens": 48,
+        "latency_ms": 1336
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 15,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer correctly states that a PPI issuer must keep a log of all transactions for at least ten years, which is fully supported by the context and matches the reference answer.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6358,
+        "output_tokens": 172
+      }
+    },
+    {
+      "id": "q0015",
+      "type": "numeric",
+      "question": "What is the total priority sector lending target for scheduled commercial banks under the 2020 PSL Directions?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.9469024295259745,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00004",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.76966
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00005",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 5,
+          "page_end": 5,
+          "score": 0.766776
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00007",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.765336
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00010",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.752834
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00006",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.752586
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00027",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 23,
+          "page_end": 24,
+          "score": 0.750916
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00003",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 2,
+          "page_end": 4,
+          "score": 0.750699
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00016",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 13,
+          "page_end": 14,
+          "score": 0.745439
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00017",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 14,
+          "page_end": 15,
+          "score": 0.744564
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00018",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 15,
+          "page_end": 16,
+          "score": 0.743706
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6515,
+        "output_tokens": 5,
+        "latency_ms": 1243
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 21,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 0,
+        "faithfulness": 0,
+        "notes": "The candidate incorrectly claims insufficient evidence when the context explicitly states that the total priority sector target for commercial banks is 40 per cent of ANBC or CEOBE, whichever is higher.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6691,
+        "output_tokens": 725
+      }
+    },
+    {
+      "id": "q0016",
+      "type": "numeric",
+      "question": "What is the agriculture priority sector target, including the sub-target for Small and Marginal Farmers, under the 2020 PSL Directions?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.8854598815714874,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00006",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.782416
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00013",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.778133
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00005",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 5,
+          "page_end": 5,
+          "score": 0.773706
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00007",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.771858
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00004",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.768497
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00011",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.762873
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00010",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.757552
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00014",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.754474
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00016",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 13,
+          "page_end": 14,
+          "score": 0.752877
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00024",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 21,
+          "page_end": 22,
+          "score": 0.749179
+        }
+      ],
+      "answer": {
+        "text": "\"Agriculture: 18 per cent of ANBC or CEOBE, whichever is higher; out of which a target of 10 percent# is prescribed for Small and Marginal Farmers (SMFs)\" [Master Directions - Priority Sector Lending (PSL) - Targets and Classification, p.5, clause n/a]",
+        "refused": false,
+        "citations": [
+          "[Master Directions - Priority Sector Lending (PSL) - Targets and Classification, p.5, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6503,
+        "output_tokens": 66,
+        "latency_ms": 1487
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 28,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately quotes the exact target and sub-target from the context, fully matching the reference answer.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6758,
+        "output_tokens": 413
+      }
+    },
+    {
+      "id": "q0017",
+      "type": "numeric",
+      "question": "What are the monthly load, yearly load and outstanding limits for a small (minimum-detail) PPI?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": true,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.86034433104172,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00014",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 10,
+          "page_end": 10,
+          "score": 0.73508
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00016",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 11,
+          "page_end": 11,
+          "score": 0.734301
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00013",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.722653
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00031",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 21,
+          "page_end": 21,
+          "score": 0.711436
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00010",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.708764
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00027",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 18,
+          "page_end": 19,
+          "score": 0.700949
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00015",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.695246
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00018",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.691792
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00030",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 20,
+          "page_end": 21,
+          "score": 0.68917
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00017",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.68865
+        }
+      ],
+      "answer": {
+        "text": "For Small PPIs (or Minimum-detail PPIs) with a cash loading facility:\n* \"Amount loaded in such PPIs during any month shall not exceed Rs.10,000/- and the total amount loaded during the financial year shall not exceed Rs.1,20,000/-\" [Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.10, n/a]\n* \"Amount outstanding at any point of time in such PPIs shall not exceed Rs.10,000/-\" [Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.10, n/a]\n\nFor Small PPIs (or Minimum-detail PPIs) with no cash loading facility:\n* \"The amount loaded in such PPIs during any month shall not exceed Rs.10,000 and the total amount loaded during the financial year shall not exceed Rs.1,20,000\" [Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.10-11, n/a]\n* \"The amount outstanding at any point of time in such PPIs shall not exceed Rs.10,000\" [Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.11, n/a]",
+        "refused": false,
+        "citations": [
+          "[Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.10, n/a]",
+          "[Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.10-11, n/a]",
+          "[Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.11, n/a]"
+        ],
+        "citation_total": 3,
+        "citation_resolved": 3,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 5858,
+        "output_tokens": 277,
+        "latency_ms": 1820
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 21,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately provides all the requested monthly load, yearly load, and outstanding limits for small PPIs, fully supported by the context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6363,
+        "output_tokens": 434
+      }
+    },
+    {
+      "id": "q0018",
+      "type": "numeric",
+      "question": "What is the maximum compensation the Ombudsman can award for consequential loss?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.5,
+      "ndcg": 0.5640920940185894,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00010",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.707375
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00004",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.698256
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00011",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.684021
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00027",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 28,
+          "page_end": 29,
+          "score": 0.681269
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00028",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 29,
+          "page_end": 30,
+          "score": 0.675291
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00031",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 31,
+          "page_end": 32,
+          "score": 0.675199
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00029",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 30,
+          "page_end": 31,
+          "score": 0.674985
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00030",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 31,
+          "page_end": 31,
+          "score": 0.674721
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00032",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 32,
+          "page_end": 33,
+          "score": 0.664374
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00005",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.664345
+        }
+      ],
+      "answer": {
+        "text": "The Ombudsman can provide compensation for consequential loss \"up to Rupees 20 lakh\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.5-6, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.5-6, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6198,
+        "output_tokens": 57,
+        "latency_ms": 1257
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 16,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 1,
+        "faithfulness": 2,
+        "notes": "The candidate correctly states the limit of Rs 20 lakh for consequential loss, but omits the additional compensation of up to Rs 1 lakh for mental anguish/expenses mentioned in the reference answer.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6448,
+        "output_tokens": 670
+      }
+    },
+    {
+      "id": "q0019",
+      "type": "numeric",
+      "question": "After how many days of continuous overdue interest or principal is a term loan classified as an NPA under the IRAC Directions, 2025?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 1.0,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00014",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 17,
+          "page_end": 18,
+          "score": 0.775206
+        },
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00015",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 18,
+          "page_end": 19,
+          "score": 0.757615
+        },
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00020",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 24,
+          "page_end": 25,
+          "score": 0.749303
+        },
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00009",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.745105
+        },
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00018",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 21,
+          "page_end": 23,
+          "score": 0.733352
+        },
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00022",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 26,
+          "page_end": 27,
+          "score": 0.727837
+        },
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00008",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.725308
+        },
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00004",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 5,
+          "page_end": 7,
+          "score": 0.719677
+        },
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00019",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 22,
+          "page_end": 24,
+          "score": 0.717133
+        },
+        {
+          "chunk_id": "rbi_md_irac_2025__fixed__00003",
+          "doc_id": "rbi_md_irac_2025",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.715352
+        }
+      ],
+      "answer": {
+        "text": "A term loan is classified as an NPA if \"interest and / or instalment of principal remains overdue for a period of more than 90 days in respect of a term loan\" [Reserve Bank of India (Commercial Banks - Income Recognition, Asset Classification and Provisioning) Directions, 2025, p.18, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank of India (Commercial Banks - Income Recognition, Asset Classification and Provisioning) Directions, 2025, p.18, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6200,
+        "output_tokens": 72,
+        "latency_ms": 1164
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 29,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately identifies that a term loan is classified as an NPA after remaining overdue for a period of more than 90 days, which matches both the reference answer and the context passages.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6435,
+        "output_tokens": 252
+      }
+    },
+    {
+      "id": "q0020",
+      "type": "numeric",
+      "question": "What dividend payout ratio can an eligible NBFC-P2P declare?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.9674679834891693,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_nbfc_p2p_2017__fixed__00008",
+          "doc_id": "rbi_md_nbfc_p2p_2017",
+          "page_start": 7,
+          "page_end": 7,
+          "score": 0.843693
+        },
+        {
+          "chunk_id": "rbi_md_nbfc_p2p_2017__fixed__00009",
+          "doc_id": "rbi_md_nbfc_p2p_2017",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.790263
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00018",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 19,
+          "page_end": 20,
+          "score": 0.779938
+        },
+        {
+          "chunk_id": "rbi_md_nbfc_p2p_2017__fixed__00007",
+          "doc_id": "rbi_md_nbfc_p2p_2017",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.759453
+        },
+        {
+          "chunk_id": "rbi_md_nbfc_p2p_2017__fixed__00001",
+          "doc_id": "rbi_md_nbfc_p2p_2017",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.740288
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00019",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 20,
+          "page_end": 22,
+          "score": 0.724763
+        },
+        {
+          "chunk_id": "rbi_md_nbfc_p2p_2017__fixed__00019",
+          "doc_id": "rbi_md_nbfc_p2p_2017",
+          "page_start": 15,
+          "page_end": 16,
+          "score": 0.705225
+        },
+        {
+          "chunk_id": "rbi_md_nbfc_p2p_2017__fixed__00018",
+          "doc_id": "rbi_md_nbfc_p2p_2017",
+          "page_start": 14,
+          "page_end": 15,
+          "score": 0.697909
+        },
+        {
+          "chunk_id": "rbi_md_nbfc_p2p_2017__fixed__00016",
+          "doc_id": "rbi_md_nbfc_p2p_2017",
+          "page_start": 13,
+          "page_end": 14,
+          "score": 0.693488
+        },
+        {
+          "chunk_id": "rbi_md_nbfc_p2p_2017__fixed__00000",
+          "doc_id": "rbi_md_nbfc_p2p_2017",
+          "page_start": 1,
+          "page_end": 1,
+          "score": 0.690726
+        }
+      ],
+      "answer": {
+        "text": "NBFC-P2Ps that meet the eligibility criteria can \"declare dividend upto a dividend payout ratio of 50 per cent\" [Master Direction - Non-Banking Financial Company - Peer to Peer Lending Platform (Reserve Bank) Directions, 2017, p.7, clause n/a]. Additionally, \"There will be no ceiling on dividend payout ratio for eligible NBFC-P2Ps that do not accept public funds.\" [Master Direction - Non-Banking Financial Company - Peer to Peer Lending Platform (Reserve Bank) Directions, 2017, p.7, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Master Direction - Non-Banking Financial Company - Peer to Peer Lending Platform (Reserve Bank) Directions, 2017, p.7, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6415,
+        "output_tokens": 126,
+        "latency_ms": 1374
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 14,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately captures all details from the reference answer and is fully supported by the provided context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6740,
+        "output_tokens": 438
+      }
+    },
+    {
+      "id": "q0021",
+      "type": "numeric",
+      "question": "What are the one-time and annual membership fee caps for a Credit Information Company charging its member CIs?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": true,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 1.0,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00005",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.76356
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00006",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.730396
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00018",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 19,
+          "page_end": 20,
+          "score": 0.724039
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00007",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.72307
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00012",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 14,
+          "page_end": 15,
+          "score": 0.710222
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00003",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 4,
+          "page_end": 6,
+          "score": 0.706869
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00013",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 15,
+          "page_end": 16,
+          "score": 0.706279
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00022",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 23,
+          "page_end": 24,
+          "score": 0.705562
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00023",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 24,
+          "page_end": 25,
+          "score": 0.705027
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00014",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 16,
+          "page_end": 17,
+          "score": 0.701423
+        }
+      ],
+      "answer": {
+        "text": "Based on the provided context, the membership fee caps charged by a CIC from CIs are as follows:\n\n* \"One-time membership fee charged by the CIC from CIs to become its members shall not exceed ₹10,000 each.\" [Reserve Bank of India (Credit Information Companies) Directions, 2025, p. 7-8, clause n/a]\n* \"The annual fees charged by the CIC from the CIs shall not exceed ₹5,000 each.\" [Reserve Bank of India (Credit Information Companies) Directions, 2025, p. 7-8, clause n/a]",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank of India (Credit Information Companies) Directions, 2025, p.7-8, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6055,
+        "output_tokens": 137,
+        "latency_ms": 1367
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 21,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer is accurate and fully supported by the context passages.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6382,
+        "output_tokens": 245
+      }
+    },
+    {
+      "id": "q0022",
+      "type": "numeric",
+      "question": "What are the per-transaction and per-month limits on cross-border outward transactions using Rupee-denominated PPIs?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.9197207891481876,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00012",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.741612
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00016",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 11,
+          "page_end": 11,
+          "score": 0.73199
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00013",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.731855
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00019",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 13,
+          "page_end": 14,
+          "score": 0.700974
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00031",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 21,
+          "page_end": 21,
+          "score": 0.695672
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00014",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 10,
+          "page_end": 10,
+          "score": 0.693604
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00018",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.684867
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00017",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.684375
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00030",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 20,
+          "page_end": 21,
+          "score": 0.678455
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00010",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.675335
+        }
+      ],
+      "answer": {
+        "text": "\"a per transaction limit not exceeding Rs.10,000/-, while per month limit shall not exceed Rs.50,000/- for such cross-border transactions\" [Master Direction on Issuance and Operation of Prepaid Payment Instruments | p.8-9 | clause n/a]",
+        "refused": false,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 5873,
+        "output_tokens": 64,
+        "latency_ms": 1284
+      },
+      "refused": false,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 24,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 1,
+        "faithfulness": 2,
+        "notes": "The candidate correctly states the per-transaction and per-month limits, but misses the requirement mentioned in the reference answer that this facility must be enabled only on the explicit request of the PPI holder.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6136,
+        "output_tokens": 687
+      }
+    },
+    {
+      "id": "q0023",
+      "type": "temporal",
+      "question": "As of 31 March 2025, what was the total priority sector lending target for scheduled commercial banks?",
+      "as_of_date": "2025-03-31",
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.8529278650606567,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00005",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 5,
+          "page_end": 5,
+          "score": 0.767275
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00043",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 39,
+          "page_end": 40,
+          "score": 0.764979
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00007",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.756063
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00006",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.754176
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00004",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.753684
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00002",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.749833
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00027",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 23,
+          "page_end": 24,
+          "score": 0.749432
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00028",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 24,
+          "page_end": 25,
+          "score": 0.742219
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00003",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 2,
+          "page_end": 4,
+          "score": 0.739963
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00046",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 41,
+          "page_end": 41,
+          "score": 0.736272
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6709,
+        "output_tokens": 5,
+        "latency_ms": 1070
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 22,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 0,
+        "faithfulness": 2,
+        "notes": "The candidate incorrectly refused to answer even though the context provided the priority sector lending target of 40 per cent of ANBC or CEOBE.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6910,
+        "output_tokens": 802
+      }
+    },
+    {
+      "id": "q0024",
+      "type": "temporal",
+      "question": "As of January 2023, what maximum compensation could the Ombudsman award for consequential loss?",
+      "as_of_date": "2023-01-31",
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.5,
+      "ndcg": 0.6309297535714575,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00010",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.674394
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00004",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.670318
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00027",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 28,
+          "page_end": 29,
+          "score": 0.656668
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00028",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 29,
+          "page_end": 30,
+          "score": 0.652681
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00029",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 30,
+          "page_end": 31,
+          "score": 0.652578
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00030",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 31,
+          "page_end": 31,
+          "score": 0.652258
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00031",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 31,
+          "page_end": 32,
+          "score": 0.648561
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00034",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 34,
+          "page_end": 36,
+          "score": 0.648197
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00011",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.648077
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00032",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 32,
+          "page_end": 33,
+          "score": 0.642356
+        }
+      ],
+      "answer": {
+        "text": "Based on the provided texts, for any consequential loss suffered by the complainant, \"the Ombudsman shall have the power to provide a compensation up to Rupees 20 lakh\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.4-5, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.4-5, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6187,
+        "output_tokens": 74,
+        "latency_ms": 1305
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 21,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer correctly identifies the maximum compensation of Rs 20 lakh under the Reserve Bank - Integrated Ombudsman Scheme, 2021, fully supported by the reference answer and context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6439,
+        "output_tokens": 339
+      }
+    },
+    {
+      "id": "q0025",
+      "type": "temporal",
+      "question": "As of mid-2022, what were the load limits for a small PPI?",
+      "as_of_date": "2022-06-30",
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.5,
+      "ndcg": 0.6653497124326151,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00016",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 11,
+          "page_end": 11,
+          "score": 0.708805
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00014",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 10,
+          "page_end": 10,
+          "score": 0.699618
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00031",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 21,
+          "page_end": 21,
+          "score": 0.695797
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00013",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.6938
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00010",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.693139
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00015",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.678361
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00045",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 30,
+          "page_end": 31,
+          "score": 0.674163
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00018",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.666782
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00027",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 18,
+          "page_end": 19,
+          "score": 0.666124
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00003",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 3,
+          "page_end": 3,
+          "score": 0.666121
+        }
+      ],
+      "answer": {
+        "text": "Based on the provided context, the load limits for Small PPIs (Minimum-detail PPIs) depend on the specific type:\n\n* **For Small PPIs with cash loading facility:** \n  * \"Cash loading to PPIs shall be limited to Rs.50,000/- per month subject to overall limit of the PPI\" [Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.7-8, clause n/a].\n\n* **For Small PPIs up to Rs.10,000/- (with no cash loading facility):** \n  * \"The amount loaded in such PPIs during any month shall not exceed Rs.10,000 and the total amount loaded during the financial year shall not exceed Rs.1,20,000\" [Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.10-11, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.7-8, clause n/a]",
+          "[Master Direction on Issuance and Operation of Prepaid Payment Instruments, p.10-11, clause n/a]"
+        ],
+        "citation_total": 2,
+        "citation_resolved": 2,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 5955,
+        "output_tokens": 196,
+        "latency_ms": 1532
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 18,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 1,
+        "faithfulness": 2,
+        "notes": "The candidate correctly identifies the monthly and annual load limits, but misses the outstanding balance limit and misapplies a general cash loading rule to small PPIs with cash loading.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6357,
+        "output_tokens": 861
+      }
+    },
+    {
+      "id": "q0026",
+      "type": "temporal",
+      "question": "As of early 2017, what consent rule applied to Account Aggregators serving customers?",
+      "as_of_date": "2017-03-31",
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.25,
+      "ndcg": 0.45749452618986164,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00009",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.762821
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00010",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 10,
+          "page_end": 12,
+          "score": 0.743558
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00013",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 14,
+          "page_end": 15,
+          "score": 0.739897
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00008",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.739088
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00011",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 11,
+          "page_end": 13,
+          "score": 0.735879
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00005",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.727896
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00006",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.724807
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00007",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.724713
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00012",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 12,
+          "page_end": 14,
+          "score": 0.723766
+        },
+        {
+          "chunk_id": "rbi_md_account_aggregator_2016__fixed__00001",
+          "doc_id": "rbi_md_account_aggregator_2016",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.721322
+        }
+      ],
+      "answer": {
+        "text": "An Account Aggregator shall not part with any information that it may come to acquire from/ on behalf of a customer without the explicit consent of the customer [Master Direction - Non-Banking Financial Company - Account Aggregator (Reserve Bank) Directions, 2016, p.9-10, n/a]. Furthermore, \"no financial information of the customer shall be retrieved, shared or transferred by the Account Aggregator without the explicit consent of the customer\" [Master Direction - Non-Banking Financial Company - Account Aggregator (Reserve Bank) Directions, 2016, p.9-10, n/a].",
+        "refused": false,
+        "citations": [
+          "[Master Direction - Non-Banking Financial Company - Account Aggregator (Reserve Bank) Directions, 2016, p.9-10, n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6272,
+        "output_tokens": 131,
+        "latency_ms": 1693
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 19,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer correctly identifies the requirement for explicit consent as specified in the reference answer and context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6209,
+        "output_tokens": 444
+      }
+    },
+    {
+      "id": "q0027",
+      "type": "temporal",
+      "question": "As of August 2024, how was a guarantor's liability treated in wilful defaulter cases?",
+      "as_of_date": "2024-08-31",
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.8772153153380493,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00015",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 15,
+          "page_end": 17,
+          "score": 0.759027
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00009",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.741337
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00001",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 1,
+          "page_end": 3,
+          "score": 0.728877
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00014",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 15,
+          "page_end": 16,
+          "score": 0.728458
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00002",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 2,
+          "page_end": 4,
+          "score": 0.725478
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00010",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.722788
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00000",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.721276
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00005",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.719112
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00016",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 17,
+          "page_end": 18,
+          "score": 0.71301
+        },
+        {
+          "chunk_id": "rbi_md_wilful_defaulters_2024__fixed__00011",
+          "doc_id": "rbi_md_wilful_defaulters_2024",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.711851
+        }
+      ],
+      "answer": {
+        "text": "As of August 2024, a guarantor's liability in wilful defaulter cases is treated as follows:\n\n* \"As per Section 128 of the Indian Contract Act, 1872, the liability of the guarantor is coextensive with that of the principal debtor unless it is otherwise provided by the contract.\" [Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.15-17, 8(1)]\n* \"When a default happens in making payment/ repayment by the principal debtor, the lender will be able to proceed against the guarantor even without exhausting the remedies against the principal debtor.\" [Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.15-17, 8(2)]\n* \"Where a lender has made a claim on the guarantor on account of the default made by the principal debtor, the liability of the guarantor is immediate.\" [Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.15-17, 8(3)]\n* \"In case the said guarantor refuses to comply with the demand made by the lender, such guarantor shall also be considered for classification as a wilful defaulter by following the mechanism as set out in para 4 of these Directions.\" [Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.15-17, 8(4)]",
+        "refused": false,
+        "citations": [
+          "[Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.15-17, 8(1)]",
+          "[Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.15-17, 8(2)]",
+          "[Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.15-17, 8(3)]",
+          "[Master Direction on Treatment of Wilful Defaulters and Large Defaulters, p.15-17, 8(4)]"
+        ],
+        "citation_total": 4,
+        "citation_resolved": 4,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6291,
+        "output_tokens": 307,
+        "latency_ms": 2271
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 23,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer fully and correctly answers the question using exact details from the provided context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6321,
+        "output_tokens": 448
+      }
+    },
+    {
+      "id": "q0028",
+      "type": "temporal",
+      "question": "As of end-2023, how much experience qualified as 'substantial IT expertise' for an IT Strategy Committee member?",
+      "as_of_date": "2023-12-31",
+      "review": "draft",
+      "held_out": true,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 1.0,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00007",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 8,
+          "page_end": 10,
+          "score": 0.695863
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00006",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.692878
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00008",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 9,
+          "page_end": 11,
+          "score": 0.671115
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00001",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 2,
+          "page_end": 3,
+          "score": 0.66611
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00026",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 31,
+          "page_end": 31,
+          "score": 0.663518
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00009",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.654778
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00005",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.651846
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00002",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.649205
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00000",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.648675
+        },
+        {
+          "chunk_id": "rbi_md_it_outsourcing_2023__fixed__00004",
+          "doc_id": "rbi_md_it_outsourcing_2023",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.641783
+        }
+      ],
+      "answer": {
+        "text": "As of end-2023, \"substantial IT expertise\" meant that the person had \"a minimum of seven years of experience in managing information systems and/or leading/ guiding technology/ cybersecurity initiatives/ projects\" [Master Direction on Information Technology Governance, Risk, Controls and Assurance Practices, p.8, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Master Direction on Information Technology Governance, Risk, Controls and Assurance Practices, p.8, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 5883,
+        "output_tokens": 68,
+        "latency_ms": 1311
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 25,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately provides the required seven years of experience detail from the text and fully answers the question.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 5715,
+        "output_tokens": 276
+      }
+    },
+    {
+      "id": "q0029",
+      "type": "comparison",
+      "question": "Do the Commercial Banks KYC Directions, 2025 and the NBFC KYC Directions, 2025 prescribe the same KYC periodic-updation intervals?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 2,
+      "recall": 0.5,
+      "rr": 1.0,
+      "ndcg": 0.7977228895450266,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00036",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 40,
+          "page_end": 41,
+          "score": 0.747469
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00013",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 14,
+          "page_end": 16,
+          "score": 0.737757
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00052",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 57,
+          "page_end": 58,
+          "score": 0.734187
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00053",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 58,
+          "page_end": 59,
+          "score": 0.732254
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00039",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 43,
+          "page_end": 44,
+          "score": 0.730263
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00038",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 42,
+          "page_end": 43,
+          "score": 0.729868
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00040",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 44,
+          "page_end": 45,
+          "score": 0.728098
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00000",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 1,
+          "page_end": 3,
+          "score": 0.723057
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00037",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 41,
+          "page_end": 42,
+          "score": 0.722543
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00046",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 40,
+          "page_end": 41,
+          "score": 0.718922
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6260,
+        "output_tokens": 5,
+        "latency_ms": 1064
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 33,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate correctly identifies that the provided context lacks sufficient evidence regarding Commercial Banks KYC Directions, 2025 to answer the question.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6143,
+        "output_tokens": 1138
+      }
+    },
+    {
+      "id": "q0030",
+      "type": "comparison",
+      "question": "Is customer risk categorisation the same under the KYC Master Direction, 2016 and the Commercial Banks KYC Directions, 2025?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 2,
+      "recall": 1.0,
+      "rr": 0.5,
+      "ndcg": 0.6394562303262419,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00000",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.748054
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00022",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 20,
+          "page_end": 21,
+          "score": 0.739417
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00000",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 1,
+          "page_end": 3,
+          "score": 0.73745
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00018",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 20,
+          "page_end": 22,
+          "score": 0.736402
+        },
+        {
+          "chunk_id": "rbi_md_kyc_nbfc_2025__fixed__00017",
+          "doc_id": "rbi_md_kyc_nbfc_2025",
+          "page_start": 19,
+          "page_end": 21,
+          "score": 0.725559
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00002",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.724814
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00016",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 18,
+          "page_end": 20,
+          "score": 0.721265
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00058",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 62,
+          "page_end": 63,
+          "score": 0.720288
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00019",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 22,
+          "page_end": 23,
+          "score": 0.719991
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00037",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 40,
+          "page_end": 41,
+          "score": 0.714657
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6573,
+        "output_tokens": 5,
+        "latency_ms": 1009
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 29,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 0,
+        "faithfulness": 2,
+        "notes": "The candidate incorrectly stated there was insufficient evidence, whereas both contexts explicitly state that customers are to be categorized into low, medium, and high-risk categories based on risk perception.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6151,
+        "output_tokens": 583
+      }
+    },
+    {
+      "id": "q0031",
+      "type": "comparison",
+      "question": "Under the 2020 PSL Directions, is the total priority sector target larger than the agriculture target, and by how much?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.9010126104210695,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00004",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.772858
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00005",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 5,
+          "page_end": 5,
+          "score": 0.770281
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00010",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.76704
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00007",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.760223
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00043",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 39,
+          "page_end": 40,
+          "score": 0.753034
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00016",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 13,
+          "page_end": 14,
+          "score": 0.750983
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00003",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 2,
+          "page_end": 4,
+          "score": 0.750197
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00011",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.749606
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00027",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 23,
+          "page_end": 24,
+          "score": 0.743831
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00006",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.743668
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6595,
+        "output_tokens": 5,
+        "latency_ms": 1048
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 26,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 0,
+        "faithfulness": 2,
+        "notes": "The candidate incorrectly claims insufficient evidence, whereas the context provides the total priority sector target (40%) and agriculture target (18%).",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6802,
+        "output_tokens": 528
+      }
+    },
+    {
+      "id": "q0032",
+      "type": "comparison",
+      "question": "How does the Ombudsman's consequential-loss compensation cap compare with the cap for loss of time and harassment?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": true,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.5,
+      "ndcg": 0.5640920940185894,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00010",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.666575
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00004",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.659575
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00031",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 31,
+          "page_end": 32,
+          "score": 0.656099
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00011",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.655502
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00027",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 28,
+          "page_end": 29,
+          "score": 0.652668
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00029",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 30,
+          "page_end": 31,
+          "score": 0.651597
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00028",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 29,
+          "page_end": 30,
+          "score": 0.650143
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00030",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 31,
+          "page_end": 31,
+          "score": 0.647081
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00032",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 32,
+          "page_end": 33,
+          "score": 0.641646
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00005",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.635388
+        }
+      ],
+      "answer": {
+        "text": "The Ombudsman has the power to provide compensation \"up to Rupees 20 lakh\" for any consequential loss suffered by the complainant [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.5, clause n/a]. In addition, the Ombudsman may award compensation \"up to Rupees One lakh for the loss of the complainant’s time, expenses incurred and for harassment/mental anguish suffered by the complainant\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.5, clause n/a]. Alternatively stated, \"the Ombudsman shall not have the power to pass an Award directing payment by way of compensation, an amount which is more than the consequential loss suffered by the complainant or Rupees 20 lakh whichever is lower,\" while the compensation for the loss of time, expenses incurred, harassment, and mental anguish is \"not exceeding Rupees one lakh\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.10-11, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.5, clause n/a]",
+          "[Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.10-11, clause n/a]"
+        ],
+        "citation_total": 2,
+        "citation_resolved": 2,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6207,
+        "output_tokens": 250,
+        "latency_ms": 2039
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 23,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer correctly states both caps (Rs 20 lakh for consequential loss and Rs 1 lakh for loss of time and harassment) accurately and directly based on the context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6651,
+        "output_tokens": 335
+      }
+    },
+    {
+      "id": "q0033",
+      "type": "comparison",
+      "question": "Which PPI cross-border limit is larger - the per-transaction cap or the monthly cap - and by what factor?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 1,
+      "recall": 1.0,
+      "rr": 0.5,
+      "ndcg": 0.6934264036172708,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00016",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 11,
+          "page_end": 11,
+          "score": 0.70394
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00013",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.69904
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00012",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.685078
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00014",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 10,
+          "page_end": 10,
+          "score": 0.666843
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00031",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 21,
+          "page_end": 21,
+          "score": 0.663392
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00019",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 13,
+          "page_end": 14,
+          "score": 0.658958
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00030",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 20,
+          "page_end": 21,
+          "score": 0.65088
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00010",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.650311
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00018",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.64622
+        },
+        {
+          "chunk_id": "rbi_md_ppi_2021__fixed__00017",
+          "doc_id": "rbi_md_ppi_2021",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.645529
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 5871,
+        "output_tokens": 5,
+        "latency_ms": 1246
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 24,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 0,
+        "faithfulness": 2,
+        "notes": "The candidate incorrectly claims insufficient evidence when the context explicitly provides the per-transaction cap (Rs. 10,000) and monthly cap (Rs. 50,000) for cross-border transactions.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6072,
+        "output_tokens": 648
+      }
+    },
+    {
+      "id": "q0034",
+      "type": "multi_hop",
+      "question": "What data-localisation rule applies under the Digital Lending Directions, 2025, and which parties does it bind?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 2,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.9176551163528843,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00011",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 12,
+          "page_end": 13,
+          "score": 0.728241
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00010",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.715485
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00000",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.711227
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00003",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.708096
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00002",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 3,
+          "page_end": 4,
+          "score": 0.704414
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00001",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 2,
+          "page_end": 3,
+          "score": 0.701391
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00007",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.699499
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00013",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 14,
+          "page_end": 15,
+          "score": 0.697269
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00003",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.694321
+        },
+        {
+          "chunk_id": "rbi_md_digital_lending_2025__fixed__00004",
+          "doc_id": "rbi_md_digital_lending_2025",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.692923
+        }
+      ],
+      "answer": {
+        "text": "Under the Reserve Bank of India (Digital Lending) Directions, 2025, Regulated Entities (REs) \"shall ensure that all data is stored only in servers located within India, while ensuring compliance with statutory obligations/ regulatory instructions\" [Reserve Bank of India (Digital Lending) Directions, 2025, p.12-13, clause n/a]. Furthermore, \"in case the data is processed outside India, the same shall be deleted from servers outside India and brought back to India within 24 hours of processing\" [Reserve Bank of India (Digital Lending) Directions, 2025, p.12-13, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank of India (Digital Lending) Directions, 2025, p.12-13, clause n/a]"
+        ],
+        "citation_total": 1,
+        "citation_resolved": 1,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6174,
+        "output_tokens": 144,
+        "latency_ms": 1383
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 24,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 1,
+        "faithfulness": 2,
+        "notes": "The candidate correctly states the data-localisation and processing rules, but fails to explicitly answer the second part of the prompt regarding all the bound parties (Lending Service Providers and Digital Lending Apps).",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6139,
+        "output_tokens": 540
+      }
+    },
+    {
+      "id": "q0035",
+      "type": "multi_hop",
+      "question": "What total PSL target applies to scheduled commercial banks under the 2020 Directions, and how is ANBC defined?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 2,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.9493885684853097,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00009",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.796915
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00007",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.780935
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00004",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.759045
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00025",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 21,
+          "page_end": 22,
+          "score": 0.758701
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00026",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 22,
+          "page_end": 23,
+          "score": 0.751639
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00010",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 8,
+          "page_end": 9,
+          "score": 0.749117
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00043",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 39,
+          "page_end": 40,
+          "score": 0.740034
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00003",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 2,
+          "page_end": 4,
+          "score": 0.736573
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00005",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 5,
+          "page_end": 5,
+          "score": 0.734429
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00046",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 41,
+          "page_end": 41,
+          "score": 0.731053
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6649,
+        "output_tokens": 5,
+        "latency_ms": 934
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 24,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 0,
+        "faithfulness": 2,
+        "notes": "The candidate incorrectly claims insufficient evidence, as both the 40% target and the definition of ANBC are explicitly provided in the context.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6883,
+        "output_tokens": 804
+      }
+    },
+    {
+      "id": "q0036",
+      "type": "multi_hop",
+      "question": "When may a complainant go to the Ombudsman under the 2021 Scheme, and what is the maximum consequential-loss compensation?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 2,
+      "recall": 1.0,
+      "rr": 1.0,
+      "ndcg": 0.8207149601443599,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00004",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 4,
+          "page_end": 5,
+          "score": 0.703403
+        },
+        {
+          "chunk_id": "rbi_notif_integrated_ombudsman_2021__fixed__00001",
+          "doc_id": "rbi_notif_integrated_ombudsman_2021",
+          "page_start": 1,
+          "page_end": 1,
+          "score": 0.685813
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00027",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 28,
+          "page_end": 29,
+          "score": 0.684939
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00005",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 5,
+          "page_end": 6,
+          "score": 0.68463
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00010",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.684301
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00006",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.684095
+        },
+        {
+          "chunk_id": "rbi_notif_integrated_ombudsman_2021__fixed__00000",
+          "doc_id": "rbi_notif_integrated_ombudsman_2021",
+          "page_start": 1,
+          "page_end": 1,
+          "score": 0.682346
+        },
+        {
+          "chunk_id": "rbi_scheme_integrated_ombudsman_2021__fixed__00007",
+          "doc_id": "rbi_scheme_integrated_ombudsman_2021",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.676744
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00031",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 31,
+          "page_end": 32,
+          "score": 0.674222
+        },
+        {
+          "chunk_id": "rbi_md_credit_information_2025__fixed__00029",
+          "doc_id": "rbi_md_credit_information_2025",
+          "page_start": 30,
+          "page_end": 31,
+          "score": 0.673829
+        }
+      ],
+      "answer": {
+        "text": "Under the Reserve Bank - Integrated Ombudsman Scheme, 2021, a complaint shall not lie unless:\n(a) \"the complainant had, before making a complaint under the Scheme, made a written complaint to the Regulated Entity concerned\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.6-7, clause n/a] and either the complaint was rejected wholly or partly or no reply was received within 30 days [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.7, clause n/a]. Additionally, the complaint must be made to the Ombudsman \"within one year after the complainant has received the reply from the Regulated Entity to the complaint or, where no reply is received, within one year and 30 days from the date of the complaint.\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.7, clause n/a].\n(b) The complaint is not in respect of the same cause of action already pending, settled, or dealt with on merits by an Ombudsman, Court, Tribunal, Arbitrator, or any other Forum or Authority [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.7, clause n/a].\n(c) The complaint is \"not abusive or frivolous or vexatious in nature\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.7, clause n/a].\n(d) The complaint to the Regulated Entity was made \"before the expiry of the period of limitation prescribed under the Limitation Act, 1963\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.7, clause n/a].\n(e) Complete information as specified in clause 11 is provided [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.7, clause n/a].\n(f) The complaint is lodged personally or through an authorised representative \"other than an advocate unless the advocate is the aggrieved person\" [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.8, clause n/a].\n\nThe maximum compensation for any consequential loss suffered by the complainant that the Ombudsman has the power to provide is \"Rupees 20 lakh\" (or \"the consequential loss suffered by the complainant or Rupees 20 lakh whichever is lower\") [Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.4-5, clause n/a; Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.10-11, clause n/a].",
+        "refused": false,
+        "citations": [
+          "[Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.6-7, clause n/a]",
+          "[Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.7, clause n/a]",
+          "[Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.8, clause n/a]",
+          "[Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.4-5, clause n/a; Reserve Bank - Integrated Ombudsman Scheme, 2021 (consolidated text as amended August 5, 2022), p.10-11, clause n/a]"
+        ],
+        "citation_total": 4,
+        "citation_resolved": 4,
+        "citation_precision": 1.0,
+        "has_citations": true,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 5876,
+        "output_tokens": 694,
+        "latency_ms": 2820
+      },
+      "refused": false,
+      "citation_precision": 1.0,
+      "has_citations": true,
+      "embed_input_tokens": 28,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate answer accurately and comprehensively answers both parts of the question using exact details supported by the context passages.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6794,
+        "output_tokens": 364
+      }
+    },
+    {
+      "id": "q0037",
+      "type": "multi_hop",
+      "question": "What rank must the CISO hold and what experience counts as 'substantial IT expertise' under the IT Governance Directions, 2023?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 2,
+      "recall": 0.5,
+      "rr": 1.0,
+      "ndcg": 1.0,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00007",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 8,
+          "page_end": 10,
+          "score": 0.696049
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00006",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 7,
+          "page_end": 8,
+          "score": 0.685568
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00001",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 2,
+          "page_end": 3,
+          "score": 0.666047
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00005",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 6,
+          "page_end": 7,
+          "score": 0.664867
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00000",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 1,
+          "page_end": 2,
+          "score": 0.664843
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00002",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 3,
+          "page_end": 5,
+          "score": 0.663669
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00019",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 22,
+          "page_end": 24,
+          "score": 0.659854
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00009",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 11,
+          "page_end": 12,
+          "score": 0.658997
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00015",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 18,
+          "page_end": 19,
+          "score": 0.656884
+        },
+        {
+          "chunk_id": "rbi_md_it_governance_2023__fixed__00008",
+          "doc_id": "rbi_md_it_governance_2023",
+          "page_start": 9,
+          "page_end": 11,
+          "score": 0.656811
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6436,
+        "output_tokens": 5,
+        "latency_ms": 861
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 28,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The provided context does not contain information regarding the required rank for the CISO, so the candidate's refusal based on insufficient evidence is correct.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 5628,
+        "output_tokens": 1269
+      }
+    },
+    {
+      "id": "q0038",
+      "type": "unanswerable",
+      "question": "What repo rate did the Monetary Policy Committee decide at its latest meeting?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 0,
+      "recall": null,
+      "rr": null,
+      "ndcg": null,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00128",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 135,
+          "page_end": 138,
+          "score": 0.629757
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00008",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 9,
+          "page_end": 10,
+          "score": 0.628934
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00073",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 77,
+          "page_end": 78,
+          "score": 0.628574
+        },
+        {
+          "chunk_id": "rbi_md_risk_interbank_2016__fixed__00000",
+          "doc_id": "rbi_md_risk_interbank_2016",
+          "page_start": 1,
+          "page_end": 1,
+          "score": 0.628235
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00044",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 40,
+          "page_end": 40,
+          "score": 0.627208
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00000",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 1,
+          "page_end": 1,
+          "score": 0.625823
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00074",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 78,
+          "page_end": 79,
+          "score": 0.62102
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00032",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 33,
+          "page_end": 34,
+          "score": 0.619334
+        },
+        {
+          "chunk_id": "rbi_md_risk_interbank_2016__fixed__00043",
+          "doc_id": "rbi_md_risk_interbank_2016",
+          "page_start": 62,
+          "page_end": 63,
+          "score": 0.618948
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00045",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 40,
+          "page_end": 41,
+          "score": 0.616817
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6581,
+        "output_tokens": 5,
+        "latency_ms": 1159
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 14,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate correctly states that there is insufficient evidence in the context to answer the question.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6769,
+        "output_tokens": 159
+      }
+    },
+    {
+      "id": "q0039",
+      "type": "unanswerable",
+      "question": "What is the expense ratio cap for equity mutual fund schemes?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": true,
+      "gold_count": 0,
+      "recall": null,
+      "rr": null,
+      "ndcg": null,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_risk_interbank_2016__fixed__00000",
+          "doc_id": "rbi_md_risk_interbank_2016",
+          "page_start": 1,
+          "page_end": 1,
+          "score": 0.625127
+        },
+        {
+          "chunk_id": "rbi_md_investment_2023__fixed__00029",
+          "doc_id": "rbi_md_investment_2023",
+          "page_start": 30,
+          "page_end": 31,
+          "score": 0.623105
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00052",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 57,
+          "page_end": 58,
+          "score": 0.621558
+        },
+        {
+          "chunk_id": "rbi_md_risk_interbank_2016__fixed__00050",
+          "doc_id": "rbi_md_risk_interbank_2016",
+          "page_start": 66,
+          "page_end": 67,
+          "score": 0.617205
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00146",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 154,
+          "page_end": 155,
+          "score": 0.614537
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00119",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 124,
+          "page_end": 125,
+          "score": 0.612847
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00042",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 42,
+          "page_end": 43,
+          "score": 0.612321
+        },
+        {
+          "chunk_id": "rbi_md_securitisation_2021__fixed__00009",
+          "doc_id": "rbi_md_securitisation_2021",
+          "page_start": 10,
+          "page_end": 11,
+          "score": 0.61173
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00083",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 86,
+          "page_end": 88,
+          "score": 0.611705
+        },
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00133",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 142,
+          "page_end": 143,
+          "score": 0.611014
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6736,
+        "output_tokens": 5,
+        "latency_ms": 1007
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 12,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate correctly states that there is insufficient evidence in the context to answer the question.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6926,
+        "output_tokens": 143
+      }
+    },
+    {
+      "id": "q0040",
+      "type": "unanswerable",
+      "question": "What customs duty applies to imported gold bullion?",
+      "as_of_date": null,
+      "review": "draft",
+      "held_out": false,
+      "gold_count": 0,
+      "recall": null,
+      "rr": null,
+      "ndcg": null,
+      "retrieved": [
+        {
+          "chunk_id": "rbi_md_alm_2025__fixed__00083",
+          "doc_id": "rbi_md_alm_2025",
+          "page_start": 86,
+          "page_end": 88,
+          "score": 0.581592
+        },
+        {
+          "chunk_id": "rbi_md_risk_interbank_2016__fixed__00050",
+          "doc_id": "rbi_md_risk_interbank_2016",
+          "page_start": 66,
+          "page_end": 67,
+          "score": 0.576366
+        },
+        {
+          "chunk_id": "rbi_md_risk_interbank_2016__fixed__00046",
+          "doc_id": "rbi_md_risk_interbank_2016",
+          "page_start": 63,
+          "page_end": 64,
+          "score": 0.569826
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00021",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 18,
+          "page_end": 19,
+          "score": 0.569337
+        },
+        {
+          "chunk_id": "rbi_md_risk_interbank_2016__fixed__00047",
+          "doc_id": "rbi_md_risk_interbank_2016",
+          "page_start": 64,
+          "page_end": 64,
+          "score": 0.568084
+        },
+        {
+          "chunk_id": "rbi_md_kyc_2016__fixed__00114",
+          "doc_id": "rbi_md_kyc_2016",
+          "page_start": 97,
+          "page_end": 97,
+          "score": 0.567666
+        },
+        {
+          "chunk_id": "rbi_md_risk_interbank_2016__fixed__00044",
+          "doc_id": "rbi_md_risk_interbank_2016",
+          "page_start": 63,
+          "page_end": 63,
+          "score": 0.567249
+        },
+        {
+          "chunk_id": "rbi_md_psl_2020__fixed__00022",
+          "doc_id": "rbi_md_psl_2020",
+          "page_start": 19,
+          "page_end": 20,
+          "score": 0.566723
+        },
+        {
+          "chunk_id": "rbi_md_kyc_commercial_2025__fixed__00085",
+          "doc_id": "rbi_md_kyc_commercial_2025",
+          "page_start": 88,
+          "page_end": 90,
+          "score": 0.566332
+        },
+        {
+          "chunk_id": "rbi_md_risk_interbank_2016__fixed__00045",
+          "doc_id": "rbi_md_risk_interbank_2016",
+          "page_start": 63,
+          "page_end": 64,
+          "score": 0.566311
+        }
+      ],
+      "answer": {
+        "text": "INSUFFICIENT EVIDENCE",
+        "refused": true,
+        "citations": [],
+        "citation_total": 0,
+        "citation_resolved": 0,
+        "citation_precision": null,
+        "has_citations": false,
+        "model": "gemini-3.5-flash-lite",
+        "input_tokens": 6763,
+        "output_tokens": 5,
+        "latency_ms": 1066
+      },
+      "refused": true,
+      "citation_precision": null,
+      "has_citations": false,
+      "embed_input_tokens": 10,
+      "embed_model": "gemini-embedding-001",
+      "judge": {
+        "correctness": 2,
+        "faithfulness": 2,
+        "notes": "The candidate correctly refuses to answer as the context contains no information regarding customs duty on imported gold bullion.",
+        "error": null,
+        "prompt_version": "judge-v1",
+        "model": "gemini-3.6-flash",
+        "input_tokens": 6948,
+        "output_tokens": 159
+      }
+    }
+  ]
+}
