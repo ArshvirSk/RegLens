@@ -27,7 +27,7 @@ What Phase 0 *does* establish is the machinery that makes a metric trustworthy:
 | Report carries config, corpus version, git commit, models | `ExperimentConfig.fingerprint()`, `Settings.corpus_version`, `describe_pricing()` | `tests/unit/test_config.py` |
 | Questions have a schema, quotas and a review flag | `eval/golden/schema.md`, `eval/runners/golden.py` | `tests/unit/test_golden.py` |
 | Held-out questions cannot be tuned on | `held_out` field + validator counts | `tests/unit/test_golden.py::test_review_and_held_out_counts` |
-| Judge is validated against humans | Phase 1 deliverable (20 hand-graded answers) | — |
+| Judge is validated against humans | Phase 1 deliverable (20 hand-graded answers) | `eval/grades/phase-1.jsonl` → `eval --agree-with` (Phase 1, agreement section in the report) |
 
 ## Parser comparison (measured, Phase 1 preprocessing)
 
@@ -43,15 +43,34 @@ Worst agreement: 0.9048 (`rbi_md_psl_2020`). Pages `[57, 73, 86]` yielded almost
 and are flagged as OCR candidates. Decision: **pymupdf stays the baseline parser on this
 evidence** (`parsing.parser: pymupdf`).
 
-## Phase 1 — baseline (to be filled by the first real run)
+## Phase 1 — baseline (measured)
 
 | # | Config | Chunking | Embedding | Retrieval | recall@10 | MRR@10 | nDCG@10 | Correctness | Faithfulness | Report |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1.0 | `baseline_naive` | fixed 512/64 | `gemini-embedding-001` (3072-dim) | dense top-10 | — | — | — | — | — | — |
+| 1.0 | `baseline_naive` | fixed 512/64 | `gemini-embedding-001` (3072-dim) | dense top-10 | 0.9730 | 0.7820 | 0.7959 | 0.7750 (1.55/2) | 0.9750 (1.95/2) | `eval/results/2026-10-03T121902Z_baseline_naive_e98261b91683` |
 
 Baseline is deliberately naive: fixed-size chunks, one hosted embedding model, dense
 retrieval only, no reranking, no rewriting, no temporal filtering. It stays runnable for the
 rest of the project.
+
+Generation detail from the same run (all numbers from the report):
+
+| Metric | Value | Denominator |
+|---|---|---|
+| Citation precision | 1.0000 | 28 answered-with-citations of 37 answerable (9 answers cite nothing → graded undefined, not 0) |
+| Refusal rate | 0.2750 | 40 scored |
+| Correct refusals on unanswerable | 3/3 | 3 unanswerable |
+| False refusals (answerable refused) | 8 | 37 answerable — 6 of them with recall@10 = 1.0, i.e. the evidence *was* in context |
+| Judge mean correctness by type | lookup 1.846, numeric 1.556, temporal 1.500, comparison 0.800, multi_hop 1.250, unanswerable 2.000 | judge score 0–2 |
+| Judge vs human agreement | exact 0.95 C / 0.80 F; within-one 0.95 C / 0.80 F | paired = 20 hand grades (`eval/grades/phase-1.jsonl`) |
+| Cost | $0.345511 per 40-question run; serving path (embed+answer only) **$0.002148/question** | judge scoring is $0.259601 of the run |
+| Answer latency (answerer call only) | p50 1284 ms, p95 2271 ms | n=40 |
+
+Caveats that belong to this row: all 40 questions are still `review:draft`, 7 held-out
+questions are included in the aggregates, the HNSW index is skipped at 3072 dimensions
+(search is exact kNN, not approximate), and this run precedes any tuning — the agreement
+numbers were attached post-hoc with `eval --agree-with` and no experiment was changed
+after seeing them.
 
 ## Phase 2 — ablation queue
 
@@ -106,10 +125,10 @@ baseline, and the actual delta is reported — including if it is smaller than h
 
 | Metric | Target | Measured | Where |
 |---|---|---|---|
-| p50 latency (text) | < 4 s | — | — |
-| p95 latency (text) | < 10 s | — | — |
-| Cost per query | < ~$0.02 | — | — |
-| Judge vs human agreement | report actual | — | — |
+| p50 latency (text) | < 4 s | 1.284 s (answerer call; retrieval not in this number) | `eval/results/2026-10-03T121902Z_baseline_naive_e98261b91683` |
+| p95 latency (text) | < 10 s | 2.271 s (answerer call; retrieval not in this number) | same report |
+| Cost per query | < ~$0.02 | $0.002148 serving path (embed+answer); $0.008638 including judge scoring | report `totals` |
+| Judge vs human agreement | report actual | paired=20: exact 0.95 C / 0.80 F, within-one 0.95 C / 0.80 F | report `judge.agreement`, `eval/grades/phase-1.jsonl` |
 
 ## Changelog
 
@@ -117,3 +136,5 @@ baseline, and the actual delta is reported — including if it is smaller than h
 |---|---|
 | 2026-10-02 | Created. Phase 0 complete: no metrics yet, by design. |
 | 2026-10-02 | Parser comparison measured on all 20 fetched documents; pymupdf retained. |
+| 2026-10-03 | Phase 1 baseline run measured (row 1.0 + detail tables). Two measuring-instrument bugs found by reading the first run and fixed before it was recorded: judge output budget (thinking tokens ate the 400-token cap, 21/40 replies truncated) and `CITATION_RE` (rejected the `p.40-41` ranges its own context block emits). First run discarded uncommitted; row 1.0 comes from the clean re-run. |
+| 2026-10-03 | 20 hand grades recorded and judge agreement attached post-hoc (`eval --agree-with`): exact 0.95/0.80. All 5 disagreements are refusal-related; judge-prompt conflict documented in `docs/learning/phase-1.md`. |
