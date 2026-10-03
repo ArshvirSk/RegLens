@@ -12,9 +12,15 @@ import pymupdf
 import pytest
 
 from reglens.chunking.fixed import FixedSizeChunker
+from reglens.cli import EXIT_ERROR, main
 from reglens.config import get_settings, load_experiment
 from reglens.indexing.base import EmbeddedBatch
-from reglens.ingestion.ingest import build_chunker, chunk_rows, ingest_corpus
+from reglens.ingestion.ingest import (
+    EmbeddingDimensionError,
+    build_chunker,
+    chunk_rows,
+    ingest_corpus,
+)
 from reglens.ingestion.manifest import raw_relative_path, sha256_bytes, write_manifest
 from reglens.ingestion.parse import parse_pdf
 from tests.conftest import make_record
@@ -69,6 +75,17 @@ class FakeStore:
         self.chunks.extend(records)
         self.vectors.extend(vectors)
         return len(records)
+
+
+class DimensionStore(FakeStore):
+    """Fake that reports a column width, the way PgVectorStore reads it from Postgres."""
+
+    def __init__(self, *, dimension: int | None) -> None:
+        super().__init__()
+        self.dimension = dimension
+
+    def embedding_dimension(self) -> int | None:
+        return self.dimension
 
 
 def make_fetchable_pdf() -> bytes:
@@ -157,6 +174,40 @@ def test_ingest_skips_documents_already_indexed() -> None:
     assert embedder.batch_sizes == []  # no paid call happened
 
 
+def test_ingest_refuses_before_paying_when_store_dimension_mismatches() -> None:
+    settings = get_settings()
+    write_fetched_row(make_fetchable_pdf())
+    embedder = FakeEmbedder()
+    wrong = settings.embedding_dim + 1
+
+    with pytest.raises(EmbeddingDimensionError, match=f"vector\\({wrong}\\)"):
+        ingest_corpus(
+            settings=settings,
+            experiment=load_experiment("baseline_naive"),
+            embedder=embedder,  # type: ignore[arg-type]
+            store=DimensionStore(dimension=wrong),  # type: ignore[arg-type]
+            chunker=small_chunker(),
+        )
+
+    assert embedder.batch_sizes == []  # the preflight ran before any paid call
+
+
+def test_ingest_proceeds_when_store_dimension_matches_settings() -> None:
+    settings = get_settings()
+    record = write_fetched_row(make_fetchable_pdf())
+
+    report = ingest_corpus(
+        settings=settings,
+        experiment=load_experiment("baseline_naive"),
+        embedder=FakeEmbedder(),  # type: ignore[arg-type]
+        store=DimensionStore(dimension=settings.embedding_dim),  # type: ignore[arg-type]
+        chunker=small_chunker(),
+    )
+
+    assert report.processed == [record.doc_id]
+    assert report.failed == []
+
+
 def test_failed_documents_are_reported_not_raised() -> None:
     settings = get_settings()
     record = write_fetched_row(make_fetchable_pdf())
@@ -196,3 +247,18 @@ def test_build_chunker_refuses_phase_2_strategies() -> None:
     modified.chunking.strategy = "clause_aware"
     with pytest.raises(NotImplementedError, match="Phase 2"):
         build_chunker(modified)
+
+
+def test_cli_ingest_reports_dimension_mismatch_as_an_error(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    write_fetched_row(make_fetchable_pdf())
+
+    def mismatched(**_kwargs: object) -> None:
+        raise EmbeddingDimensionError(
+            "chunks.embedding is vector(1) but settings expect vector(2)"
+        )
+
+    monkeypatch.setattr("reglens.ingestion.ingest.ingest_corpus", mismatched)
+    assert main(["ingest", "--yes"]) == EXIT_ERROR
+    assert "cannot ingest" in capsys.readouterr().err

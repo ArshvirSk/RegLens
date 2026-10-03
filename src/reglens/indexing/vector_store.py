@@ -275,6 +275,25 @@ class PgVectorStore:
 
         return self._run(work)
 
+    def embedding_dimension(self) -> int | None:
+        """Declared width of ``chunks.embedding`` (pgvector keeps it in ``atttypmod``).
+
+        ``None`` when the column is unconstrained. The ingest preflight compares this
+        against settings before any paid embedding call: a dimension mismatch otherwise
+        surfaces only at insert time, after the embed bill is already spent.
+        """
+
+        async def work(connection: asyncpg.Connection) -> int | None:
+            row = await connection.fetchrow(
+                "SELECT atttypmod FROM pg_attribute "
+                "WHERE attrelid = 'chunks'::regclass AND attname = 'embedding'"
+            )
+            if row is None or row[0] is None or int(row[0]) < 0:
+                return None
+            return int(row[0])
+
+        return self._run(work)
+
     def purge_chunks(self) -> int:
         """Delete every chunk of the active corpus version; documents are kept.
 

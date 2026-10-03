@@ -283,7 +283,7 @@ def cmd_download(args: argparse.Namespace) -> int:
 
 def cmd_ingest(args: argparse.Namespace) -> int:
     """Parse, chunk, embed and store the fetched corpus (dry run unless --yes)."""
-    from reglens.ingestion.ingest import ingest_corpus
+    from reglens.ingestion.ingest import EmbeddingDimensionError, ingest_corpus
 
     settings = get_settings()
     try:
@@ -308,11 +308,15 @@ def cmd_ingest(args: argparse.Namespace) -> int:
             print(f"  ingest {record.doc_id:44s} {record.title[:60]}")
         return EXIT_OK
 
-    report = ingest_corpus(
-        settings=settings,
-        only=set(args.only) if args.only else None,
-        limit=args.limit,
-    )
+    try:
+        report = ingest_corpus(
+            settings=settings,
+            only=set(args.only) if args.only else None,
+            limit=args.limit,
+        )
+    except EmbeddingDimensionError as exc:
+        print(f"cannot ingest: {exc}", file=sys.stderr)
+        return EXIT_ERROR
     payload = report.as_dict()
     lines = [
         f"ingested {payload['documents']} document(s): {payload['chunks']} chunks, "
@@ -336,6 +340,7 @@ def cmd_reindex(args: argparse.Namespace) -> int:
     """
     from reglens.config.settings import MissingApiKeyError
     from reglens.indexing.vector_store import PgVectorStore
+    from reglens.ingestion.ingest import EmbeddingDimensionError, ensure_store_dimension
 
     settings = get_settings()
     store = PgVectorStore(settings=settings)
@@ -343,6 +348,14 @@ def cmd_reindex(args: argparse.Namespace) -> int:
         existing = store.count_chunks()
     except Exception as exc:  # database unreachable is a preflight failure, not a crash
         print(f"cannot reindex: index unreachable: {exc}", file=sys.stderr)
+        return EXIT_ERROR
+
+    # Preflight before the purge: a mismatched column would fail the re-ingest anyway,
+    # but only after the existing index had already been destroyed.
+    try:
+        ensure_store_dimension(store, settings)
+    except EmbeddingDimensionError as exc:
+        print(f"cannot reindex: {exc}", file=sys.stderr)
         return EXIT_ERROR
 
     if not args.yes:

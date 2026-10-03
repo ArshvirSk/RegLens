@@ -124,3 +124,19 @@ def test_reindex_unreachable_database_is_a_preflight_error(
     monkeypatch.setattr("reglens.indexing.vector_store.PgVectorStore", DeadStore)
     assert main(["reindex"]) == EXIT_ERROR
     assert "unreachable" in capsys.readouterr().err
+
+
+def test_reindex_dimension_mismatch_never_purges(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A purge followed by a failed ingest would lose the index for nothing."""
+
+    class MismatchedStore(FakeStore):
+        def embedding_dimension(self) -> int | None:
+            return 1
+
+    store = MismatchedStore(42, allow_purge=True)
+    monkeypatch.setattr("reglens.indexing.vector_store.PgVectorStore", lambda **_k: store)
+    assert main(["reindex", "--yes"]) == EXIT_ERROR
+    assert "vector(1)" in capsys.readouterr().err
+    assert store.purged == 0

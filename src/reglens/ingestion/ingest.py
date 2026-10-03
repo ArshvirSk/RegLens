@@ -176,6 +176,32 @@ def embed_chunks(
     return vectors
 
 
+class EmbeddingDimensionError(RuntimeError):
+    """The store's vector column disagrees with the configured embedding dimension."""
+
+
+def ensure_store_dimension(target: Any, settings: Settings) -> None:
+    """Refuse to start when the store cannot accept the vectors this run will write.
+
+    The migration that created the column rendered ``${EMBEDDING_DIM}`` once, when it
+    was first applied, so a database created under one dimension rejects another only
+    at insert time: after every embedding call has already been paid for. Checked once,
+    before the first document. Stores without an ``embedding_dimension`` probe (test
+    fakes, alternative backends) skip the check.
+    """
+    try:
+        stored = target.embedding_dimension()
+    except AttributeError:
+        return
+    if stored is None or stored == settings.embedding_dim:
+        return
+    raise EmbeddingDimensionError(
+        f"chunks.embedding is vector({stored}) but settings expect "
+        f"vector({settings.embedding_dim}); apply pending migrations "
+        "(reglens migrate) or align REGLENS_EMBEDDING_DIM before ingesting"
+    )
+
+
 def ingest_corpus(
     *,
     settings: Settings | None = None,
@@ -195,6 +221,8 @@ def ingest_corpus(
     model = embedder or build_embedding_model(active)
     target = store or PgVectorStore(settings=active)
     windows = chunker or build_chunker(config)
+    # Preflight: a wrong column width must fail here, before the first paid embed call.
+    ensure_store_dimension(target, active)
 
     records = [
         record
