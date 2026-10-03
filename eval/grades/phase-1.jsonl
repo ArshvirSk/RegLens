@@ -1,0 +1,20 @@
+{"question_id": "q0001", "correctness": 2, "faithfulness": 2, "notes": "All three intervals (2/8/10 yrs) present; every quoted span verified verbatim in retrieved chunks."}
+{"question_id": "q0002", "correctness": 2, "faithfulness": 2, "notes": "Three categories plus assessment/perception basis; quote matches kyc_2016 p20 verbatim."}
+{"question_id": "q0003", "correctness": 2, "faithfulness": 2, "notes": "HTM/AFS/FVTPL plus HFT sub-category and subsidiary exclusion; 'sub- category' PDF hyphen explains the raw quote miss."}
+{"question_id": "q0004", "correctness": 2, "faithfulness": 2, "notes": "GM rank, no reporting to Head of IT, no business targets - all three quoted spans found in context."}
+{"question_id": "q0005", "correctness": 2, "faithfulness": 2, "notes": "No-breach rule with explicit-consent condition, quoted verbatim from p.7-8."}
+{"question_id": "q0006", "correctness": 1, "faithfulness": 2, "notes": "Right on explicit consent but drops 'backed by appropriate agreements or authorisations' from the reference."}
+{"question_id": "q0014", "correctness": 2, "faithfulness": 2, "notes": "Ten-year log retention quoted verbatim, clause 6.3."}
+{"question_id": "q0015", "correctness": 0, "faithfulness": 0, "notes": "False refusal: retrieved chunk p5 literally contains '40 per cent of ANBC ... or CEOBE whichever is higher', so 'INSUFFICIENT EVIDENCE' contradicts the context."}
+{"question_id": "q0016", "correctness": 2, "faithfulness": 2, "notes": "Both 18% and 10% SMF targets present in p5 table; quote differs from context only by an added colon after 'Agriculture'."}
+{"question_id": "q0017", "correctness": 2, "faithfulness": 2, "notes": "All three required figures (10,000/month, 1,20,000/year, 10,000 outstanding) with verbatim quotes; 4th figure (monthly debit) is optional per golden notes. Held-out."}
+{"question_id": "q0023", "correctness": 0, "faithfulness": 0, "notes": "False refusal: context contains both the 40% target and the 'Withdrawn w.e.f April 01, 2025' notice, so the as-of question is answerable from it."}
+{"question_id": "q0024", "correctness": 2, "faithfulness": 2, "notes": "Rs 20 lakh cap quoted verbatim from the consolidated Scheme text."}
+{"question_id": "q0025", "correctness": 1, "faithfulness": 2, "notes": "Gives 10,000/1,20,000 load limits but omits the 10,000 outstanding figure the reference requires, and leads with an irrelevant 50,000 cash-loading figure (itself context-supported)."}
+{"question_id": "q0029", "correctness": 0, "faithfulness": 2, "notes": "Refused an answerable (per reference) question: correctness axis is defined against the reference only, so 0. Faithfulness 2 because recall was 0.5 - the Commercial Banks side of the comparison was genuinely not in context, so the caution was supported."}
+{"question_id": "q0030", "correctness": 0, "faithfulness": 0, "notes": "False refusal: both documents' three-category text is in context (kyc_2016 p20 and commercial_2025 p20)."}
+{"question_id": "q0031", "correctness": 0, "faithfulness": 0, "notes": "False refusal: both 40% and 18% appear in retrieved p5 chunk, so the comparison and the 22-point difference are derivable."}
+{"question_id": "q0034", "correctness": 1, "faithfulness": 2, "notes": "Covers hop 1 (India storage + 24h return) verbatim but never answers who is bound (RE/LSP/DLA), which the golden notes require for full credit."}
+{"question_id": "q0035", "correctness": 0, "faithfulness": 0, "notes": "False refusal: recall 1.0 with both hops in context (40% target on p5, ANBC definition with Section 42(2) on p7)."}
+{"question_id": "q0038", "correctness": 2, "faithfulness": 2, "notes": "Correct refusal: no MPC/repo-rate content in the corpus; nothing fabricated."}
+{"question_id": "q0039", "correctness": 2, "faithfulness": 2, "notes": "Correct refusal: expense-ratio rules are outside this RBI corpus. Held-out."}
