@@ -42,7 +42,7 @@ type AskResponse = {
   latency_ms: number;
 };
 
-type Camera = { yaw: number; pitch: number; zoom: number };
+type Camera = { yaw: number; pitch: number; zoom: number; panX: number; panY: number };
 
 const HUE_STEP = 137.508; // golden angle: maximally spread hues across ~20 documents
 
@@ -70,8 +70,16 @@ export default function VectorsPage() {
   const [note, setNote] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const camera = useRef<Camera>({ yaw: 0.7, pitch: -0.35, zoom: 1 });
-  const drag = useRef<{ x: number; y: number; yaw: number; pitch: number } | null>(null);
+  const camera = useRef<Camera>({ yaw: 0.7, pitch: -0.35, zoom: 1, panX: 0, panY: 0 });
+  const drag = useRef<{
+    mode: "pan" | "rotate";
+    x: number;
+    y: number;
+    yaw: number;
+    pitch: number;
+    panX: number;
+    panY: number;
+  } | null>(null);
   const hover = useRef<{ index: number; x: number; y: number } | null>(null);
   const overlayRef = useRef<QueryResult | null>(null);
   overlayRef.current = overlay;
@@ -166,8 +174,8 @@ export default function VectorsPage() {
       const y1 = ny * cosP - z1 * sinP;
       const z2 = ny * sinP + z1 * cosP;
       const perspective = 2.6 / (2.6 + z2);
-      const cx = state.width / 2;
-      const cy = state.height / 2;
+      const cx = state.width / 2 + cam.panX;
+      const cy = state.height / 2 + cam.panY;
       const scale = Math.min(state.width, state.height) * 0.42 * cam.zoom * perspective;
       return { sx: cx + x1 * scale, sy: cy - y1 * scale, depth: z2 };
     };
@@ -277,11 +285,17 @@ export default function VectorsPage() {
     frameHandle = requestAnimationFrame(draw);
 
     const onPointerDown = (event: PointerEvent) => {
+      // Left-drag pans the view so the centre can be moved; right- or
+      // shift-drag orbits the camera around the cloud.
+      const mode = event.button === 0 && !event.shiftKey ? "pan" : "rotate";
       drag.current = {
+        mode,
         x: event.clientX,
         y: event.clientY,
         yaw: camera.current.yaw,
         pitch: camera.current.pitch,
+        panX: camera.current.panX,
+        panY: camera.current.panY,
       };
       canvas.setPointerCapture(event.pointerId);
     };
@@ -290,11 +304,15 @@ export default function VectorsPage() {
       const mx = event.clientX - rect.left;
       const my = event.clientY - rect.top;
       if (drag.current) {
-        camera.current.yaw = drag.current.yaw + (event.clientX - drag.current.x) * 0.008;
-        camera.current.pitch = Math.max(
-          -1.5,
-          Math.min(1.5, drag.current.pitch + (event.clientY - drag.current.y) * 0.008),
-        );
+        const dx = event.clientX - drag.current.x;
+        const dy = event.clientY - drag.current.y;
+        if (drag.current.mode === "pan") {
+          camera.current.panX = drag.current.panX + dx;
+          camera.current.panY = drag.current.panY + dy;
+        } else {
+          camera.current.yaw = drag.current.yaw + dx * 0.008;
+          camera.current.pitch = Math.max(-1.5, Math.min(1.5, drag.current.pitch + dy * 0.008));
+        }
         hover.current = null;
         return;
       }
@@ -314,12 +332,14 @@ export default function VectorsPage() {
       event.preventDefault();
       camera.current.zoom = Math.max(0.4, Math.min(5, camera.current.zoom * (1 - event.deltaY * 0.001)));
     };
+    const onContextMenu = (event: Event) => event.preventDefault();
 
     canvas.addEventListener("pointerdown", onPointerDown);
     canvas.addEventListener("pointermove", onPointerMove);
     canvas.addEventListener("pointerup", onPointerUp);
     canvas.addEventListener("pointerleave", onPointerUp);
     canvas.addEventListener("wheel", onWheel, { passive: false });
+    canvas.addEventListener("contextmenu", onContextMenu);
 
     return () => {
       cancelAnimationFrame(frameHandle);
@@ -329,6 +349,7 @@ export default function VectorsPage() {
       canvas.removeEventListener("pointerup", onPointerUp);
       canvas.removeEventListener("pointerleave", onPointerUp);
       canvas.removeEventListener("wheel", onWheel);
+      canvas.removeEventListener("contextmenu", onContextMenu);
     };
   }, [space, frame, docIndex, scoreByChunk, chunkById, overlay]);
 
@@ -426,8 +447,8 @@ export default function VectorsPage() {
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted)]">
               <span>
-                {space.chunks_total} chunks · {space.documents.length} documents · drag to rotate,
-                scroll to zoom
+                {space.chunks_total} chunks · {space.documents.length} documents · drag to pan,
+                shift+drag to rotate, scroll to zoom
               </span>
               <span>
                 PCA axes capture{" "}
