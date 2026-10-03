@@ -11,6 +11,7 @@ from typing import Any
 
 from google.genai import types
 
+from reglens.chunking.fixed import TiktokenTokenizer
 from reglens.config import Settings, get_settings
 from reglens.indexing.base import EmbeddedBatch, EmbeddingModel
 
@@ -21,6 +22,23 @@ MAX_CONTENTS_PER_REQUEST = 100
 #: ``EmbedContentConfig.task_type``, 2026-10-02).
 DOCUMENT_TASK = "RETRIEVAL_DOCUMENT"
 QUERY_TASK = "RETRIEVAL_QUERY"
+
+
+def _reported_tokens(item: Any) -> int:
+    """Token usage from the API when it reports one, else 0.
+
+    The field name differs across SDK generations (``token_count`` is current,
+    ``total_tokens`` legacy), and for ``gemini-embedding-001`` the embed endpoint
+    returns ``statistics=None`` entirely (verified live, 2026-10-03), so callers fall
+    back to a local count instead of recording zero cost.
+    """
+    statistics = getattr(item, "statistics", None)
+    if statistics is None:
+        return 0
+    value = getattr(statistics, "token_count", None)
+    if value is None:
+        value = getattr(statistics, "total_tokens", 0)
+    return int(value or 0)
 
 
 class GeminiEmbedding:
@@ -59,6 +77,8 @@ class GeminiEmbedding:
             )
         vectors: list[list[float]] = []
         input_tokens = 0
+        # Only used when the API reports no statistics; loads tiktoken lazily.
+        proxy = TiktokenTokenizer()
         for start in range(0, len(texts), MAX_CONTENTS_PER_REQUEST):
             batch = texts[start : start + MAX_CONTENTS_PER_REQUEST]
             response = self._sdk().models.embed_content(
@@ -74,11 +94,11 @@ class GeminiEmbedding:
                     f"{self.name} returned {len(response.embeddings)} vectors for "
                     f"{len(batch)} inputs — refusing to index a partial batch"
                 )
-            for item in response.embeddings:
-                values = list(item.values or [])
-                vectors.append(values)
-                statistics = getattr(item, "statistics", None)
-                input_tokens += int(getattr(statistics, "total_tokens", 0) or 0)
+            for text, item in zip(batch, response.embeddings, strict=True):
+                vectors.append(list(item.values or []))
+                # No API-reported usage means counting the tokens actually sent, via
+                # the same cl100k_base proxy the chunker uses: measured, never zero.
+                input_tokens += _reported_tokens(item) or len(proxy.encode(text))
 
         if not vectors or not vectors[0]:
             raise RuntimeError(f"{self.name} returned no embedding values")

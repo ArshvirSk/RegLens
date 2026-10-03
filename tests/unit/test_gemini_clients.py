@@ -11,6 +11,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from reglens.chunking.fixed import TiktokenTokenizer
 from reglens.config import Settings
 from reglens.config.settings import MissingApiKeyError
 from reglens.generation.base import LLMClient, Message
@@ -33,11 +34,13 @@ class FakeModels:
         tokens_per_content: int = 10,
         text: str | None = "answer",
         drop_last_embedding: bool = False,
+        report_statistics: bool = True,
     ) -> None:
         self.dims = dims
         self.tokens_per_content = tokens_per_content
         self.text = text
         self.drop_last_embedding = drop_last_embedding
+        self.report_statistics = report_statistics
         self.embed_calls: list[dict[str, object]] = []
         self.generate_calls: list[dict[str, object]] = []
 
@@ -46,7 +49,11 @@ class FakeModels:
         embeddings = [
             SimpleNamespace(
                 values=[0.0] * self.dims,
-                statistics=SimpleNamespace(total_tokens=self.tokens_per_content),
+                statistics=(
+                    SimpleNamespace(total_tokens=self.tokens_per_content)
+                    if self.report_statistics
+                    else None
+                ),
             )
             for _ in contents
         ]
@@ -91,6 +98,19 @@ def test_embed_documents_batches_at_the_sdk_ceiling() -> None:
     assert batch.model == "gemini-embedding-001"
     assert all(call["config"].task_type == "RETRIEVAL_DOCUMENT" for call in models.embed_calls)  # type: ignore[attr-defined]
     assert models.embed_calls[0]["config"].output_dimensionality == 8  # type: ignore[attr-defined]
+
+
+def test_missing_api_statistics_fall_back_to_proxy_token_count() -> None:
+    """Live embed_content returns statistics=None; cost accounting must not read 0."""
+    models = FakeModels(dims=4, report_statistics=False)
+    embedding = GeminiEmbedding(dimensions=4, client=fake_client(models))
+    texts = ["the quick brown fox", "jumps over the lazy dog"]
+
+    batch = embedding.embed_documents(texts)
+
+    expected = sum(len(TiktokenTokenizer().encode(text)) for text in texts)
+    assert expected > 0
+    assert batch.input_tokens == expected
 
 
 def test_embed_query_uses_the_query_task_and_returns_one_vector() -> None:
