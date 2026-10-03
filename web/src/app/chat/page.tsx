@@ -83,8 +83,9 @@ export default function ChatPage() {
           </button>
         </div>
         <p className="mt-3 text-xs text-[var(--muted)]">
-          Retrieval and generation arrive in Phase 1. Until then <code>/ask</code> returns an
-          explicit &quot;not implemented&quot; response rather than a fabricated answer.
+          Answers come from the baseline pipeline: dense top-10 retrieval over the ingested
+          corpus, then one grounded generation call. Every claim should carry a citation; when
+          the context lacks the answer the reply is INSUFFICIENT EVIDENCE rather than a guess.
         </p>
       </div>
 

@@ -51,8 +51,8 @@ export default function StatusPage() {
         </h2>
         <ul className="mt-3 space-y-2 text-sm">
           <li>Phase 0 — foundations, corpus manifest, tracing skeleton: complete</li>
-          <li>Phase 1 — naive baseline (fixed chunks, dense retrieval) and first eval: next</li>
-          <li>Phase 2 — retrieval quality ablations: not started</li>
+          <li>Phase 1 — naive baseline (fixed chunks, dense retrieval) and first eval: complete</li>
+          <li>Phase 2 — retrieval quality ablations: next</li>
           <li>Phase 3 — tables, temporal filters, routing: not started</li>
           <li>Phase 4 — citation verifier, refusals, source viewer: not started</li>
         </ul>
