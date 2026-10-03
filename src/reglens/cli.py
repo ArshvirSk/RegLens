@@ -682,6 +682,8 @@ def cmd_parse_compare(args: argparse.Namespace) -> int:
 
 
 def cmd_migrate(args: argparse.Namespace) -> int:
+    import asyncpg
+
     from reglens.db.pool import connect
     from reglens.db.runner import MigrationError, apply_migrations, migration_status
 
@@ -697,7 +699,7 @@ def cmd_migrate(args: argparse.Namespace) -> int:
 
     try:
         result = asyncio.run(run())
-    except (MigrationError, OSError) as exc:
+    except (MigrationError, OSError, asyncpg.PostgresError) as exc:
         print(f"migration failed: {exc}", file=sys.stderr)
         return EXIT_ERROR
     _emit(result, as_json=args.json, text=f"migrations: {result}")
