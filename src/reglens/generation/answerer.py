@@ -25,7 +25,11 @@ from reglens.generation.base import Answer, LLMClient, LLMResponse, Message
 from reglens.retrieval.base import RetrievedChunk
 
 REFUSAL_MARKER = "INSUFFICIENT EVIDENCE"
-CITATION_RE = re.compile(r"\[([^\[\]\n]{3,160}?),\s*p\.(\d+),\s*([^\[\]\n]*?)\]")
+# The context block prints multi-page chunks as ``p.40-41`` and PDF extraction sometimes
+# leaves a space (``p. 7``), so the model citing those verbatim is *not* a mangled format.
+# Anything else (missing ``p.N``, swapped separators) stays unparsed and is visible as a
+# missing citation in the eval report.
+CITATION_RE = re.compile(r"\[([^\[\]\n]{3,160}?),\s*p\.\s*(\d+(?:-\d+)?),\s*([^\[\]\n]*?)\]")
 
 SYSTEM_PROMPT = f"""\
 You answer questions about Indian banking regulation ONLY from the numbered context \

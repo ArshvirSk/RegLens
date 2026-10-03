@@ -110,7 +110,9 @@ def score_citations(labels: Sequence[str], retrieved: Sequence[RetrievedChunk]) 
         if not match:
             continue
         title, page, _clause = match.groups()
-        page_number = int(page)
+        # ``page`` may be a printed range (``40-41``); the range's start is the page the
+        # label points at, and it must still fall inside the chunk's page range.
+        page_number = int(page.split("-", 1)[0])
         if any(
             chunk.doc_title.strip() == title.strip()
             and chunk.page_start is not None

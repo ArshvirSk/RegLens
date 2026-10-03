@@ -108,6 +108,13 @@ def test_citation_precision_resolves_by_title_and_page() -> None:
     assert score.precision == 1 / 3
 
 
+def test_citation_precision_accepts_page_ranges() -> None:
+    retrieved = [chunk("a", "doc1", 5, 9, title="KYC Direction")]
+    score = score_citations(["[KYC Direction, p.7-8, 4.2]"], retrieved)
+    assert score.total == 1
+    assert score.resolved == 1
+
+
 def test_citation_precision_none_when_no_citations() -> None:
     score = score_citations([], [])
     assert score.total == 0

@@ -106,6 +106,20 @@ def test_citations_are_parsed_and_deduplicated() -> None:
     assert parse_citations("no citations here [not a citation]") == []
 
 
+def test_citations_tolerate_page_ranges_and_spacing() -> None:
+    """The context block itself prints ``p.40-41`` for multi-page chunks, so a model
+    citing that verbatim is a *correct* citation, not a mangled format."""
+    text = (
+        "Answer. [Reserve Bank of India (Commercial Banks - Know Your Customer) "
+        "Directions, 2025, p.40-41, clause n/a] Also [Direction B, p. 7, clause 3.2]."
+    )
+    assert parse_citations(text) == [
+        "[Reserve Bank of India (Commercial Banks - Know Your Customer) "
+        "Directions, 2025, p.40-41, clause n/a]",
+        "[Direction B, p.7, clause 3.2]",
+    ]
+
+
 def test_answer_passes_context_and_usage_through() -> None:
     answerer, llm = answerer_with("The LCR is 100%. [Master Direction - Liquidity, p.12, 4.2]")
     answer = answerer.answer("What is the LCR?", [make_chunk()])

@@ -181,7 +181,10 @@ class GeminiJudge:
                 ],
                 model=self.model,
                 temperature=0.0,
-                max_output_tokens=400,
+                # gemini-3.6-flash thinks *inside* the output budget (thoughts_tokens are
+                # billed as output), and 400 left ~36 chars of visible JSON — 21/40
+                # replies were truncated mid-object in the first eval run.
+                max_output_tokens=4000,
             )
         except Exception as exc:  # provider outage must not zero the metric
             return JudgeScore(None, None, error=f"judge call failed: {exc}", model=self.model)

@@ -60,6 +60,7 @@ class FakeLLM:
         self.reply = reply
         self.error = error
         self.calls: list[list[Message]] = []
+        self.budgets: list[int] = []
 
     def complete(
         self,
@@ -70,6 +71,7 @@ class FakeLLM:
         max_output_tokens: int = 900,
     ) -> LLMResponse:
         self.calls.append(messages)
+        self.budgets.append(max_output_tokens)
         if self.error is not None:
             raise self.error
         return LLMResponse(
@@ -94,6 +96,16 @@ def test_judge_returns_scores_and_records_prompt_version() -> None:
     assert "X is 100%." in llm.calls[0][1].content
     # the system prompt carries the scale the report documents
     assert str(JUDGE_MAX_SCORE) in llm.calls[0][0].content
+
+
+def test_judge_output_budget_leaves_room_for_thinking() -> None:
+    """gemini-3.6-flash spends max_output_tokens on thinking; 400 truncated 21/40
+    replies mid-JSON in the first eval run, so the budget must dwarf a JSON answer."""
+    llm = FakeLLM('{"correctness": 1, "faithfulness": 1, "notes": "thin"}')
+    judge = GeminiJudge(llm, model="judge-model")
+    score = judge.judge(question="Q?", reference_answer="A", context=[], candidate="ans")
+    assert score.ok
+    assert llm.budgets and llm.budgets[0] >= 2000
 
 
 def test_judge_provider_failure_is_missing_not_zero() -> None:
