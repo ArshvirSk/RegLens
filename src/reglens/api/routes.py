@@ -136,7 +136,9 @@ def _map_citations(labels: list[str], context: list[RetrievedChunk]) -> list[Cit
         if not match:
             continue
         title, page, clause = match.groups()
-        page_number = int(page)
+        # ``page`` may be a printed range the context block itself emits (``p.40-41``);
+        # the label points at the range's start page.
+        page_number = int(page.split("-", 1)[0])
         candidates = [chunk for chunk in context if chunk.doc_title == title.strip()]
         if not candidates:
             logger.warning("citation title not in context", extra={"label": label})
@@ -223,7 +225,14 @@ async def ask(request: Request, payload: AskRequest) -> Any:
                 output_tokens=answer.output_tokens,
             )
             span.add_metadata(refused=answer.refused, citations_parsed=len(answer.citations))
-    except Exception as exc:  # dead DB, provider outage, bad response — never an empty 200
+        # Mapping lives inside the failure boundary: an unmappable citation must be a
+        # 503 with a trace id (this route's contract), never an unhandled 500 — which
+        # also drops the CORS headers and shows the browser a meaningless "Failed to
+        # fetch" instead of the error.
+        citations = _map_citations(answer.citations, result.chunks)
+        trace.add_metadata(citations_mapped=len(citations))
+    except Exception as exc:
+        # dead DB, provider outage, bad response — never an empty 200
         logger.error("ask pipeline failed", extra={"error": str(exc)})
         record = await trace.afinish(pool=get_pool(request), error=str(exc))
         return JSONResponse(
@@ -231,8 +240,6 @@ async def ask(request: Request, payload: AskRequest) -> Any:
             content={"detail": f"pipeline failed: {exc}", "trace_id": record.trace_id},
         )
 
-    citations = _map_citations(answer.citations, result.chunks)
-    trace.add_metadata(citations_mapped=len(citations))
     record = await trace.afinish(pool=get_pool(request))
     return AskResponse(
         answer=answer.text,

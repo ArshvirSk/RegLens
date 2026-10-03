@@ -86,7 +86,7 @@ def make_chunk() -> RetrievedChunk:
     )
 
 
-def make_result(*, refused: bool = False) -> AskResult:
+def make_result(*, refused: bool = False, citations: list[str] | None = None) -> AskResult:
     text = (
         "INSUFFICIENT EVIDENCE"
         if refused
@@ -94,7 +94,7 @@ def make_result(*, refused: bool = False) -> AskResult:
     )
     answer = Answer(
         text=text,
-        citations=[] if refused else ["[Master Direction - Test, p.4, 3.1]"],
+        citations=[] if refused else (citations or ["[Master Direction - Test, p.4, 3.1]"]),
         refused=refused,
         refusal_reason="no_evidence" if refused else None,
         model="gemini-3.5-flash-lite",
@@ -166,6 +166,27 @@ def test_ask_answers_with_citations_via_the_pipeline(
     assert (
         filters.as_of_date is None
     )  # temporal filter is off in the baseline  # type: ignore[union-attr]
+
+
+def test_ask_maps_page_range_citations(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The context block prints multi-page chunks as ``p.4-5`` and the model cites
+    verbatim; ``int('4-5')`` crashed the route into a CORS-less 500 in the live demo."""
+    import reglens.api.routes as routes_module
+
+    monkeypatch.setattr(
+        routes_module,
+        "_get_pipeline",
+        lambda *args, **kwargs: SimpleNamespace(
+            ask=lambda *a, **k: make_result(citations=["[Master Direction - Test, p.4-5, n/a]"])
+        ),
+    )
+    response = client.post("/ask", json={"question": "What is the LCR requirement?"})
+    assert response.status_code == 200
+    citation = response.json()["citations"][0]
+    assert citation["page"] == 4
+    assert citation["chunk_id"] == "rbi_md_test__fixed__00000"
 
 
 def test_ask_refusal_is_explicit(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
