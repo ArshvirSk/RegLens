@@ -435,14 +435,17 @@ export default function VectorsPage() {
                 — a view of the space, not the decision space
               </span>
             </div>
-            <div className="flex max-h-24 flex-wrap gap-x-4 gap-y-1 overflow-y-auto text-xs text-[var(--muted)]">
+            <div className="columns-2 gap-6 text-xs text-[var(--muted)]">
               {space.documents.map((doc) => (
-                <span key={doc.doc_id} className="inline-flex items-center gap-1.5">
+                <span
+                  key={doc.doc_id}
+                  className="mb-1 flex break-inside-avoid items-start gap-1.5"
+                >
                   <span
-                    className="inline-block h-2.5 w-2.5 rounded-full"
+                    className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
                     style={{ background: docColor(doc.doc_id, docIndex) }}
                   />
-                  {doc.title}
+                  <span>{doc.title}</span>
                 </span>
               ))}
             </div>
@@ -508,9 +511,6 @@ export default function VectorsPage() {
         </div>
       )}
 
-      <p className="text-xs text-[var(--muted)]">
-        Informational only. Not legal or investment advice.
-      </p>
     </div>
   );
 }

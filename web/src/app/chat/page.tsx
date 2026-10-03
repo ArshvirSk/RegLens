@@ -113,9 +113,6 @@ export default function ChatPage() {
         </article>
       )}
 
-      <p className="text-xs text-[var(--muted)]">
-        Informational only. Not legal or investment advice.
-      </p>
     </div>
   );
 }
