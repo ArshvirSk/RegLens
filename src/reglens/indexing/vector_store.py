@@ -275,6 +275,50 @@ class PgVectorStore:
 
         return self._run(work)
 
+    def all_embeddings(self) -> list[dict[str, Any]]:
+        """Every chunk's identity + vector for the vector-space view (PCA input).
+
+        Vectors travel as pgvector's text form, which is a JSON array, so no codec
+        registration is needed — same reasoning as :func:`vector_literal`.
+        """
+
+        async def work(connection: asyncpg.Connection) -> list[Mapping[str, Any]]:
+            return await connection.fetch(
+                "SELECT c.chunk_id, c.doc_id, c.page_start, d.title AS doc_title, "
+                "c.embedding::text AS embedding "
+                "FROM chunks c JOIN documents d ON d.doc_id = c.doc_id "
+                "WHERE c.corpus_version = $1 ORDER BY c.chunk_id",
+                self.settings.corpus_version,
+            )
+
+        return [
+            {
+                "chunk_id": row["chunk_id"],
+                "doc_id": row["doc_id"],
+                "page_start": row["page_start"],
+                "doc_title": row["doc_title"],
+                "vector": json.loads(row["embedding"]),
+            }
+            for row in self._run(work)
+        ]
+
+    def score_all(self, vector: list[float]) -> list[tuple[str, float]]:
+        """Cosine similarity of every chunk against this vector, best first.
+
+        This is the real retrieval decision — computed against the full stored
+        dimension, never against a projected view.
+        """
+
+        async def work(connection: asyncpg.Connection) -> list[Mapping[str, Any]]:
+            return await connection.fetch(
+                "SELECT chunk_id, 1 - (embedding <=> $1::vector) AS score "
+                "FROM chunks WHERE corpus_version = $2 ORDER BY score DESC",
+                vector_literal(vector),
+                self.settings.corpus_version,
+            )
+
+        return [(row["chunk_id"], float(row["score"])) for row in self._run(work)]
+
     def embedding_dimension(self) -> int | None:
         """Declared width of ``chunks.embedding`` (pgvector keeps it in ``atttypmod``).
 

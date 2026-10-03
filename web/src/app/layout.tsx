@@ -24,6 +24,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/chat" className="hover:text-white">
                 Ask
               </Link>
+              <Link href="/vectors" className="hover:text-white">
+                Vectors
+              </Link>
             </nav>
           </div>
         </header>

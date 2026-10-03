@@ -13,6 +13,7 @@ from fastapi.responses import JSONResponse
 
 from reglens import __version__
 from reglens.api.routes import ask_router, health_router, observability_router
+from reglens.api.vectors import vectors_router
 from reglens.config import get_settings
 from reglens.db import close_pool, create_pool
 from reglens.db import health as db_health
@@ -97,6 +98,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(ask_router)
     app.include_router(observability_router)
+    app.include_router(vectors_router)
     return app
 
 
